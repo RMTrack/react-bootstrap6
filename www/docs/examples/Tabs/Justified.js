@@ -6,7 +6,7 @@ function JustifiedExample() {
     <Tabs
       defaultActiveKey="profile"
       id="justify-tab-example"
-      className="mb-3"
+      className="mb-5"
       justify
     >
       <Tab eventKey="home" title="Home">

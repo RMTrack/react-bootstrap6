@@ -18,9 +18,9 @@ const ControllableNote: React.FC<ControllableNoteProps> = ({
   const isHandler = prop.type?.name === 'func';
 
   return (
-    <div className="mb-2">
+    <div className="mb-3">
       <small>
-        <em className="text-info-emphasis">
+        <em className="fg-emphasis-info">
           {isHandler ? (
             <span>
               controls <code>{controllable}</code>

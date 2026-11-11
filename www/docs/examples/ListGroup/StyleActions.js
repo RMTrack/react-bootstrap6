@@ -20,11 +20,11 @@ function StyleActionsExample() {
       <ListGroup.Item action variant="info">
         Info
       </ListGroup.Item>
-      <ListGroup.Item action variant="light">
-        Light
+      <ListGroup.Item action variant="accent">
+        Accent
       </ListGroup.Item>
-      <ListGroup.Item action variant="dark">
-        Dark
+      <ListGroup.Item action variant="inverse">
+        Inverse
       </ListGroup.Item>
     </ListGroup>
   );

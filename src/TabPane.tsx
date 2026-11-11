@@ -8,8 +8,9 @@ import type {
   EventKey,
 } from '@restart/ui/types';
 import { useBootstrapPrefix } from './ThemeProvider.js';
-import Fade from './Fade.js';
-import getTabTransitionComponent from './getTabTransitionComponent.js';
+import getTabTransitionComponent, {
+  TabPaneTransition,
+} from './getTabTransitionComponent.js';
 import type { TransitionType } from './helpers.js';
 import type { TransitionCallbacks } from './types.js';
 
@@ -74,7 +75,7 @@ const TabPane: DynamicRefForwardingComponent<'div', TabPaneProps> =
           onExited,
           mountOnEnter,
           unmountOnExit,
-          transition: Transition = Fade,
+          transition: Transition = TabPaneTransition,
         },
       ] = useTabPanel({
         ...props,

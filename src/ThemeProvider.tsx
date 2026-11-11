@@ -4,6 +4,26 @@ import { useContext, useMemo } from 'react';
 export const DEFAULT_BREAKPOINTS = ['xxl', 'xl', 'lg', 'md', 'sm', 'xs'];
 export const DEFAULT_MIN_BREAKPOINT = 'xs';
 
+/**
+ * Bootstrap 6 renamed the `xxl` breakpoint to `2xl`. Breakpoint props keep the
+ * `xxl` key (`2xl` is not a valid JSX attribute name), so map it to the
+ * `2xl` class name here. Also accepts `xxl-down` style values.
+ */
+export function toBreakpointName(breakpoint: string): string {
+  return breakpoint.replace(/^xxl(?=$|-)/, '2xl');
+}
+
+/**
+ * The Bootstrap 6 responsive class prefix for a breakpoint, e.g. `md:` as in
+ * `md:col-6`. The minimum breakpoint has no prefix.
+ */
+export function breakpointPrefix(
+  breakpoint: string,
+  minBreakpoint?: string,
+): string {
+  return breakpoint === minBreakpoint ? '' : `${toBreakpointName(breakpoint)}:`;
+}
+
 export interface ThemeContextValue {
   /**
    * An object mapping of Bootstrap component classes that

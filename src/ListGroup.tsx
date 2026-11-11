@@ -7,7 +7,7 @@ import type {
   DynamicRefForwardingComponent,
   EventKey,
 } from '@restart/ui/types';
-import { useBootstrapPrefix } from './ThemeProvider.js';
+import { toBreakpointName, useBootstrapPrefix } from './ThemeProvider.js';
 import ListGroupItem from './ListGroupItem.js';
 import type { BaseNavProps, LiteralUnion } from './types.js';
 
@@ -32,12 +32,14 @@ export interface ListGroupProps extends BaseNavProps {
   /**
    * Changes the flow of the list group items from vertical to horizontal.
    * A value of `null` (the default) sets it to vertical for all breakpoints;
-   * Just including the prop sets it for all breakpoints, while `{sm|md|lg|xl|xxl}`
-   * makes the list group horizontal starting at that breakpoint’s `min-width`.
+   * Just including the prop sets it for all breakpoints, while `{sm|md|lg|xl|2xl}`
+   * makes the list group horizontal starting at that breakpoint
+   * (`.md:list-group-horizontal`). Responsive variants use a container query, so
+   * a parent needs to be a query container (e.g. `.contains-inline`).
    */
   horizontal?:
     | boolean
-    | LiteralUnion<'sm' | 'md' | 'lg' | 'xl' | 'xxl', string>
+    | LiteralUnion<'sm' | 'md' | 'lg' | 'xl' | '2xl', string>
     | undefined;
 
   /**
@@ -68,10 +70,12 @@ const ListGroup: DynamicRefForwardingComponent<'div', ListGroupProps> =
 
     const bsPrefix = useBootstrapPrefix(initialBsPrefix, 'list-group');
 
-    let horizontalVariant: string | undefined;
+    let horizontalClass: string | undefined;
     if (horizontal) {
-      horizontalVariant =
-        horizontal === true ? 'horizontal' : `horizontal-${horizontal}`;
+      horizontalClass =
+        horizontal === true
+          ? `${bsPrefix}-horizontal`
+          : `${toBreakpointName(horizontal)}:${bsPrefix}-horizontal`;
     }
 
     warn(
@@ -88,7 +92,7 @@ const ListGroup: DynamicRefForwardingComponent<'div', ListGroupProps> =
           className,
           bsPrefix,
           variant && `${bsPrefix}-${variant}`,
-          horizontalVariant && `${bsPrefix}-${horizontalVariant}`,
+          horizontalClass,
           numbered && `${bsPrefix}-numbered`,
         )}
       />

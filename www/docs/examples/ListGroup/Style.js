@@ -10,8 +10,8 @@ function StyleExample() {
       <ListGroup.Item variant="danger">Danger</ListGroup.Item>
       <ListGroup.Item variant="warning">Warning</ListGroup.Item>
       <ListGroup.Item variant="info">Info</ListGroup.Item>
-      <ListGroup.Item variant="light">Light</ListGroup.Item>
-      <ListGroup.Item variant="dark">Dark</ListGroup.Item>
+      <ListGroup.Item variant="accent">Accent</ListGroup.Item>
+      <ListGroup.Item variant="inverse">Inverse</ListGroup.Item>
     </ListGroup>
   );
 }

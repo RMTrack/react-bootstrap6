@@ -38,8 +38,9 @@ const FloatingLabel: DynamicRefForwardingComponent<'div', FloatingLabelProps> =
           controlId={controlId}
           {...props}
         >
-          {children}
+          {/* Bootstrap 6 requires the label first (styled through :has()). */}
           <label htmlFor={controlId}>{label}</label>
+          {children}
         </FormGroup>
       );
     },

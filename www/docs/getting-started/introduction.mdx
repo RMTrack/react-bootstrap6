@@ -88,12 +88,15 @@ more information about the benefits of using a CDN can be found
 
 In case you are using **Sass** the simplest way is to include the Bootstrap’s source Sass files
 in your main Sass file and then require it on your `src/index.js` or `App.js` file.
-This applies to a typical `create-react-app` application in other use cases you might have to setup
-the bundler of your choice to compile Sass/SCSS stylesheets to CSS.
+Your bundler needs to compile Sass/SCSS stylesheets to CSS.
 
-```css
+Bootstrap 6 uses the Sass module system, so load it with `@use` rather than `@import`.
+It needs [Dart Sass](https://sass-lang.com/dart-sass/) (the `sass` package); Node Sass is
+not supported.
+
+```scss
 /* The following line can be included in a src/App.scss */
-@import '~bootstrap/scss/bootstrap';
+@use 'bootstrap/scss/bootstrap';
 ```
 
 ```jsx
@@ -103,28 +106,32 @@ import './App.scss';
 
 #### Customize Bootstrap
 
-If you wish to customize the Bootstrap theme or any Bootstrap variables
-you can create a custom Sass file:
+Bootstrap 6 is customized through CSS token maps passed with `@use ... with ()`:
+`$root-tokens` for global tokens and each component's `$*-tokens` map. Token names
+are written without the `--bs-` prefix in Sass. Settings such as `$radius` live in
+`_config.scss` (Bootstrap 5's `_variables.scss`), so configure that module before
+loading Bootstrap:
 
-```css
-/* The following block can be included in a custom.scss */
+```scss
+/* The following block can be included in a src/App.scss */
 
 /* make the customizations */
-$theme-colors: (
-  'info': tomato,
-  'danger': teal
+@use 'bootstrap/scss/config' with (
+  $radius: 0.375rem
 );
 
-/* import bootstrap to set changes */
-@import '~bootstrap/scss/bootstrap';
+/* load bootstrap with your token overrides */
+@use 'bootstrap/scss/bootstrap' with (
+  $root-tokens: (
+    --spacer: 1.25rem,
+  )
+);
 ```
 
-... And import it on the main Sass file.
-
-```css
-/* The following line can be included in a src/App.scss */
-@import 'custom';
-```
+Because `@use` doesn't add Bootstrap's variables, functions and mixins to the global
+scope, refer to them through the `bootstrap` namespace (for example
+`bootstrap.$spacer` or `@include bootstrap.media-breakpoint-down(sm)`), or load
+Bootstrap with `@use 'bootstrap/scss/bootstrap' as *;` to keep the bare names.
 
 ### Advanced usage
 

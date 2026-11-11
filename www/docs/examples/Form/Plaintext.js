@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row';
 function PlaintextExample() {
   return (
     <Form>
-      <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
+      <Form.Group as={Row} className="mb-5" controlId="formPlaintextEmail">
         <Form.Label column sm="2">
           Email
         </Form.Label>
@@ -14,7 +14,7 @@ function PlaintextExample() {
         </Col>
       </Form.Group>
 
-      <Form.Group as={Row} className="mb-3" controlId="formPlaintextPassword">
+      <Form.Group as={Row} className="mb-5" controlId="formPlaintextPassword">
         <Form.Label column sm="2">
           Password
         </Form.Label>

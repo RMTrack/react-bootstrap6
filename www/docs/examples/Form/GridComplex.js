@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row';
 function GridComplexExample() {
   return (
     <Form>
-      <Row className="mb-3">
+      <Row className="mb-5">
         <Form.Group as={Col} controlId="formGridEmail">
           <Form.Label>Email</Form.Label>
           <Form.Control type="email" placeholder="Enter email" />
@@ -18,17 +18,17 @@ function GridComplexExample() {
         </Form.Group>
       </Row>
 
-      <Form.Group className="mb-3" controlId="formGridAddress1">
+      <Form.Group className="mb-5" controlId="formGridAddress1">
         <Form.Label>Address</Form.Label>
         <Form.Control placeholder="1234 Main St" />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formGridAddress2">
+      <Form.Group className="mb-5" controlId="formGridAddress2">
         <Form.Label>Address 2</Form.Label>
         <Form.Control placeholder="Apartment, studio, or floor" />
       </Form.Group>
 
-      <Row className="mb-3">
+      <Row className="mb-5">
         <Form.Group as={Col} controlId="formGridCity">
           <Form.Label>City</Form.Label>
           <Form.Control />
@@ -48,7 +48,7 @@ function GridComplexExample() {
         </Form.Group>
       </Row>
 
-      <Form.Group className="mb-3" id="formGridCheckbox">
+      <Form.Group className="mb-5" id="formGridCheckbox">
         <Form.Check type="checkbox" label="Check me out" />
       </Form.Group>
 

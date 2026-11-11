@@ -42,8 +42,9 @@ describe('<ThemeProvider>', () => {
     );
     const buttonElem = screen.getByText('My label');
     expect(buttonElem.tagName).toEqual('BUTTON');
-    expect(buttonElem.classList).toContain('my-btn');
-    expect(buttonElem.classList).toContain('my-btn-primary');
+    // A theme color alone renders a solid button: .btn-solid.theme-primary
+    expect(buttonElem.classList).toContain('my-btn-solid');
+    expect(buttonElem.classList).toContain('theme-primary');
 
     const fooElem = screen.getByText('foo val');
     expect(fooElem.tagName).toEqual('P');

@@ -13,7 +13,7 @@ describe('Badge', () => {
     const badge = screen.getByTestId('test');
     expect(badge.innerText).toEqual('Message');
     expect(badge.classList).toContain('badge');
-    expect(badge.classList).toContain('bg-primary');
+    expect(badge.classList).toContain('theme-primary');
     expect(badge.classList).toContain('rounded-pill');
   });
 
@@ -33,7 +33,7 @@ describe('Badge', () => {
     render(<Badge data-testid="test">Message</Badge>);
 
     const badge = screen.getByTestId('test');
-    expect(badge.classList).toContain('bg-primary');
+    expect(badge.classList).toContain('theme-primary');
   });
 
   it('Should use bg class', () => {
@@ -44,7 +44,7 @@ describe('Badge', () => {
     );
 
     const badge = screen.getByTestId('test');
-    expect(badge.classList).toContain('bg-danger');
+    expect(badge.classList).toContain('theme-danger');
   });
 
   it('Should not have bg class when bg=null', () => {
@@ -55,6 +55,21 @@ describe('Badge', () => {
     );
 
     const badge = screen.getByTestId('test');
-    expect(badge.classList).not.toContain('bg-primary');
+    expect(badge.classList).not.toContain('theme-primary');
+  });
+  it('Should render subtle and outline variants', () => {
+    render(
+      <>
+        <Badge variant="subtle" data-testid="subtle" />
+        <Badge variant="outline" bg="danger" data-testid="outline" />
+      </>,
+    );
+
+    expect(screen.getByTestId('subtle').className).toEqual(
+      'badge badge-subtle theme-primary',
+    );
+    expect(screen.getByTestId('outline').className).toEqual(
+      'badge badge-outline theme-danger',
+    );
   });
 });

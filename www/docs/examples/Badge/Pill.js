@@ -3,9 +3,12 @@ import Stack from 'react-bootstrap/Stack';
 
 function PillExample() {
   return (
-    <Stack direction="horizontal" gap={2}>
+    <Stack direction="horizontal" gap={3}>
       <Badge pill bg="primary">
         Primary
+      </Badge>
+      <Badge pill bg="accent">
+        Accent
       </Badge>
       <Badge pill bg="secondary">
         Secondary
@@ -16,17 +19,14 @@ function PillExample() {
       <Badge pill bg="danger">
         Danger
       </Badge>
-      <Badge pill bg="warning" text="dark">
+      <Badge pill bg="warning">
         Warning
       </Badge>
       <Badge pill bg="info">
         Info
       </Badge>
-      <Badge pill bg="light" text="dark">
-        Light
-      </Badge>
-      <Badge pill bg="dark">
-        Dark
+      <Badge pill bg="inverse">
+        Inverse
       </Badge>
     </Stack>
   );

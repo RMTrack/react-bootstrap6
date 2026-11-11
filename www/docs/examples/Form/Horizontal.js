@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row';
 function HorizontalExample() {
   return (
     <Form>
-      <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
+      <Form.Group as={Row} className="mb-5" controlId="formHorizontalEmail">
         <Form.Label column sm={2}>
           Email
         </Form.Label>
@@ -15,7 +15,7 @@ function HorizontalExample() {
         </Col>
       </Form.Group>
 
-      <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
+      <Form.Group as={Row} className="mb-5" controlId="formHorizontalPassword">
         <Form.Label column sm={2}>
           Password
         </Form.Label>
@@ -24,7 +24,7 @@ function HorizontalExample() {
         </Col>
       </Form.Group>
       <fieldset>
-        <Form.Group as={Row} className="mb-3">
+        <Form.Group as={Row} className="mb-5">
           <Form.Label as="legend" column sm={2}>
             Radios
           </Form.Label>
@@ -50,13 +50,13 @@ function HorizontalExample() {
           </Col>
         </Form.Group>
       </fieldset>
-      <Form.Group as={Row} className="mb-3" controlId="formHorizontalCheck">
+      <Form.Group as={Row} className="mb-5" controlId="formHorizontalCheck">
         <Col sm={{ span: 10, offset: 2 }}>
           <Form.Check label="Remember me" />
         </Col>
       </Form.Group>
 
-      <Form.Group as={Row} className="mb-3">
+      <Form.Group as={Row} className="mb-5">
         <Col sm={{ span: 10, offset: 2 }}>
           <Button type="submit">Sign in</Button>
         </Col>

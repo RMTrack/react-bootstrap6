@@ -16,11 +16,16 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLElement> {
   bsPrefix?: string | undefined;
 
   /**
-   * The visual style of the badge
+   * The theme color of the badge, applied with `.theme-*`.
    *
-   * @type {'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | undefined}
+   * @type {'primary' | 'accent' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'inverse' | undefined}
    */
   bg?: Variant | undefined;
+
+  /**
+   * Render a subtle or outline badge instead of the default solid one.
+   */
+  variant?: 'subtle' | 'outline' | undefined;
 
   /**
    * Make badges more rounded with some additional horizontal padding
@@ -28,9 +33,9 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLElement> {
   pill?: boolean | undefined;
 
   /**
-   * Sets badge text color
+   * Sets badge text color, applied with `.fg-*`
    *
-   * @type {'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | 'white' | 'muted' | undefined}
+   * @type {'primary' | 'accent' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'inverse' | 'body' | 'white' | 'black' | undefined}
    */
   text?: Color | undefined;
 }
@@ -41,6 +46,7 @@ const Badge: DynamicRefForwardingComponent<'span', BadgeProps> =
       {
         bsPrefix,
         bg = 'primary',
+        variant,
         pill = false,
         text,
         className,
@@ -57,9 +63,10 @@ const Badge: DynamicRefForwardingComponent<'span', BadgeProps> =
           className={clsx(
             className,
             prefix,
+            variant && `${prefix}-${variant}`,
             pill && `rounded-pill`,
-            text && `text-${text}`,
-            bg && `bg-${bg}`,
+            text && `fg-${text}`,
+            bg && `theme-${bg}`,
           )}
         />
       );

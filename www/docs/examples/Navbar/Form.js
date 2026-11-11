@@ -7,8 +7,8 @@ import Col from 'react-bootstrap/Col';
 
 function FormExample() {
   return (
-    <Navbar className="bg-body-tertiary justify-content-between">
-      <Form inline>
+    <Navbar className="bg-1 justify-content-between">
+      <Form>
         <InputGroup>
           <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
           <Form.Control
@@ -18,14 +18,10 @@ function FormExample() {
           />
         </InputGroup>
       </Form>
-      <Form inline>
+      <Form>
         <Row>
           <Col xs="auto">
-            <Form.Control
-              type="text"
-              placeholder="Search"
-              className=" mr-sm-2"
-            />
+            <Form.Control type="text" placeholder="Search" />
           </Col>
           <Col xs="auto">
             <Button type="submit">Submit</Button>

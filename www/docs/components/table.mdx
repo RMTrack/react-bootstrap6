@@ -9,6 +9,7 @@ import TableStripedColumns from '!!raw-loader!../examples/Table/StripedColumns';
 import TableResponsive from '!!raw-loader!../examples/Table/Responsive';
 import TableResponsiveBreakpoints from '!!raw-loader!../examples/Table/ResponsiveBreakpoints';
 import TableSmall from '!!raw-loader!../examples/Table/Small';
+import TableStacked from '!!raw-loader!../examples/Table/Stacked';
 
 ## Example
 
@@ -28,8 +29,9 @@ Use `size="sm"` to make tables compact by cutting cell padding in half.
 
 ## Dark Table
 
-Use `variant="dark"` to invert the colors of the table and get light text
-on a dark background.
+Bootstrap 6 has no `.table-dark`. Render the table in the dark color mode with
+`data-bs-theme="dark"` to get light text on a dark background. To color a table
+with a theme color, use the `variant` prop, which applies a `.theme-*` class.
 
 <CodeBlock language="jsx" live>
   {TableDark}
@@ -67,12 +69,27 @@ has 12 columns that are scrollable horizontally.
 
 ### Breakpoint specific
 
-Use `responsive="sm"`, `responsive="md"`, `responsive="lg"`, or `responsive="xl"`
+Use `responsive="sm"`, `responsive="md"`, `responsive="lg"`, `responsive="xl"` or `responsive="2xl"`
 as needed to create responsive tables up to a particular breakpoint. From that
 breakpoint and up, the table will behave normally and not scroll horizontally.
+`responsive="md"` renders a `.md:table-responsive` wrapper.
 
 <CodeBlock language="jsx" live>
   {TableResponsiveBreakpoints}
+</CodeBlock>
+
+## Stacked
+
+Use the `stacked` prop to show each row as a block on narrow containers, with the header
+row hidden visually. Pass a breakpoint to stack only below it: `stacked="md"` renders
+`.md:table-stacked`. Label the cells with a `data-cell` attribute, which Bootstrap shows
+above each value.
+
+Stacked tables use a container query, so a parent must be a query container, for example
+`.contains-inline`. Make your browser window narrower to see the example stack.
+
+<CodeBlock language="jsx" live>
+  {TableStacked}
 </CodeBlock>
 
 ## API

@@ -35,7 +35,7 @@ function FormExample() {
     >
       {({ handleSubmit, handleChange, values, touched, errors }) => (
         <Form noValidate onSubmit={handleSubmit}>
-          <Row className="mb-3">
+          <Row className="mb-5">
             <Form.Group as={Col} md="4" controlId="validationFormik01">
               <Form.Label>First name</Form.Label>
               <Form.Control
@@ -59,9 +59,14 @@ function FormExample() {
 
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} md="4" controlId="validationFormikUsername">
+            <Form.Group
+              as={Col}
+              md="4"
+              controlId="validationFormikUsername"
+              className="form-field"
+            >
               <Form.Label>Username</Form.Label>
-              <InputGroup hasValidation>
+              <InputGroup>
                 <InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
                 <Form.Control
                   type="text"
@@ -72,13 +77,13 @@ function FormExample() {
                   onChange={handleChange}
                   isInvalid={!!errors.username}
                 />
-                <Form.Control.Feedback type="invalid">
-                  {errors.username}
-                </Form.Control.Feedback>
               </InputGroup>
+              <Form.Control.Feedback type="invalid">
+                {errors.username}
+              </Form.Control.Feedback>
             </Form.Group>
           </Row>
-          <Row className="mb-3">
+          <Row className="mb-5">
             <Form.Group as={Col} md="6" controlId="validationFormik03">
               <Form.Label>City</Form.Label>
               <Form.Control
@@ -124,7 +129,7 @@ function FormExample() {
               </Form.Control.Feedback>
             </Form.Group>
           </Row>
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-5">
             <Form.Check
               required
               name="terms"

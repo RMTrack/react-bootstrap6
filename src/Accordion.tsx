@@ -1,12 +1,10 @@
 import clsx from 'clsx';
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useUncontrolled } from 'uncontrollable';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import { useBootstrapPrefix } from './ThemeProvider.js';
 import AccordionBody from './AccordionBody.js';
-import AccordionButton from './AccordionButton.js';
-import AccordionCollapse from './AccordionCollapse.js';
 import AccordionContext, {
   type AccordionSelectCallback,
   type AccordionEventKey,
@@ -55,6 +53,16 @@ export interface AccordionProps extends Omit<
   flush?: boolean | undefined;
 
   /**
+   * Render a compact accordion with tighter padding, radius and type.
+   */
+  size?: 'sm' | undefined;
+
+  /**
+   * Space the items apart as separate rounded cards.
+   */
+  gap?: boolean | undefined;
+
+  /**
    * Allow accordion items to stay open when another item is opened.
    */
   alwaysOpen?: boolean | undefined;
@@ -70,6 +78,8 @@ const Accordion: DynamicRefForwardingComponent<'div', AccordionProps> =
       className,
       onSelect,
       flush,
+      size,
+      gap,
       alwaysOpen,
       ...controlledProps
     } = useUncontrolled(props, {
@@ -77,13 +87,20 @@ const Accordion: DynamicRefForwardingComponent<'div', AccordionProps> =
     });
 
     const prefix = useBootstrapPrefix(bsPrefix, 'accordion');
+    const groupName = useId();
+
+    // Items of an exclusive accordion share a `name`, so the browser keeps at
+    // most one of the `<details>` open.
+    const name = alwaysOpen || Array.isArray(activeKey) ? undefined : groupName;
+
     const contextValue = useMemo(
       () => ({
         activeEventKey: activeKey,
         onSelect,
         alwaysOpen,
+        name,
       }),
-      [activeKey, onSelect, alwaysOpen],
+      [activeKey, onSelect, alwaysOpen, name],
     );
 
     return (
@@ -91,7 +108,13 @@ const Accordion: DynamicRefForwardingComponent<'div', AccordionProps> =
         <Component
           ref={ref}
           {...controlledProps}
-          className={clsx(className, prefix, flush && `${prefix}-flush`)}
+          className={clsx(
+            className,
+            prefix,
+            flush && `${prefix}-flush`,
+            size && `${prefix}-${size}`,
+            gap && `${prefix}-gap`,
+          )}
         />
       </AccordionContext.Provider>
     );
@@ -100,8 +123,6 @@ const Accordion: DynamicRefForwardingComponent<'div', AccordionProps> =
 Accordion.displayName = 'Accordion';
 
 export default Object.assign(Accordion, {
-  Button: AccordionButton,
-  Collapse: AccordionCollapse,
   Item: AccordionItem,
   Header: AccordionHeader,
   Body: AccordionBody,

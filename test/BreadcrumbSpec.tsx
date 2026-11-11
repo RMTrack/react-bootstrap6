@@ -43,4 +43,51 @@ describe('<Breadcrumb>', () => {
 
     expect(screen.getByTestId('test').tagName).toEqual('NAV');
   });
+  it('Should render .breadcrumb-divider items between the items', () => {
+    render(
+      <Breadcrumb data-testid="test">
+        <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
+        <Breadcrumb.Item href="#">Library</Breadcrumb.Item>
+        <Breadcrumb.Item active>Data</Breadcrumb.Item>
+      </Breadcrumb>,
+    );
+
+    const list = screen.getByTestId('test').querySelector('ol')!;
+    expect(Array.from(list.children).map((li) => li.className)).toEqual([
+      'breadcrumb-item',
+      'breadcrumb-divider',
+      'breadcrumb-item',
+      'breadcrumb-divider',
+      'breadcrumb-item',
+    ]);
+    const divider = list.children[1];
+    expect(divider.getAttribute('aria-hidden')).toEqual('true');
+    expect(divider.textContent).toEqual('');
+  });
+
+  it('Should render custom divider content', () => {
+    render(
+      <Breadcrumb data-testid="test" divider="/">
+        <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
+        <Breadcrumb.Item active>Data</Breadcrumb.Item>
+      </Breadcrumb>,
+    );
+
+    expect(
+      screen.getByTestId('test').querySelector('.breadcrumb-divider')!
+        .textContent,
+    ).toEqual('/');
+  });
+
+  it('Should not render a divider for a single item', () => {
+    render(
+      <Breadcrumb data-testid="test">
+        <Breadcrumb.Item active>Home</Breadcrumb.Item>
+      </Breadcrumb>,
+    );
+
+    expect(
+      screen.getByTestId('test').querySelector('.breadcrumb-divider'),
+    ).toBeNull();
+  });
 });

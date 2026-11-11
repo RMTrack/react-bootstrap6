@@ -20,6 +20,6 @@ describe('<Stack>', () => {
 
   it('should render responsive gap', () => {
     const { container } = render(<Stack gap={{ md: 2 }} />);
-    expect(container.firstElementChild!.classList).toContain('gap-md-2');
+    expect(container.firstElementChild!.classList).toContain('md:gap-2');
   });
 });

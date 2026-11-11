@@ -7,7 +7,6 @@ import CardFooter from './CardFooter.js';
 import CardHeader from './CardHeader.js';
 import CardImg from './CardImg.js';
 import CardImgOverlay from './CardImgOverlay.js';
-import CardLink from './CardLink.js';
 import CardSubtitle from './CardSubtitle.js';
 import CardText from './CardText.js';
 import CardTitle from './CardTitle.js';
@@ -25,23 +24,28 @@ export interface CardProps extends React.HTMLAttributes<HTMLElement> {
   bsPrefix?: string | undefined;
 
   /**
-   * Sets card background
+   * The theme color of the card, applied with `.theme-*`.
    *
-   * @type {'primary' | 'secondary' | 'success' |'danger' | 'warning' | 'info' | 'dark' | 'light' | undefined}
+   * @type {'primary' | 'accent' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'inverse' | undefined}
    */
   bg?: Variant | undefined;
 
   /**
-   * Sets card text color
+   * Render a subtle (themed with subtle backgrounds) or translucent card.
+   */
+  variant?: 'subtle' | 'translucent' | undefined;
+
+  /**
+   * Sets card text color, applied with `.fg-*`
    *
-   * @type {'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark' | 'light' | 'white' | 'muted' | undefined}
+   * @type {'primary' | 'accent' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'inverse' | 'body' | 'white' | 'black' | undefined}
    */
   text?: Color | undefined;
 
   /**
    * Sets card border color
    *
-   * @type {'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark' | 'light' | undefined}
+   * @type {'primary' | 'accent' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'inverse' | undefined}
    */
   border?: Variant | undefined;
 
@@ -61,6 +65,7 @@ const Card: DynamicRefForwardingComponent<'div', CardProps> = React.forwardRef<
       bsPrefix,
       className,
       bg,
+      variant,
       text,
       border,
       body = false,
@@ -80,8 +85,9 @@ const Card: DynamicRefForwardingComponent<'div', CardProps> = React.forwardRef<
         className={clsx(
           className,
           prefix,
-          bg && `bg-${bg}`,
-          text && `text-${text}`,
+          variant && `${prefix}-${variant}`,
+          bg && `theme-${bg}`,
+          text && `fg-${text}`,
           border && `border-${border}`,
         )}
       >
@@ -98,7 +104,6 @@ export default Object.assign(Card, {
   Title: CardTitle,
   Subtitle: CardSubtitle,
   Body: CardBody,
-  Link: CardLink,
   Text: CardText,
   Header: CardHeader,
   Footer: CardFooter,

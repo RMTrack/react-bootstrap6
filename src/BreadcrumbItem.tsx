@@ -19,8 +19,8 @@ export interface BreadcrumbItemProps extends Omit<
   bsPrefix?: string | undefined;
 
   /**
-   * Adds a visual "active" state to a Breadcrumb
-   * Item and disables the link.
+   * Marks the current page: renders `.breadcrumb-link.active` without a
+   * link and sets `aria-current="page"`.
    */
   active?: boolean | undefined;
 
@@ -70,19 +70,21 @@ const BreadcrumbItem: DynamicRefForwardingComponent<'li', BreadcrumbItemProps> =
       ref,
     ) => {
       const prefix = useBootstrapPrefix(bsPrefix, 'breadcrumb-item');
+      const linkPrefix = useBootstrapPrefix(undefined, 'breadcrumb-link');
 
       return (
         <Component
           ref={ref}
           {...props}
-          className={clsx(prefix, className, { active })}
+          className={clsx(prefix, className)}
           aria-current={active ? 'page' : undefined}
         >
           {active ? (
-            children
+            <span className={clsx(linkPrefix, 'active')}>{children}</span>
           ) : (
             <LinkComponent
               {...linkProps}
+              className={clsx(linkPrefix, linkProps.className)}
               href={href}
               title={title}
               target={target}

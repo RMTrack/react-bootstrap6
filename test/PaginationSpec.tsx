@@ -30,4 +30,11 @@ describe('<Pagination>', () => {
     );
     expect(ref.current?.tagName).toEqual('LI');
   });
+  it('should render a theme variant', () => {
+    render(<Pagination variant="primary" data-testid="test" />);
+
+    expect(screen.getByTestId('test').className).toEqual(
+      'pagination theme-primary',
+    );
+  });
 });

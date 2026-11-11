@@ -12,14 +12,17 @@ import ValidationTooltips from '!!raw-loader!../examples/Form/ValidationTooltips
 ## Native HTML5 form validation
 
 For native HTML form validation–[available in all our supported browsers](https://caniuse.com/#feat=form-validation),
-the `:valid` and `:invalid` pseudo selectors are used to apply validation
+the `:user-invalid` and `:user-valid` pseudo selectors are used to apply validation
 styles as well as display feedback messages.
 
-Bootstrap scopes the `:valid` and `:invalid` styles to parent `.was-validated`
-class, usually applied to the `<Form>` (you can use the `validated` prop
-as a shortcut). Otherwise, any required field without a value shows up
-as invalid on page load. This way, you may choose when to activate them
-(typically after form submission is attempted).
+Bootstrap 6 scopes these styles to a parent with the `data-bs-validate` attribute,
+usually the `<Form>`. The `validated` prop is a shortcut: `validated` renders
+`data-bs-validate`, and `validated="valid"` renders `data-bs-validate="valid"` to also
+show the success styles on valid controls.
+
+Because `:user-invalid` only matches once the user has interacted with a control or
+tried to submit the form, required fields no longer show up as invalid on page load.
+Bootstrap 6 has no `.was-validated` class, and the `validated` prop no longer adds one.
 
 :::caution Watch out!
 
@@ -47,7 +50,7 @@ validation styles. Below is a quick example integrating with
 ## Tooltips
 
 If your form layout allows it, you can use the `tooltip` prop to display
-validation feedback in a styled tooltip. Be sure to have a parent with
+validation feedback in a styled tooltip (`.tooltip.invalid-tooltip`). Be sure to have a parent with
 `position: relative` on it for tooltip positioning. In the example below,
 our column classes have this already, but your project may require an
 alternative setup.
@@ -58,8 +61,9 @@ alternative setup.
 
 ## Input group validation
 
-To properly show rounded corners in an `<InputGroup>` with validation,
-the `<InputGroup>` requires the `hasValidation` prop.
+Bootstrap 6 removed `.has-validation`, and the `hasValidation` prop was removed with it.
+Instead, place the feedback after the `<InputGroup>`, inside an element with the
+`.form-field` class. Bootstrap shows it when a control in the group is invalid.
 
 <CodeBlock language="jsx" live>
   {ValidationInputGroup}

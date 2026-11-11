@@ -5,7 +5,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 function ButtonsExample() {
   return (
     <>
-      <InputGroup className="mb-3">
+      <InputGroup className="mb-5">
         <Button variant="outline-secondary" id="button-addon1">
           Button
         </Button>
@@ -15,7 +15,7 @@ function ButtonsExample() {
         />
       </InputGroup>
 
-      <InputGroup className="mb-3">
+      <InputGroup className="mb-5">
         <Form.Control
           placeholder="Recipient's username"
           aria-label="Recipient's username"
@@ -26,7 +26,7 @@ function ButtonsExample() {
         </Button>
       </InputGroup>
 
-      <InputGroup className="mb-3">
+      <InputGroup className="mb-5">
         <Button variant="outline-secondary">Button</Button>
         <Button variant="outline-secondary">Button</Button>
         <Form.Control aria-label="Example text with two button addons" />

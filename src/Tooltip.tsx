@@ -86,7 +86,7 @@ const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
         ref={ref}
         style={computedStyle}
         role="tooltip"
-        x-placement={primaryPlacement}
+        data-bs-placement={placement}
         className={clsx(className, bsPrefix, `bs-tooltip-${bsDirection}`)}
         {...props}
       >

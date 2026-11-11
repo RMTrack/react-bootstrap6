@@ -49,11 +49,6 @@ export interface NavProps extends BaseNavProps {
   navbar?: boolean | undefined;
 
   /**
-   * Enable vertical scrolling within the toggleable contents of a collapsed Navbar.
-   */
-  navbarScroll?: boolean | undefined;
-
-  /**
    * ARIA role for the Nav, in the context of a TabContainer, the default will
    * be set to "tablist", but can be overridden by the Nav when set explicitly.
    *
@@ -75,7 +70,6 @@ const Nav: DynamicRefForwardingComponent<'div', NavProps> = React.forwardRef<
     fill = false,
     justify = false,
     navbar,
-    navbarScroll,
     className,
     activeKey,
     ...props
@@ -105,8 +99,9 @@ const Nav: DynamicRefForwardingComponent<'div', NavProps> = React.forwardRef<
       className={clsx(className, {
         [bsPrefix]: !isNavbar,
         [`${navbarBsPrefix}-nav`]: isNavbar,
-        [`${navbarBsPrefix}-nav-scroll`]: isNavbar && navbarScroll,
-        [`${cardHeaderBsPrefix}-${variant}`]: !!cardHeaderBsPrefix,
+        // Bootstrap 6 only styles tabs in card headers.
+        [`${cardHeaderBsPrefix}-tabs`]:
+          !!cardHeaderBsPrefix && variant === 'tabs',
         [`${bsPrefix}-${variant}`]: !!variant,
         [`${bsPrefix}-fill`]: fill,
         [`${bsPrefix}-justified`]: justify,

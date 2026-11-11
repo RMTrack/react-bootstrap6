@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import CardHeader from '../src/CardHeader';
 import Nav from '../src/Nav';
 import Navbar from '../src/Navbar';
-import NavDropdown from '../src/NavDropdown';
+import NavMenu from '../src/NavMenu';
 
 describe('<Nav>', () => {
   it('should have div as default component', () => {
@@ -71,23 +71,6 @@ describe('<Nav>', () => {
     expect(navItem.classList).toContain('navbar-nav');
   });
 
-  it('should handle navbarScroll if within navbar', () => {
-    render(
-      <Navbar>
-        <Nav navbarScroll data-testid="test" />
-      </Navbar>,
-    );
-    const navItem = screen.getByTestId('test');
-    expect(navItem.classList).toContain('navbar-nav-scroll');
-  });
-
-  it('should not add navbarScroll when not within navbar', () => {
-    render(<Nav navbarScroll data-testid="test" />);
-
-    const navItem = screen.getByTestId('test');
-    expect(navItem.classList).not.toContain('navbar-nav-scroll');
-  });
-
   it('should be card header aware', () => {
     render(
       <CardHeader>
@@ -97,8 +80,21 @@ describe('<Nav>', () => {
         </Nav>
       </CardHeader>,
     );
+    // Bootstrap 6 only has .card-header-tabs.
     const navItem = screen.getByTestId('test');
-    expect(navItem.classList).toContain('card-header-pills');
+    expect(navItem.className).toEqual('nav nav-pills');
+  });
+
+  it('should add card-header-tabs for tabs in a card header', () => {
+    render(
+      <CardHeader>
+        <Nav variant="tabs" data-testid="test">
+          <Nav.Link eventKey={1}>Tab 1 content</Nav.Link>
+        </Nav>
+      </CardHeader>,
+    );
+
+    expect(screen.getByTestId('test').classList).toContain('card-header-tabs');
   });
 
   it('should call onSelect when a Nav.Link is selected', () => {
@@ -117,16 +113,16 @@ describe('<Nav>', () => {
     expect(onSelectSpy).toHaveBeenCalledWith('2', expect.anything());
   });
 
-  it('should call onSelect when a NavDropdown.Item is selected', () => {
+  it('should call onSelect when a NavMenu.Item is selected', () => {
     const onSelectSpy = vi.fn();
 
     render(
       <Nav onSelect={onSelectSpy}>
-        <NavDropdown title="Dropdown" id="nav-dropdown-test" renderMenuOnMount>
-          <NavDropdown.Item eventKey={1} data-testid="test">
-            Dropdown item
-          </NavDropdown.Item>
-        </NavDropdown>
+        <NavMenu title="Menu" id="nav-dropdown-test" renderMenuOnMount>
+          <NavMenu.Item eventKey={1} data-testid="test">
+            Menu item
+          </NavMenu.Item>
+        </NavMenu>
       </Nav>,
     );
     const dropdownItem = screen.getByTestId('test');

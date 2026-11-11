@@ -19,7 +19,7 @@ function AlignmentExample() {
           </Nav.Link>
         </Nav.Item>
       </Nav>
-      <p className="text-center mt-4 mb-4">Or right-aligned</p>
+      <p className="text-center mt-7 mb-7">Or right-aligned</p>
       <Nav className="justify-content-end" activeKey="/home">
         <Nav.Item>
           <Nav.Link href="/home">Active</Nav.Link>

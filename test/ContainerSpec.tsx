@@ -17,7 +17,7 @@ describe('<Container>', () => {
 
   it('Should include size breakpoint class when fluid is set to sm, md, lg or xl', () => {
     render(<Container fluid="sm">Container</Container>);
-    expect(screen.getByText('Container').classList).toContain('container-sm');
+    expect(screen.getByText('Container').classList).toContain('sm:container');
   });
 
   it('allows custom elements instead of "div"', () => {
@@ -33,6 +33,6 @@ describe('<Container>', () => {
 
   it('should allow custom breakpoints', () => {
     render(<Container fluid="custom">test</Container>);
-    expect(screen.getByText('test').classList).toContain('container-custom');
+    expect(screen.getByText('test').classList).toContain('custom:container');
   });
 });

@@ -22,8 +22,8 @@ describe('<Spinner>', () => {
 
     expect(spinnerElem.tagName).toEqual('SPAN');
     expect(spinnerElem.classList).toContain('spinner-grow');
-    expect(spinnerElem.classList).toContain('spinner-grow-sm');
-    expect(spinnerElem.classList).toContain('text-primary');
+    expect(spinnerElem.classList).toContain('spinner-sm');
+    expect(spinnerElem.classList).toContain('fg-primary');
   });
 
   it('Should render a spinner with other properties', () => {

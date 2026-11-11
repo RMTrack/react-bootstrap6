@@ -17,7 +17,7 @@ describe('Popover', () => {
     const popoverHeaderElem = popoverElem.children[1]!;
     const popoverBodyElem = popoverElem.children[2]!;
 
-    expect(popoverElem.getAttribute('x-placement')).toEqual('right');
+    expect(popoverElem.getAttribute('data-bs-placement')).toEqual('right');
     expect(popoverElem.getAttribute('role')).toEqual('tooltip');
     expect(popoverElem.classList).toContain('popover');
     expect(popoverElem.classList).toContain('bs-popover-end');

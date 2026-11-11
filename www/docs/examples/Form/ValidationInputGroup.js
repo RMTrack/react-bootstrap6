@@ -3,13 +3,15 @@ import InputGroup from 'react-bootstrap/InputGroup';
 
 function ValidationInputGroupExample() {
   return (
-    <InputGroup hasValidation>
-      <InputGroup.Text>@</InputGroup.Text>
-      <Form.Control type="text" required isInvalid />
+    <div className="form-field">
+      <InputGroup>
+        <InputGroup.Text>@</InputGroup.Text>
+        <Form.Control type="text" required isInvalid />
+      </InputGroup>
       <Form.Control.Feedback type="invalid">
         Please choose a username.
       </Form.Control.Feedback>
-    </InputGroup>
+    </div>
   );
 }
 

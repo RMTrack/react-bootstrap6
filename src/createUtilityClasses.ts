@@ -1,4 +1,5 @@
 import {
+  breakpointPrefix,
   DEFAULT_BREAKPOINTS,
   DEFAULT_MIN_BREAKPOINT,
 } from './ThemeProvider.js';
@@ -26,8 +27,8 @@ export default function createUtilityClassName(
         breakpoints.forEach((brkPoint) => {
           const bpValue = utilValue![brkPoint];
           if (bpValue != null) {
-            const infix = brkPoint !== minBreakpoint ? `-${brkPoint}` : '';
-            classes.push(`${utilName}${infix}-${bpValue}`);
+            const prefix = breakpointPrefix(brkPoint, minBreakpoint);
+            classes.push(`${prefix}${utilName}-${bpValue}`);
           }
         });
       } else {

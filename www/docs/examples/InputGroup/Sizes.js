@@ -4,7 +4,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 function SizesExample() {
   return (
     <>
-      <InputGroup size="sm" className="mb-3">
+      <InputGroup size="sm" className="mb-5">
         <InputGroup.Text id="inputGroup-sizing-sm">Small</InputGroup.Text>
         <Form.Control
           aria-label="Small"
@@ -12,7 +12,7 @@ function SizesExample() {
         />
       </InputGroup>
       <br />
-      <InputGroup className="mb-3">
+      <InputGroup className="mb-5">
         <InputGroup.Text id="inputGroup-sizing-default">
           Default
         </InputGroup.Text>

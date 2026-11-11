@@ -4,28 +4,28 @@ import ExampleCarouselImage from 'components/ExampleCarouselImage';
 function UncontrolledExample() {
   return (
     <Carousel>
-      <Carousel.Item>
+      <Carousel.Item className="position-relative">
         <ExampleCarouselImage text="First slide" />
-        <Carousel.Caption>
+        <div className="position-absolute bottom-0 start-0 end-0 px-12 pb-12 text-center fg-white">
           <h3>First slide label</h3>
           <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-        </Carousel.Caption>
+        </div>
       </Carousel.Item>
-      <Carousel.Item>
+      <Carousel.Item className="position-relative">
         <ExampleCarouselImage text="Second slide" />
-        <Carousel.Caption>
+        <div className="position-absolute bottom-0 start-0 end-0 px-12 pb-12 text-center fg-white">
           <h3>Second slide label</h3>
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </Carousel.Caption>
+        </div>
       </Carousel.Item>
-      <Carousel.Item>
+      <Carousel.Item className="position-relative">
         <ExampleCarouselImage text="Third slide" />
-        <Carousel.Caption>
+        <div className="position-absolute bottom-0 start-0 end-0 px-12 pb-12 text-center fg-white">
           <h3>Third slide label</h3>
           <p>
             Praesent commodo cursus magna, vel scelerisque nisl consectetur.
           </p>
-        </Carousel.Caption>
+        </div>
       </Carousel.Item>
     </Carousel>
   );

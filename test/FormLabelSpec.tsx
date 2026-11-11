@@ -46,7 +46,7 @@ describe('<FormLabel>', () => {
     expect(element.classList).toHaveLength(3);
     expect(element.classList).toContain('form-label');
     expect(element.classList).toContain('col-form-label');
-    expect(element.classList).toContain('col-sm-4');
+    expect(element.classList).toContain('sm:col-4');
   });
 
   it('should use controlId for htmlFor when render as Col', () => {
@@ -60,7 +60,7 @@ describe('<FormLabel>', () => {
     expect(element.classList).toHaveLength(3);
     expect(element.classList).toContain('form-label');
     expect(element.classList).toContain('col-form-label');
-    expect(element.classList).toContain('col-sm-4');
+    expect(element.classList).toContain('sm:col-4');
     expect(element.getAttribute('for')).toEqual('foo');
   });
 

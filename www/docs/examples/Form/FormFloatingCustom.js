@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 function FormFloatingCustom() {
   return (
     <>
-      <Form.Floating className="mb-3">
+      <Form.Floating className="mb-5">
         <Form.Control
           id="floatingInputCustom"
           type="email"

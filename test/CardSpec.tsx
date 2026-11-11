@@ -16,12 +16,12 @@ describe('<Card>', () => {
 
   it('accepts a bg prop', () => {
     render(<Card bg="primary">Card</Card>);
-    expect(screen.getByText('Card').classList).toContain('bg-primary');
+    expect(screen.getByText('Card').classList).toContain('theme-primary');
   });
 
   it('accepts a text prop', () => {
     render(<Card text="success">Card</Card>);
-    expect(screen.getByText('Card').classList).toContain('text-success');
+    expect(screen.getByText('Card').classList).toContain('fg-success');
   });
 
   it('accepts a border prop', () => {
@@ -52,5 +52,12 @@ describe('<Card>', () => {
   it('Should have div as default component', () => {
     render(<Card data-testid="default-test" />);
     expect(screen.getByTestId('default-test').tagName).toEqual('DIV');
+  });
+  it('accepts a variant prop', () => {
+    render(<Card variant="subtle" bg="success" data-testid="test" />);
+
+    const card = screen.getByTestId('test');
+    expect(card.classList).toContain('card-subtle');
+    expect(card.classList).toContain('theme-success');
   });
 });

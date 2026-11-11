@@ -183,7 +183,7 @@ describe('<Tabs>', () => {
     expect(screen.getAllByRole('tabpanel')).toHaveLength(1);
   });
 
-  it('should have fade animation by default', () => {
+  it('should leave the fade to Bootstrap by default', () => {
     const { getByRole } = render(
       <Tabs id="test" defaultActiveKey={1}>
         <Tab title="Tab 1" eventKey={1}>
@@ -191,7 +191,8 @@ describe('<Tabs>', () => {
         </Tab>
       </Tabs>,
     );
-    expect(getByRole('tabpanel').classList).toContain('fade');
+    // Bootstrap 6 fades .active panes in with @starting-style.
+    expect(getByRole('tabpanel').className).toEqual('tab-pane active');
   });
 
   it('Should omit Transition in TabPane if prop is false ', () => {
@@ -208,8 +209,8 @@ describe('<Tabs>', () => {
     const firstTabContent = screen.getByText('Tab 1 content');
     const secondTabContent = screen.getByText('Tab 2 content');
 
-    expect(firstTabContent.classList).not.toContain('fade');
-    expect(secondTabContent.classList).toContain('fade');
+    expect(firstTabContent.classList).toContain('tab-pane-instant');
+    expect(secondTabContent.classList).not.toContain('tab-pane-instant');
   });
 
   it('Should pass fill to Nav', () => {

@@ -6,7 +6,7 @@ const BreakpointTable: React.FC = () => (
     <thead>
       <tr>
         <th>Breakpoint</th>
-        <th>Class infix</th>
+        <th>Class prefix</th>
         <th>Dimensions</th>
       </tr>
     </thead>
@@ -37,21 +37,21 @@ const BreakpointTable: React.FC = () => (
         <td>
           <code>lg</code>
         </td>
-        <td>≥992px</td>
+        <td>≥1024px</td>
       </tr>
       <tr>
         <td>Extra large</td>
         <td>
           <code>xl</code>
         </td>
-        <td>≥1200px</td>
+        <td>≥1280px</td>
       </tr>
       <tr>
         <td>Extra extra large</td>
         <td>
-          <code>xxl</code>
+          <code>2xl</code> (prop name <code>xxl</code>)
         </td>
-        <td>≥1400px</td>
+        <td>≥1536px</td>
       </tr>
     </tbody>
   </Table>

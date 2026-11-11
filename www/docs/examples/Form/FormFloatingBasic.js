@@ -7,7 +7,7 @@ function FormFloatingBasicExample() {
       <FloatingLabel
         controlId="floatingInput"
         label="Email address"
-        className="mb-3"
+        className="mb-5"
       >
         <Form.Control type="email" placeholder="name@example.com" />
       </FloatingLabel>

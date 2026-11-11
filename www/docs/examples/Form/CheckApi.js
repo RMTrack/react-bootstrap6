@@ -4,7 +4,7 @@ function CheckApiExample() {
   return (
     <Form>
       {['checkbox', 'radio'].map((type) => (
-        <div key={type} className="mb-3">
+        <div key={type} className="mb-5">
           <Form.Check type={type} id={`check-api-${type}`}>
             <Form.Check.Input type={type} isValid />
             <Form.Check.Label>{`Custom api ${type}`}</Form.Check.Label>

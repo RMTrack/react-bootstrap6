@@ -4,6 +4,7 @@ description: A set of presentational components for building pagination UI.
 ---
 
 import PaginationAdvanced from '!!raw-loader!../examples/Pagination/Advanced';
+import PaginationVariants from '!!raw-loader!../examples/Pagination/Variants';
 import PaginationBasic from '!!raw-loader!../examples/Pagination/Basic';
 
 ## Example
@@ -21,6 +22,15 @@ previous or continuing results.
 
 <CodeBlock language="jsx" live>
   {PaginationAdvanced}
+</CodeBlock>
+
+## Theme colors
+
+Use the `variant` prop to color the links and the active page with a theme color
+(`.theme-*`).
+
+<CodeBlock language="jsx" live>
+  {PaginationVariants}
 </CodeBlock>
 
 ## API

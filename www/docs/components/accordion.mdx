@@ -1,14 +1,33 @@
 ---
 title: Accordion
-description: Build vertically collapsing accordions in combination with the Collapse component
+description: Build vertically collapsing accordions with native details and summary elements
 ---
 
 import Basic from '!!raw-loader!../examples/Accordion/Basic';
 import AllCollapse from '!!raw-loader!../examples/Accordion/AllCollapse';
 import Flush from '!!raw-loader!../examples/Accordion/Flush';
+import Small from '!!raw-loader!../examples/Accordion/Small';
+import Gap from '!!raw-loader!../examples/Accordion/Gap';
 import AlwaysOpen from '!!raw-loader!../examples/Accordion/AlwaysOpen';
 import CustomToggle from '!!raw-loader!../examples/Accordion/CustomToggle.js';
 import ContextAwareToggle from '!!raw-loader!../examples/Accordion/ContextAwareToggle.js';
+
+## How it works
+
+Each `Accordion.Item` renders a native `<details class="accordion-item">` element, and
+`Accordion.Header` renders its `<summary class="accordion-header">` with the
+`.accordion-icon` chevron. The browser shows, hides and animates the
+`Accordion.Body`, so there is no `.accordion-button` or `.accordion-collapse` markup.
+
+- The open items still follow `activeKey`, so `activeKey`, `defaultActiveKey` and
+  `onSelect` work as before. Clicking a header updates the active key instead of
+  toggling the `<details>` directly.
+- Items in an exclusive accordion share a generated `name`, which is how native
+  `<details>` groups close each other.
+- Items the browser opens itself (for example, find-in-page revealing hidden text) are
+  reported through `onSelect`.
+- `Accordion.Header` takes a `disabled` prop, which sets `aria-disabled` and removes the
+  header from the tab order.
 
 ## Examples
 
@@ -36,7 +55,23 @@ Add `flush` to remove the default background-color, some borders, and some round
   {Flush}
 </CodeBlock>
 
-### Always open
+### Small
+
+Set `size="sm"` (`.accordion-sm`) for tighter padding, radius and type.
+
+<CodeBlock language="jsx" live>
+  {Small}
+</CodeBlock>
+
+## Gap
+
+Add `gap` (`.accordion-gap`) to space the items apart as separate rounded cards.
+
+<CodeBlock language="jsx" live>
+  {Gap}
+</CodeBlock>
+
+## Always open
 
 You can make accordion items stay open when another item is opened by using the `alwaysOpen` prop. If you're looking to
 control the component, you must use an array of strings for `activeKey` or `defaultActiveKey`.
@@ -49,7 +84,8 @@ control the component, you must use an array of strings for `activeKey` or `defa
 
 You can still create card-based accordions like those in Bootstrap 4. You can hook
 into the Accordion toggle functionality via `useAccordionButton` to make custom
-toggle components.
+toggle components. `Accordion.Collapse` has been removed, so read the active key from
+`AccordionContext` and show the content with a `Collapse`.
 
 ### Custom Toggle
 
@@ -83,14 +119,6 @@ this can be achieved with a custom toggle that is context aware and also takes a
 ### AccordionBody
 
 <PropsTable name="AccordionBody" />
-
-### AccordionButton
-
-<PropsTable name="AccordionButton" />
-
-### AccordionCollapse
-
-<PropsTable name="AccordionCollapse" />
 
 ### useAccordionButton
 

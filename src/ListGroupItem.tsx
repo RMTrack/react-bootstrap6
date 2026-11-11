@@ -103,7 +103,7 @@ const ListGroupItem: DynamicRefForwardingComponent<'a', ListGroupItemProps> =
             bsPrefix,
             meta.isActive && 'active',
             disabled && 'disabled',
-            variant && `${bsPrefix}-${variant}`,
+            variant && `theme-${variant}`,
             action && `${bsPrefix}-action`,
           )}
         />

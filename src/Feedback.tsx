@@ -39,7 +39,8 @@ const Feedback: DynamicRefForwardingComponent<'div', FeedbackProps> =
         ref={ref}
         className={clsx(
           className,
-          `${type}-${tooltip ? 'tooltip' : 'feedback'}`,
+          // Bootstrap 6 validation tooltips reuse the tooltip styles.
+          tooltip ? ['tooltip', `${type}-tooltip`] : `${type}-feedback`,
         )}
       />
     ),

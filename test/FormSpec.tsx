@@ -26,11 +26,27 @@ describe('<Form>', () => {
     expect(form.tagName).toEqual('FORM');
   });
 
-  it('should have form class `was-validated` if validated', () => {
+  it('should render data-bs-validate if validated', () => {
     render(<Form validated data-testid="test" />);
 
     const form = screen.getByTestId('test');
-    expect(form.classList).toHaveLength(1);
-    expect(form.classList).toContain('was-validated');
+    expect(form.classList).toHaveLength(0);
+    expect(form.getAttribute('data-bs-validate')).toEqual('');
+  });
+
+  it('should render data-bs-validate="valid" to show success styles', () => {
+    render(<Form validated="valid" data-testid="test" />);
+
+    expect(screen.getByTestId('test').getAttribute('data-bs-validate')).toEqual(
+      'valid',
+    );
+  });
+
+  it('should not render data-bs-validate by default', () => {
+    render(<Form data-testid="test" />);
+
+    expect(screen.getByTestId('test').hasAttribute('data-bs-validate')).toEqual(
+      false,
+    );
   });
 });

@@ -53,11 +53,25 @@ describe('Table', () => {
     expect(tableElem.classList).toContain('table-sm');
   });
 
-  it('Should have correct class when dark', () => {
-    render(<Table data-testid="test" variant="dark" />);
+  it('Should apply the variant as a theme class', () => {
+    render(<Table data-testid="test" variant="primary" />);
     const tableElem = screen.getByTestId('test');
 
-    expect(tableElem.classList).toContain('table-dark');
+    expect(tableElem.classList).toContain('theme-primary');
+  });
+
+  it('Should have stacked classes', () => {
+    render(
+      <>
+        <Table data-testid="stacked" stacked />
+        <Table data-testid="responsive" stacked="md" />
+      </>,
+    );
+
+    expect(screen.getByTestId('stacked').classList).toContain('table-stacked');
+    expect(screen.getByTestId('responsive').classList).toContain(
+      'md:table-stacked',
+    );
   });
 
   it('Should have responsive wrapper', () => {
@@ -71,6 +85,6 @@ describe('Table', () => {
     const { container } = render(<Table responsive="sm" />);
     const tableElem = container.firstElementChild!;
 
-    expect(tableElem.classList).toContain('table-responsive-sm');
+    expect(tableElem.classList).toContain('sm:table-responsive');
   });
 });

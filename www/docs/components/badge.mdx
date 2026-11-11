@@ -6,6 +6,7 @@ description: Documentation and examples for badges, our small count and labeling
 import BadgeBasic from '!!raw-loader!../examples/Badge/Basic';
 import BadgeButton from '!!raw-loader!../examples/Badge/Button';
 import BadgePill from '!!raw-loader!../examples/Badge/Pill';
+import BadgeStyles from '!!raw-loader!../examples/Badge/Styles';
 import BadgeVariations from '!!raw-loader!../examples/Badge/Variations';
 
 ## Examples
@@ -34,11 +35,20 @@ of additional text.
 
 ## Contextual variations
 
-Add any of the below mentioned modifier classes to change the
-appearance of a badge.
+Use the `bg` prop to set the badge's theme color (`.theme-*`). Bootstrap 6
+picks a contrasting text color from the theme, so `text` is rarely needed.
 
 <CodeBlock language="jsx" live>
   {BadgeVariations}
+</CodeBlock>
+
+## Styles
+
+Set `variant="subtle"` (`.badge-subtle`) for a tinted background, or
+`variant="outline"` (`.badge-outline`) for a bordered badge.
+
+<CodeBlock language="jsx" live>
+  {BadgeStyles}
 </CodeBlock>
 
 ## Pill badges

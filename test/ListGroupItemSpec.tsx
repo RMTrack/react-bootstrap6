@@ -16,7 +16,7 @@ describe('<ListGroupItem>', () => {
 
     const item = screen.getByTestId('test');
     expect(item.classList).toContain('list-group-item');
-    expect(item.classList).toContain('list-group-item-success');
+    expect(item.classList).toContain('theme-success');
   });
 
   it('accepts active', () => {

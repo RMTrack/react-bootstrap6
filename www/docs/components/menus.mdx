@@ -1,0 +1,258 @@
+---
+title: Menus
+description: Toggle contextual overlays for displaying lists of links and more with the Bootstrap menu plugin
+---
+
+import MenuBasic from '!!raw-loader!../examples/Menu/Basic';
+import MenuBasicButton from '!!raw-loader!../examples/Menu/BasicButton';
+import MenuButtonCustom from '!!raw-loader!../examples/Menu/ButtonCustom';
+import MenuButtonCustomMenu from '!!raw-loader!../examples/Menu/ButtonCustomMenu';
+import MenuButtonSizes from '!!raw-loader!../examples/Menu/ButtonSizes';
+import DropDirections from '!!raw-loader!../examples/Menu/DropDirections';
+import MenuItemTags from '!!raw-loader!../examples/Menu/MenuItemTags';
+import MenuAlignEnd from '!!raw-loader!../examples/Menu/MenuAlignEnd';
+import MenuAlignResponsive from '!!raw-loader!../examples/Menu/MenuAlignResponsive';
+import MenuDividers from '!!raw-loader!../examples/Menu/MenuDividers';
+import MenuHeaders from '!!raw-loader!../examples/Menu/MenuHeaders';
+import SplitBasic from '!!raw-loader!../examples/Menu/SplitBasic';
+import SplitVariants from '!!raw-loader!../examples/Menu/SplitVariants';
+import MenuVariants from '!!raw-loader!../examples/Menu/Variants';
+import ButtonDark from '!!raw-loader!../examples/Menu/ButtonDark';
+import NavbarDark from '!!raw-loader!../examples/Menu/NavbarDark';
+import AutoClose from '!!raw-loader!../examples/Menu/AutoClose';
+
+## Overview
+
+Menus are toggleable, contextual overlays for displaying lists of
+links and more. `Menu` was React-Bootstrap's `Dropdown` before Bootstrap 6, which
+renamed its dropdown component to Menu. Like overlays, Menus are built using a third-party
+library <a href="https://popper.js.org/">Popper.js</a>, which provides
+dynamic positioning and viewport detection.
+
+## Accessibility
+
+The <a href="https://www.w3.org/TR/wai-aria/"><abbr title="Web Accessibility Initiative">WAI</abbr> <AriaAbbr /></a> standard
+defines a [`role="menu"` widget][1], but it's very specific to a certain kind of menu. <AriaAbbr /> menus, must
+only contain `role="menuitem"`, `role="menuitemcheckbox"`, or `role="menuitemradio"`.
+
+On the other hand, Bootstrap's menus are designed to more generic
+and application in a variety of situations. For this reason we don't
+automatically add the menu roles to the markup. We do implement some
+basic keyboard navigation, and if you do provide the "menu" role,
+react-bootstrap will do its best to ensure the focus management is
+compliant with the <AriaAbbr /> authoring guidelines for menus.
+
+## Examples
+
+### Single button menus
+
+The basic Menu is composed of a wrapping `Menu` and
+inner `<Menu.Panel>` (the floating `.menu` element), and `<Menu.Toggle>`. By
+default the `<Menu.Toggle>` will render a
+`Button` component and accepts all the same props.
+
+<CodeBlock language="jsx" live>
+  {MenuBasic}
+</CodeBlock>
+
+Since the above is such a common configuration react-bootstrap provides
+the `<MenuButton>` component to help reduce typing. Provide
+a `title` prop and some `<MenuItem>`s and you're
+ready to go.
+
+<CodeBlock language="jsx" live>
+  {MenuBasicButton}
+</CodeBlock>
+
+MenuButton will forward Button props to the underlying Toggle
+component
+
+<CodeBlock language="jsx" live>
+  {MenuVariants}
+</CodeBlock>
+
+### Split button menus
+
+Similarly, You create a split button menu by combining the Menu
+components with another Button and a ButtonGroup.
+
+<CodeBlock language="jsx" live>
+  {SplitBasic}
+</CodeBlock>
+
+As with MenuButton, `SplitButton` is provided as
+convenience component.
+
+<CodeBlock language="jsx" live>
+  {SplitVariants}
+</CodeBlock>
+
+## Sizing
+
+Menus work with buttons of all sizes.
+
+<CodeBlock language="jsx" live>
+  {MenuButtonSizes}
+</CodeBlock>
+
+## Dark menus
+
+Opt into darker menus to match a dark navbar or custom style by adding
+`variant="dark"` onto an existing `Menu.Panel`. Alternatively, use
+`menuVariant="dark"` when using the `MenuButton` component.
+
+Bootstrap 6 has no dark menu class: `variant="dark"` renders the `.menu` with
+`data-bs-theme="dark"`. You can also set `data-bs-theme="dark"` on the root element,
+a parent wrapper, or the component itself.
+
+<CodeBlock language="jsx" live>
+  {ButtonDark}
+</CodeBlock>
+
+Using `menuVariant="dark"` in a `NavMenu`:
+
+<CodeBlock language="jsx" live>
+  {NavbarDark}
+</CodeBlock>
+
+## Drop directions
+
+Trigger menus above, below, left, or to the right of their
+toggle elements, with the `drop` prop.
+
+<CodeBlock language="jsx" live>
+  {DropDirections}
+</CodeBlock>
+
+## Menu items
+
+Historically menu contents had to be links, but that’s no
+longer the case with v4. Now you can optionally use
+`<button>` elements in your menus instead of just `<a>`s.
+
+You can also create non-interactive menu items with `<Menu.Text>` (`.menu-text`).
+Feel free to style further with custom CSS or text utilities.
+
+<CodeBlock language="jsx" live>
+  {MenuItemTags}
+</CodeBlock>
+
+## Menu alignment
+
+By default, a menu is aligned to the left, but you can switch
+it by passing `align="end"` to a `<Menu>`, `<MenuButton>`, or `<SplitButton>`.
+
+<CodeBlock language="jsx" live>
+  {MenuAlignEnd}
+</CodeBlock>
+
+### Responsive alignment
+
+If you want to use responsive menu alignment, pass an object containing a breakpoint to the
+`align` prop on the `<Menu.Panel>`, `<MenuButton>`, or `<SplitButton>`.
+You can specify `start` or `end` for the various breakpoints.
+
+:::danger Warning
+
+Using responsive alignment will disable Popper usage so any dynamic
+positioning features such as <code>flip</code> will not work.
+
+:::
+
+<CodeBlock language="jsx" live>
+  {MenuAlignResponsive}
+</CodeBlock>
+
+## Menu headers
+
+Add a header to label sections of actions.
+
+<CodeBlock language="jsx" live previewClassName="static-menu">
+  {MenuHeaders}
+</CodeBlock>
+
+## Menu dividers
+
+Separate groups of related menu items with a divider.
+
+<CodeBlock language="jsx" live previewClassName="static-menu">
+  {MenuDividers}
+</CodeBlock>
+
+## AutoClose
+
+By default, the menu is closed when selecting a menu item or clicking outside of the
+menu. This behaviour can be changed by using the `autoClose` property.
+
+By default, `autoClose` is set to the default value `true` and behaves like expected. By choosing `false`, the
+menu can only be toggled by clicking on the toggle button. `inside` makes the menu disappear **only**
+by choosing a menu item and `outside` closes the menu **only** by clicking outside.
+
+**Notice** how the menu is toggled in each scenario by clicking on the button.
+
+<CodeBlock language="jsx" live>
+  {AutoClose}
+</CodeBlock>
+
+## Customization
+
+If the default handling of the menu panel and toggle components
+aren't to your liking, you can customize them, by using the more basic
+`<Menu>` Component to explicitly specify the Toggle and
+Panel components
+
+<CodeBlock language="jsx" live previewClassName="custom-menu">
+  {MenuButtonCustom}
+</CodeBlock>
+
+### Custom Menu Components
+
+For those that want to customize everything, you can forgo the included
+Toggle and Panel components, and create your own. By providing custom
+components to the `as` prop, you can control how each
+component behaves. Custom toggle and panel components **must** be able to accept refs.
+
+<CodeBlock language="jsx" live noInline>
+  {MenuButtonCustomMenu}
+</CodeBlock>
+
+## API
+
+### MenuButton
+
+<PropsTable name="MenuButton" />
+
+### SplitButton
+
+<PropsTable name="SplitButton" />
+
+### Menu
+
+<PropsTable name="Menu" />
+
+### MenuToggle
+
+<PropsTable name="MenuToggle" />
+
+### MenuPanel
+
+<PropsTable name="MenuPanel" />
+
+### MenuItem
+
+<PropsTable name="MenuItem" />
+
+### MenuText
+
+<PropsTable name="MenuText" />
+
+### MenuHeader
+
+<PropsTable name="MenuHeader" />
+
+### MenuDivider
+
+<PropsTable name="MenuDivider" />
+
+[0]: https://www.w3.org/TR/wai-aria/
+[1]: https://www.w3.org/TR/wai-aria-1.1/#menu

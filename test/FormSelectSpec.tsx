@@ -13,7 +13,8 @@ describe('<FormSelect>', () => {
     expect(element.tagName).toEqual('SELECT');
     expect(element.classList).toHaveLength(2);
     expect(element.classList).toContain('my-control');
-    expect(element.classList).toContain('form-select');
+    // Bootstrap 6 styles <select> with .form-control.
+    expect(element.classList).toContain('form-control');
     expect(element.getAttribute('name')).toEqual('bar');
   });
 
@@ -22,7 +23,7 @@ describe('<FormSelect>', () => {
 
     const element = screen.getByTestId('test-id');
     expect(element.classList).toHaveLength(2);
-    expect(element.classList).toContain('form-select-lg');
+    expect(element.classList).toContain('form-control-lg');
   });
 
   it('should render htmlSize correctly', () => {

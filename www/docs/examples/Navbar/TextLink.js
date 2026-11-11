@@ -3,15 +3,12 @@ import Navbar from 'react-bootstrap/Navbar';
 
 function TextLinkExample() {
   return (
-    <Navbar className="bg-body-tertiary">
+    <Navbar className="bg-1">
       <Container>
         <Navbar.Brand href="#home">Navbar with text</Navbar.Brand>
-        <Navbar.Toggle />
-        <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text>
-            Signed in as: <a href="#login">Mark Otto</a>
-          </Navbar.Text>
-        </Navbar.Collapse>
+        <Navbar.Text className="ms-auto">
+          Signed in as: <a href="#login">Mark Otto</a>
+        </Navbar.Text>
       </Container>
     </Navbar>
   );

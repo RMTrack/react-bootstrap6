@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import * as React from 'react';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
-import { useBootstrapPrefix } from './ThemeProvider.js';
+import { toBreakpointName, useBootstrapPrefix } from './ThemeProvider.js';
 import type { LiteralUnion } from './types.js';
 
 export interface ContainerProps extends React.HTMLAttributes<HTMLElement> {
@@ -20,7 +20,7 @@ export interface ContainerProps extends React.HTMLAttributes<HTMLElement> {
    */
   fluid?:
     | boolean
-    | LiteralUnion<'sm' | 'md' | 'lg' | 'xl' | 'xxl', string>
+    | LiteralUnion<'sm' | 'md' | 'lg' | 'xl' | '2xl', string>
     | undefined;
 }
 
@@ -38,12 +38,19 @@ const Container: DynamicRefForwardingComponent<'div', ContainerProps> =
       ref,
     ) => {
       const prefix = useBootstrapPrefix(bsPrefix, 'container');
-      const suffix = typeof fluid === 'string' ? `-${fluid}` : '-fluid';
+      let containerClass = prefix;
+      if (typeof fluid === 'string') {
+        // Fluid until the breakpoint, e.g. `md:container`.
+        containerClass = `${toBreakpointName(fluid)}:${prefix}`;
+      } else if (fluid) {
+        containerClass = `${prefix}-fluid`;
+      }
+
       return (
         <Component
           ref={ref}
           {...props}
-          className={clsx(className, fluid ? `${prefix}${suffix}` : prefix)}
+          className={clsx(className, containerClass)}
         />
       );
     },

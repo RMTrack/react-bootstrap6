@@ -7,13 +7,17 @@ sidebar_position: 5
 import Check from '!!raw-loader!../examples/Form/Check';
 import CheckApi from '!!raw-loader!../examples/Form/CheckApi';
 import CheckInline from '!!raw-loader!../examples/Form/CheckInline';
-import CheckReverse from '!!raw-loader!../examples/Form/CheckReverse';
 import NoLabels from '!!raw-loader!../examples/Form/NoLabels';
 import Switch from '!!raw-loader!../examples/Form/Switch';
 
 For the non-textual checkbox and radio controls, `FormCheck`
 provides a single component for both types that adds some additional
 styling and improved layout.
+
+`FormCheck` renders Bootstrap 6's markup: a `.form-field` wrapper with the
+`<input class="check">` (or `.radio`) and a plain `<label>`. Switches wrap the
+`<input role="switch" switch>` in a `.switch` element. The check mark is drawn by
+CSS, so there is no inline SVG.
 
 ## Default (stacked)
 
@@ -44,18 +48,11 @@ the above, in a very small component wrapper.
 
 ## Inline
 
-Group checkboxes or radios on the same horizontal row by adding the `inline` prop.
+Bootstrap 6 has no inline modifier, so the `inline` prop was removed. Group checkboxes or
+radios on the same horizontal row by placing them in a flex container.
 
 <CodeBlock language="jsx" live>
   {CheckInline}
-</CodeBlock>
-
-## Reverse
-
-Put your checkboxes, radios, and switches on the opposite side with the `reverse` prop.
-
-<CodeBlock language="jsx" live>
-  {CheckReverse}
 </CodeBlock>
 
 ## Without labels

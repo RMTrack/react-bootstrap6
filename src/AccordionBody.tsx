@@ -1,14 +1,9 @@
 import clsx from 'clsx';
 import * as React from 'react';
-import { useContext } from 'react';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import { useBootstrapPrefix } from './ThemeProvider.js';
-import AccordionCollapse from './AccordionCollapse.js';
-import AccordionItemContext from './AccordionItemContext.js';
-import type { TransitionCallbacks } from './types.js';
 
-export interface AccordionBodyProps
-  extends TransitionCallbacks, React.HTMLAttributes<HTMLElement> {
+export interface AccordionBodyProps extends React.HTMLAttributes<HTMLElement> {
   /**
    * Element used to render the component.
    */
@@ -20,6 +15,10 @@ export interface AccordionBodyProps
   bsPrefix?: string | undefined;
 }
 
+/**
+ * The content of an item. It stays in the DOM while collapsed; the native
+ * `<details>` element hides it and animates its height.
+ */
 const AccordionBody: DynamicRefForwardingComponent<'div', AccordionBodyProps> =
   React.forwardRef<HTMLElement, AccordionBodyProps>(
     (
@@ -28,35 +27,14 @@ const AccordionBody: DynamicRefForwardingComponent<'div', AccordionBodyProps> =
         as: Component = 'div',
         bsPrefix,
         className,
-        onEnter,
-        onEntering,
-        onEntered,
-        onExit,
-        onExiting,
-        onExited,
         ...props
       },
       ref,
     ) => {
       bsPrefix = useBootstrapPrefix(bsPrefix, 'accordion-body');
-      const { eventKey } = useContext(AccordionItemContext);
 
       return (
-        <AccordionCollapse
-          eventKey={eventKey}
-          onEnter={onEnter}
-          onEntering={onEntering}
-          onEntered={onEntered}
-          onExit={onExit}
-          onExiting={onExiting}
-          onExited={onExited}
-        >
-          <Component
-            ref={ref}
-            {...props}
-            className={clsx(className, bsPrefix)}
-          />
-        </AccordionCollapse>
+        <Component ref={ref} {...props} className={clsx(className, bsPrefix)} />
       );
     },
   );

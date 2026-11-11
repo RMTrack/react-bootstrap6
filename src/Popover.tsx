@@ -92,7 +92,7 @@ const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
         ref={ref}
         role="tooltip"
         style={computedStyle}
-        x-placement={primaryPlacement}
+        data-bs-placement={placement}
         className={clsx(
           className,
           decoratedBsPrefix,

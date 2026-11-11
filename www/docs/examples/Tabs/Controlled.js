@@ -10,7 +10,7 @@ function ControlledTabsExample() {
       id="controlled-tab-example"
       activeKey={key}
       onSelect={(k) => setKey(k)}
-      className="mb-3"
+      className="mb-5"
     >
       <Tab eventKey="home" title="Home">
         Tab content for Home

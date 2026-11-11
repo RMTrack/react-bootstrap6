@@ -13,15 +13,15 @@ function DismissibleExample() {
 
   return (
     <Row>
-      <Col md={6} className="mb-2">
-        <Button onClick={toggleShowA} className="mb-2">
+      <Col md={6} className="mb-3">
+        <Button onClick={toggleShowA} className="mb-3">
           Toggle Toast <strong>with</strong> Animation
         </Button>
         <Toast show={showA} onClose={toggleShowA}>
           <Toast.Header>
             <img
               src="holder.js/20x20?text=%20"
-              className="rounded me-2"
+              className="rounded me-3"
               alt=""
             />
             <strong className="me-auto">Bootstrap</strong>
@@ -30,15 +30,15 @@ function DismissibleExample() {
           <Toast.Body>Woohoo, you're reading this text in a Toast!</Toast.Body>
         </Toast>
       </Col>
-      <Col md={6} className="mb-2">
-        <Button onClick={toggleShowB} className="mb-2">
+      <Col md={6} className="mb-3">
+        <Button onClick={toggleShowB} className="mb-3">
           Toggle Toast <strong>without</strong> Animation
         </Button>
         <Toast onClose={toggleShowB} show={showB} animation={false}>
           <Toast.Header>
             <img
               src="holder.js/20x20?text=%20"
-              className="rounded me-2"
+              className="rounded me-3"
               alt=""
             />
             <strong className="me-auto">Bootstrap</strong>

@@ -33,7 +33,7 @@ function HomepageHeader() {
           </Link>
         </div>
 
-        <div className="my-2">Current version: {rbVersion}</div>
+        <div className="my-3">Current version: {rbVersion}</div>
 
         <div className={styles.carbonads}>
           <CarbonAds />

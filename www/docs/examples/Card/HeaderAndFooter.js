@@ -12,7 +12,7 @@ function HeaderAndFooterExample() {
         </Card.Text>
         <Button variant="primary">Go somewhere</Button>
       </Card.Body>
-      <Card.Footer className="text-muted">2 days ago</Card.Footer>
+      <Card.Footer className="fg-secondary">2 days ago</Card.Footer>
     </Card>
   );
 }

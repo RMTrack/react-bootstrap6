@@ -14,7 +14,7 @@ function ToggleButtonExample() {
 
   return (
     <>
-      <ButtonGroup className="mb-2">
+      <ButtonGroup className="mb-3">
         <ToggleButton
           id="toggle-check"
           type="checkbox"
@@ -27,7 +27,7 @@ function ToggleButtonExample() {
         </ToggleButton>
       </ButtonGroup>
       <br />
-      <ButtonGroup className="mb-2">
+      <ButtonGroup className="mb-3">
         {radios.map((radio, idx) => (
           <ToggleButton
             key={idx}
@@ -45,7 +45,7 @@ function ToggleButtonExample() {
       </ButtonGroup>
       <br />
       <ToggleButton
-        className="mb-2"
+        className="mb-3"
         id="toggle-check"
         type="checkbox"
         variant="outline-primary"

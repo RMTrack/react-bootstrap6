@@ -15,8 +15,8 @@ export interface FormTextProps extends React.HTMLAttributes<HTMLElement> {
   bsPrefix?: string | undefined;
 
   /**
-   * A convenience prop for add the `text-muted` class,
-   * since it's so commonly used here.
+   * A convenience prop for adding the `fg-secondary` class (Bootstrap 5's
+   * `text-muted`).
    */
   muted?: boolean | undefined;
 }
@@ -34,7 +34,7 @@ const FormText: DynamicRefForwardingComponent<'small', FormTextProps> =
         <Component
           {...props}
           ref={ref}
-          className={clsx(className, bsPrefix, muted && 'text-muted')}
+          className={clsx(className, bsPrefix, muted && 'fg-secondary')}
         />
       );
     },

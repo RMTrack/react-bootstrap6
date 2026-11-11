@@ -15,10 +15,14 @@ lines easy to do.
 ## New variants and sizes
 
 Custom variants and sizes should follow the pattern of the default
-Bootstrap variants, and define css classes matching:
-`component-*`. React-Bootstrap builds the component
-`classNames` in a consistent way that you can rely on. For
-instance this custom `Button`.
+Bootstrap variants. React-Bootstrap builds the component
+`classNames` in a consistent way that you can rely on.
+
+In Bootstrap 6, theme colors are `.theme-*` classes that set the
+`--bs-theme-*` tokens, and components read those tokens. A custom variant
+such as `variant="flat"` renders `.btn-solid.theme-flat`, so define a
+`.theme-flat` class with the tokens you need. Custom sizes still map to
+`component-*` classes, like `.btn-xxl` below. For instance this custom `Button`.
 
 <CodeBlock language="jsx" live>
   {Variants}

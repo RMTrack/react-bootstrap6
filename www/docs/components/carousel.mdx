@@ -6,9 +6,11 @@ description: A slideshow component for cycling through elements—images or slid
 import CarouselControlled from '!!raw-loader!../examples/Carousel/Controlled';
 import CarouselUncontrolled from '!!raw-loader!../examples/Carousel/Uncontrolled';
 import CarouselFade from '!!raw-loader!../examples/Carousel/CarouselFade';
+import CarouselAutoplay from '!!raw-loader!../examples/Carousel/Autoplay';
 import IndividualIntervals from '!!raw-loader!../examples/Carousel/IndividualIntervals';
 import DarkVariant from '!!raw-loader!../examples/Carousel/DarkVariant';
 import NoTransition from '!!raw-loader!../examples/Carousel/NoTransition';
+import NoOverlay from '!!raw-loader!../examples/Carousel/NoOverlay';
 
 ## Example
 
@@ -17,6 +19,13 @@ may need to use additional utilities or custom styles to appropriately
 size content. While carousels support previous/next controls and
 indicators, they’re not explicitly required. Add and customize as you
 see fit.
+
+The carousel is built on CSS scroll snap. The controls and indicators scroll
+`.carousel-inner`, and native swiping (or scrolling) updates the active slide,
+so there is no separate `touch` option.
+
+Bootstrap 6 has no caption component. Put your own markup in a
+`Carousel.Item` and position it with utilities, as in the examples below.
 
 <CodeBlock language="jsx" live>
   {CarouselUncontrolled}
@@ -41,32 +50,50 @@ Add the `fade` prop to your carousel to animate slides with a fade transition in
 
 ## No transition animation
 
-Set the `slide` prop to false to disable the transition animation between slides.
+Set the `slide` prop to false to jump between slides instead of scrolling smoothly.
 
 <CodeBlock language="jsx" live>
   {NoTransition}
 </CodeBlock>
 
-## Individual Item Intervals
+## Autoplay
 
-You can specify individual intervals for each carousel item via the `interval`
-prop.
+As in Bootstrap 6, autoplay is **opt-in**. A carousel stays on its current
+slide until you add the `autoplay` prop, which then advances every `interval`
+milliseconds (5000 by default) and adds `.carousel-playing`.
+
+Any interaction with the carousel (the controls, the indicators, the keyboard
+or swiping) stops autoplay for good, following
+[WCAG 2.2.2 Pause, Stop, Hide](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html).
+Set `pause="hover"` (the default) to also pause while the pointer is over the carousel.
+
+<CodeBlock language="jsx" live>
+  {CarouselAutoplay}
+</CodeBlock>
+
+### Individual Item Intervals
+
+When autoplay is on, you can specify individual intervals for each carousel
+item via the `interval` prop.
 
 <CodeBlock language="jsx" live>
   {IndividualIntervals}
 </CodeBlock>
 
+## Controls below the slides
+
+The controls and indicators are overlaid on the slides by default
+(`.carousel-overlay`). Set `overlay={false}` to lay them out below the slides instead.
+
+<CodeBlock language="jsx" live>
+  {NoOverlay}
+</CodeBlock>
+
 ## Dark variant
 
-Add `variant="dark"` to the `Carousel` for darker controls, indicators, and captions.
-
-:::caution Heads up!
-
-Dark variants for components were deprecated in Bootstrap v5.3.0 with the introduction
-of color modes. Instead of adding `variant="dark"`, set `data-bs-theme="dark"` on the root
-element, a parent wrapper, or the component itself.
-
-:::
+For light slides, render the controls and indicators in the dark color mode
+by setting `data-bs-theme="dark"` on the `Carousel`. The `variant="dark"` prop
+does the same thing.
 
 <CodeBlock language="jsx" live>
   {DarkVariant}
@@ -81,7 +108,3 @@ element, a parent wrapper, or the component itself.
 ### CarouselItem
 
 <PropsTable name="CarouselItem" />
-
-### CarouselCaption
-
-<PropsTable name="CarouselCaption" />

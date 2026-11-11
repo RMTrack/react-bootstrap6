@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import * as React from 'react';
 import { DynamicRefForwardingComponent } from '@restart/ui/types';
 import {
+  breakpointPrefix,
   useBootstrapPrefix,
   useBootstrapBreakpoints,
   useBootstrapMinBreakpoint,
@@ -106,9 +107,9 @@ const Row: DynamicRefForwardingComponent<'div', RowProps> = React.forwardRef<
         cols = propValue;
       }
 
-      const infix = brkPoint !== minBreakpoint ? `-${brkPoint}` : '';
+      const prefix = breakpointPrefix(brkPoint, minBreakpoint);
 
-      if (cols != null) classes.push(`${sizePrefix}${infix}-${cols}`);
+      if (cols != null) classes.push(`${prefix}${sizePrefix}-${cols}`);
     });
 
     return (

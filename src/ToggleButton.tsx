@@ -36,9 +36,10 @@ export interface ToggleButtonProps extends Omit<
   disabled?: boolean | undefined;
 
   /**
-   * `id` is required for button clicks to toggle input.
+   * The `id` of the `<input>`. Not required: the input is nested inside the
+   * `<label>`, so clicking the button toggles it.
    */
-  id: string;
+  id?: string | undefined;
 
   /**
    * A callback fired when the underlying input element changes. This is passed
@@ -73,6 +74,7 @@ const ToggleButton = React.forwardRef<HTMLLabelElement, ToggleButtonProps>(
       disabled,
       id,
       inputRef,
+      children,
       ...props
     },
     ref,
@@ -80,9 +82,16 @@ const ToggleButton = React.forwardRef<HTMLLabelElement, ToggleButtonProps>(
     bsPrefix = useBootstrapPrefix(bsPrefix, 'btn-check');
 
     return (
-      <>
+      <Button
+        {...props}
+        ref={ref}
+        className={clsx(className, bsPrefix, disabled && 'disabled')}
+        type={undefined}
+        role={undefined}
+        tabIndex={undefined}
+        as="label"
+      >
         <input
-          className={bsPrefix}
           name={name}
           type={type}
           value={value}
@@ -93,17 +102,8 @@ const ToggleButton = React.forwardRef<HTMLLabelElement, ToggleButtonProps>(
           onChange={onChange || noop}
           id={id}
         />
-        <Button
-          {...props}
-          ref={ref}
-          className={clsx(className, disabled && 'disabled')}
-          type={undefined}
-          role={undefined}
-          tabIndex={undefined}
-          as="label"
-          htmlFor={id}
-        />
-      </>
+        {children}
+      </Button>
     );
   },
 );

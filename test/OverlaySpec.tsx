@@ -16,7 +16,7 @@ describe('<Overlay>', () => {
     expect(ref.current.id).toEqual('my-overlay');
   });
 
-  it('should use Fade internally if transition=true', () => {
+  it('should toggle show (without .fade) if transition=true', () => {
     const ref = React.createRef<any>();
     render(
       <Overlay show transition ref={ref} target={ref.current}>
@@ -26,7 +26,8 @@ describe('<Overlay>', () => {
       </Overlay>,
     );
     const popoverElem = screen.getByTestId('test');
-    expect(popoverElem.classList).toContain('fade');
+    expect(popoverElem.classList).not.toContain('fade');
+    expect(popoverElem.classList).toContain('show');
   });
 
   it('should not use Fade if transition=false', () => {

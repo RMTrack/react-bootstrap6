@@ -159,4 +159,25 @@ describe('<Breadcrumb.Item>', () => {
       'bar',
     );
   });
+  it('Should render .breadcrumb-link on the link and active item', () => {
+    render(
+      <Breadcrumb>
+        <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
+        <Breadcrumb.Item active data-testid="active">
+          Data
+        </Breadcrumb.Item>
+      </Breadcrumb>,
+    );
+
+    const link = screen.getByText('Home');
+    expect(link.tagName).toEqual('A');
+    expect(link.classList).toContain('breadcrumb-link');
+
+    const active = screen.getByTestId('active');
+    expect(active.classList).not.toContain('active');
+    expect(active.getAttribute('aria-current')).toEqual('page');
+    const current = screen.getByText('Data');
+    expect(current.tagName).toEqual('SPAN');
+    expect(current.className).toEqual('breadcrumb-link active');
+  });
 });

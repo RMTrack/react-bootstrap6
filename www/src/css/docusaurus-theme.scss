@@ -46,24 +46,31 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 
-  --ifm-hero-background-color: var(--bs-body-bg);
+  --ifm-hero-background-color: var(--bs-bg-body);
   --ifm-footer-background-color: #2b3035;
 
-  --ifm-menu-color-active: var(--bs-emphasis-color);
-  --ifm-toc-link-color: var(--bs-body-color);
+  --ifm-menu-color-active: var(--bs-fg-body);
+  --ifm-toc-link-color: var(--bs-fg-1);
 
-  --ifm-breadcrumb-color-active: var(--bs-emphasis-color);
-  --ifm-button-color: var(--bs-emphasis-color);
+  --ifm-breadcrumb-color-active: var(--bs-fg-body);
+  --ifm-button-color: var(--bs-fg-body);
 
   .table-of-contents__link--active {
-    color: var(--bs-emphasis-color);
+    color: var(--bs-fg-body);
   }
 }
 
-// Override Bootstrap styles.
-.navbar {
+// Bootstrap 6's layers sit above Infima (see docusaurus.config.ts), so undo
+// the Bootstrap styles that land on Docusaurus's own markup. Scope these to
+// the site navbar: example navbars are `.navbar`s too.
+.theme-layout-navbar {
   padding: var(--ifm-navbar-padding-vertical)
     var(--ifm-navbar-padding-horizontal);
+  // `.navbar` is a query container in Bootstrap 6. That applies layout
+  // containment, which would trap the fixed mobile sidebar inside the navbar.
+  container-type: normal;
+  color: var(--ifm-navbar-link-color);
+  background-color: var(--ifm-navbar-background-color);
 
   &.navbar--fixed-top {
     position: sticky;
@@ -87,10 +94,40 @@
   }
 }
 
+// Infima's sized columns (`.col--3` for the table of contents) lose to
+// Bootstrap's `.col` otherwise.
+.col[class*='col--'] {
+  flex: 0 0 var(--ifm-col-width);
+  max-width: var(--ifm-col-width);
+}
+
 .theme-doc-sidebar-container {
   a {
     text-decoration: none;
   }
+}
+
+// Bootstrap 6 renamed `.dropdown-menu` to `.menu`, which Docusaurus also uses
+// for its sidebars. Undo the dropdown menu styles there.
+.theme-doc-sidebar-container .menu,
+.navbar-sidebar .menu {
+  position: static;
+  z-index: auto;
+  display: block;
+  min-width: 0;
+  max-height: none;
+  padding: 0.5rem;
+  margin: 0;
+  overflow-y: auto;
+  font-size: inherit;
+  color: inherit;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 a.button {
@@ -101,18 +138,7 @@ a.button {
   text-decoration: none;
 }
 
-.alert-info svg {
-  fill: var(--bs-info-text-emphasis);
-}
-
-.alert-warning svg {
-  fill: var(--bs-warning-text-emphasis);
-}
-
-.alert-danger svg {
-  fill: var(--bs-danger-text-emphasis);
-}
-
-.alert-success svg {
-  fill: var(--bs-success-text-emphasis);
+// Admonitions render a react-bootstrap Alert (`.alert.theme-*`).
+.alert svg {
+  fill: var(--bs-theme-fg-emphasis, currentcolor);
 }

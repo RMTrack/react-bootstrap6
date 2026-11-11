@@ -1,8 +1,33 @@
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import { DEFAULT_LAYERS as DOCUSAURUS_CSS_LAYERS } from '@docusaurus/plugin-css-cascade-layers/lib/options';
 // eslint-disable-next-line import/no-relative-packages
 import packageJson from '../package.json';
+
+// Bootstrap 6 ships its CSS in cascade layers, and unlayered CSS always beats
+// layered CSS, so Infima would otherwise override every Bootstrap style. Wrap
+// Infima and the Docusaurus theme in their own layers and order them between
+// Bootstrap's base layers (tokens and reboot) and the rest of Bootstrap:
+// Bootstrap components and utilities still win over Infima, while the
+// Docusaurus chrome keeps Infima's typography and links over Bootstrap's
+// reboot. The Bootstrap names only declare the order; no file is wrapped in them.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const bootstrapLayer = (filePath: string) => false;
+const cssCascadeLayers = {
+  colors: bootstrapLayer,
+  config: bootstrapLayer,
+  root: bootstrapLayer,
+  reboot: bootstrapLayer,
+  ...DOCUSAURUS_CSS_LAYERS,
+  layout: bootstrapLayer,
+  content: bootstrapLayer,
+  forms: bootstrapLayer,
+  components: bootstrapLayer,
+  custom: bootstrapLayer,
+  helpers: bootstrapLayer,
+  utilities: bootstrapLayer,
+};
 
 const config: Config = {
   title: 'React Bootstrap',
@@ -38,6 +63,7 @@ const config: Config = {
     './plugins/react-docgen-plugin.ts',
   ],
   presets: [
+    ['./plugins/css-cascade-layers-preset.ts', { layers: cssCascadeLayers }],
     [
       'classic',
       {
@@ -90,7 +116,7 @@ const config: Config = {
         },
         {
           type: 'dropdown',
-          label: `v${packageJson.version} (Bootstrap 5)`,
+          label: `v${packageJson.version} (Bootstrap 6)`,
           items: [
             {
               label: 'v2.10.10 (Bootstrap 5)',

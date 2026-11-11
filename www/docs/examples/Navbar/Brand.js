@@ -4,19 +4,19 @@ import Navbar from 'react-bootstrap/Navbar';
 function BrandExample() {
   return (
     <>
-      <Navbar className="bg-body-tertiary">
+      <Navbar className="bg-1">
         <Container>
           <Navbar.Brand href="#home">Brand link</Navbar.Brand>
         </Container>
       </Navbar>
       <br />
-      <Navbar className="bg-body-tertiary">
+      <Navbar className="bg-1">
         <Container>
           <Navbar.Brand>Brand text</Navbar.Brand>
         </Container>
       </Navbar>
       <br />
-      <Navbar className="bg-body-tertiary">
+      <Navbar className="bg-1">
         <Container>
           <Navbar.Brand href="#home">
             <img
@@ -30,7 +30,7 @@ function BrandExample() {
         </Container>
       </Navbar>
       <br />
-      <Navbar className="bg-body-tertiary">
+      <Navbar className="bg-1">
         <Container>
           <Navbar.Brand href="#home">
             <img

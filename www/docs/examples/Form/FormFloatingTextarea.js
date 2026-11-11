@@ -7,7 +7,7 @@ function FormFloatingTextareaExample() {
       <FloatingLabel
         controlId="floatingTextarea"
         label="Comments"
-        className="mb-3"
+        className="mb-5"
       >
         <Form.Control as="textarea" placeholder="Leave a comment here" />
       </FloatingLabel>

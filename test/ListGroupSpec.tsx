@@ -42,7 +42,7 @@ describe('<ListGroup>', () => {
       render(<ListGroup horizontal={breakpoint} data-testid="test" />);
 
       const listGroup = screen.getByTestId('test');
-      const breakpointClass = `list-group-horizontal-${breakpoint}`;
+      const breakpointClass = `${breakpoint === 'xxl' ? '2xl' : breakpoint}:list-group-horizontal`;
       expect(listGroup.classList).toContain(breakpointClass);
     });
   });

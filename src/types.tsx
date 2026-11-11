@@ -6,9 +6,8 @@ import type {
   VirtualElement,
 } from '@restart/ui/usePopper';
 import type { ToggleMetadata } from '@restart/ui/Dropdown';
-import type ModalManager from '@restart/ui/ModalManager';
 import type { EventKey, SelectCallback } from '@restart/ui/types';
-import type { DropDirection } from './DropdownContext.js';
+import type { DropDirection } from './MenuContext.js';
 
 // https://github.com/sindresorhus/type-fest/blob/main/source/primitive.d.ts
 export type Primitive =
@@ -24,39 +23,35 @@ export type DOMContainer<T extends HTMLElement | VirtualElement = HTMLElement> =
   | null
   | (() => T | React.RefObject<T | null> | null);
 
-export type Variant = LiteralUnion<
+/**
+ * Bootstrap 6 theme colors, applied with the `.theme-*` classes.
+ */
+export type ThemeColor =
   | 'primary'
+  | 'accent'
   | 'secondary'
   | 'success'
   | 'danger'
   | 'warning'
   | 'info'
-  | 'dark'
-  | 'light',
-  string
->;
+  | 'inverse';
+
+export type Variant = LiteralUnion<ThemeColor, string>;
+
+/**
+ * Bootstrap 6 button styles. `solid` is used when a variant is only a theme
+ * color, e.g. `primary` -> `.btn-solid.theme-primary`.
+ */
+export type ButtonStyle = 'solid' | 'outline' | 'subtle' | 'text' | 'styled';
+
 export type ButtonVariant =
-  | Variant
-  | 'link'
-  | 'outline-primary'
-  | 'outline-secondary'
-  | 'outline-success'
-  | 'outline-danger'
-  | 'outline-warning'
-  | 'outline-info'
-  | 'outline-dark'
-  | 'outline-light';
+  Variant | 'link' | ButtonStyle | `${ButtonStyle}-${ThemeColor}`;
+
+/**
+ * Foreground colors, applied with the `.fg-*` utilities.
+ */
 export type Color = LiteralUnion<
-  | 'primary'
-  | 'secondary'
-  | 'success'
-  | 'danger'
-  | 'warning'
-  | 'info'
-  | 'dark'
-  | 'light'
-  | 'white'
-  | 'muted',
+  ThemeColor | 'body' | 'white' | 'black',
   string
 >;
 
@@ -76,7 +71,10 @@ export type AlignType = AlignDirection | ResponsiveAlignProp;
 
 export type RootCloseEvent = 'click' | 'mousedown';
 
-export type GapValue = LiteralUnion<0 | 1 | 2 | 3 | 4 | 5, number>;
+export type GapValue = LiteralUnion<
+  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12,
+  number
+>;
 
 export interface PopperRef {
   state: State | undefined;
@@ -131,9 +129,9 @@ export interface TransitionCallbacks {
 }
 
 // A copy of types from @restart/ui so react-docgen can parse it
-export interface BaseDropdownProps {
+export interface BaseMenuProps {
   /**
-   * The PopperJS placement for positioning the Dropdown menu in relation to
+   * The PopperJS placement for positioning the Menu menu in relation to
    * its Toggle.
    *
    * @type {'auto' | 'auto-start' | "auto-end' | 'top' | 'bottom' | 'right' | 'left' | 'top-start' | "top-end | 'bottom-start' | 'bottom-end' | 'right-start' | 'right-end' | 'left-start' | 'left-end'}
@@ -142,26 +140,26 @@ export interface BaseDropdownProps {
   placement?: Placement | undefined;
 
   /**
-   * Sets the initial visibility of the Dropdown.
+   * Sets the initial visibility of the Menu.
    */
   defaultShow?: boolean | undefined;
 
   /**
-   * Whether or not the Dropdown is visible.
+   * Whether or not the Menu is visible.
    *
    * @controllable onToggle
    */
   show?: boolean | undefined;
 
   /**
-   * A callback fired when a DropdownItem has been selected.
+   * A callback fired when a MenuItem has been selected.
    *
    * @type {((eventKey: string | null, e: React.SyntheticEvent<any>) => void) | undefined}
    */
   onSelect?: SelectCallback | undefined;
 
   /**
-   * A callback fired when the Dropdown wishes to change visibility. Called with
+   * A callback fired when the Menu wishes to change visibility. Called with
    * the requested `show` value, the DOM event, and the source that fired it:
    * `'click'`,`'keydown'`,`'rootClose'`, or `'select'`.
    *
@@ -177,7 +175,7 @@ export interface BaseDropdownProps {
   onToggle?: ((nextShow: boolean, meta: ToggleMetadata) => void) | undefined;
 
   /**
-   * Controls the focus behavior for when the Dropdown is opened. Set to
+   * Controls the focus behavior for when the Menu is opened. Set to
    * `true` to always focus the first menu item, `keyboard` to focus only when
    * navigating via the keyboard, or `false` to disable completely
    *
@@ -188,7 +186,7 @@ export interface BaseDropdownProps {
   focusFirstItemOnShow?: boolean | 'keyboard' | undefined;
 
   /**
-   * A render prop that returns the root dropdown element. The `props`
+   * A render prop that returns the root menu element. The `props`
    * argument should spread through to an element containing _both_ the
    * menu and toggle in order to handle keyboard events for focus management.
    */
@@ -248,104 +246,60 @@ export interface BaseNavItemProps extends React.HTMLAttributes<HTMLElement> {
   href?: string | undefined;
 }
 
-export interface BaseModalProps extends TransitionCallbacks {
+/**
+ * Props shared by components built on the native `<dialog>` element.
+ */
+export interface BaseDialogProps extends TransitionCallbacks {
   /**
-   * Set the visibility of the Modal
+   * Set the visibility of the dialog
    */
   show?: boolean | undefined;
 
   /**
-   * A DOM element, a `ref` to an element, or function that returns either. The Modal is appended to it's `container` element.
+   * A DOM element, a `ref` to an element, or function that returns either. The dialog is appended to it's `container` element.
    *
    */
   container?: DOMContainer | undefined;
 
   /**
-   * A callback fired when the Modal is opening.
+   * A callback fired when the dialog is opening.
    *
    * @type {(() => void) | undefined}
    */
   onShow?: (() => void) | undefined;
 
   /**
-   * A callback fired when either the backdrop is clicked, or the escape key is pressed.
+   * A callback fired when the backdrop is clicked, the escape key is pressed,
+   * or the native `<dialog>` is closed by the browser (e.g. by a
+   * `<form method="dialog">`).
    *
-   * The `onHide` callback only signals intent from the Modal,
-   * you must actually set the `show` prop to `false` for the Modal to close.
+   * The `onHide` callback only signals intent from the dialog,
+   * you must actually set the `show` prop to `false` for the dialog to close.
    *
    * @type {(() => void) | undefined}
    */
   onHide?: (() => void) | undefined;
 
   /**
-   * A ModalManager instance used to track and manage the state of open
-   * Modals. Useful when customizing how modals interact within a container
-   *
-   * @type {ModalManager | undefined}
-   */
-  manager?: ModalManager | undefined;
-
-  /**
-   * Include a backdrop component. A `static`backdrop
-   * will not trigger a Modal onHide when clicked.
+   * Close the dialog when the native `::backdrop` is clicked. A `static`
+   * backdrop will not trigger `onHide` when clicked, and plays a short
+   * "bounce" animation instead.
    */
   backdrop?: boolean | 'static' | undefined;
 
   /**
    * A callback fired when the escape key, if specified in `keyboard`, is pressed.
    *
-   * If preventDefault() is called on the keyboard event, closing the modal will be cancelled.
+   * If preventDefault() is called on the keyboard event, closing the dialog will be cancelled.
    *
    * @type {((e: KeyboardEvent) => void) | undefined}
    */
   onEscapeKeyDown?: ((e: KeyboardEvent) => void) | undefined;
 
   /**
-   * A callback fired when the backdrop, if specified, is clicked.
-   *
-   * @type {((e: React.SyntheticEvent) => void) | undefined}
-   */
-  onBackdropClick?: ((e: React.SyntheticEvent) => void) | undefined;
-
-  /**
-   * Close the modal when escape key is pressed
+   * Close the dialog when escape key is pressed
    */
   keyboard?: boolean | undefined;
-
-  /**
-   * When `true` The modal will automatically shift focus to itself when it opens, and
-   * replace it to the last focused element when it closes. This also
-   * works correctly with any Modal children that have the `autoFocus` prop.
-   *
-   * Generally this should never be set to `false` as it makes the Modal less
-   * accessible to assistive technologies, like screen readers.
-   */
-  autoFocus?: boolean | undefined;
-
-  /**
-   * When `true` The modal will prevent focus from leaving the Modal while open.
-   *
-   * Generally this should never be set to `false` as it makes the Modal less
-   * accessible to assistive technologies, like screen readers.
-   */
-  enforceFocus?: boolean | undefined;
-
-  /**
-   * When `true` The modal will restore focus to previously focused element once
-   * modal is hidden
-   */
-  restoreFocus?: boolean | undefined;
-
-  /**
-   * Options passed to focus function when `restoreFocus` is set to `true`
-   *
-   * @link  https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#Parameters
-   */
-  restoreFocusOptions?:
-    | {
-        preventScroll: boolean;
-      }
-    | undefined;
 }
 
 export interface OverlayArrowProps extends Record<string, any> {
@@ -429,14 +383,14 @@ export interface BaseOverlayProps extends TransitionCallbacks {
   rootCloseDisabled?: boolean | undefined;
 }
 
-export interface BsDropdownProps extends BaseDropdownProps {
+export interface BsMenuProps extends BaseMenuProps {
   /**
    * Element used to render the component.
    */
   as?: React.ElementType | undefined;
 
   /**
-   * @default 'dropdown'
+   * @default 'menu'
    */
   bsPrefix?: string | undefined;
 
@@ -446,7 +400,7 @@ export interface BsDropdownProps extends BaseDropdownProps {
   drop?: DropDirection | undefined;
 
   /**
-   * Aligns the dropdown menu to the specified side of the Dropdown toggle. You can
+   * Aligns the menu to the specified side of the Menu toggle. You can
    * also align the menu responsively for breakpoints starting at `sm` and up.
    * The alignment direction will affect the specified breakpoint or larger.
    *
@@ -455,7 +409,7 @@ export interface BsDropdownProps extends BaseDropdownProps {
   align?: AlignType | undefined;
 
   /**
-   * Controls the focus behavior for when the Dropdown is opened. Set to
+   * Controls the focus behavior for when the Menu is opened. Set to
    * `true` to always focus the first menu item, `keyboard` to focus only when
    * navigating via the keyboard, or `false` to disable completely
    *
@@ -466,7 +420,7 @@ export interface BsDropdownProps extends BaseDropdownProps {
   focusFirstItemOnShow?: boolean | 'keyboard' | undefined;
 
   /**
-   * Controls the auto close behaviour of the dropdown when clicking outside of
+   * Controls the auto close behaviour of the menu when clicking outside of
    * the button or the list.
    */
   autoClose?: boolean | 'outside' | 'inside' | undefined;

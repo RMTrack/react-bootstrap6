@@ -1,6 +1,6 @@
 # React-Bootstrap
 
-> **[Bootstrap 5][bootstrap]** components built with [React][react].
+> **[Bootstrap 6][bootstrap]** components built with [React][react].
 
 [![GitHub Actions CI status][gh-actions-badge]][gh-actions]
 [![Travis CI Build status][travis-badge]][travis]
@@ -17,6 +17,7 @@ See the below table on which version of React-Bootstrap you should be using in y
 
 | Bootstrap Version | React-Bootstrap Version | Documentation |
 | ------------- |:-------------:| -----:|
+| v6.x | unreleased (this branch) | – |
 | v5.x | 2.x | [Link][v5-documentation] |
 | v4.x | 1.x (not maintained) | [Link][v4-documentation] |
 | v3.x | 0.33.x (not maintained) | [Link][v3-documentation] |

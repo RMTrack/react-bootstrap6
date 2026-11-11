@@ -1,11 +1,8 @@
 import clsx from 'clsx';
-import css from 'dom-helpers/css';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Transition, type TransitionStatus } from 'react-transition-group';
 import { getChildRef } from '@restart/ui/utils';
 import transitionEndListener from './transitionEndListener.js';
-import createChainedFunction from './createChainedFunction.js';
-import triggerBrowserReflow from './triggerBrowserReflow.js';
 import TransitionWrapper from './TransitionWrapper.js';
 import type { TransitionCallbacks } from './types.js';
 
@@ -44,24 +41,11 @@ export interface CollapseProps
 
   /**
    * The dimension used when collapsing, or a function that returns the
-   * dimension
+   * dimension. `width` adds `.collapse-horizontal`.
    *
    * @type {'height' | 'width' | (() => 'height' | 'width')  | undefined}
    */
   dimension?: Dimension | (() => Dimension) | undefined;
-
-  /**
-   * Function that returns the height or width of the animating DOM node
-   *
-   * Allows for providing some custom logic for how much the Collapse component
-   * should animate in its specified dimension. Called with the current
-   * dimension prop value and the DOM node.
-   *
-   * @type {((dimension: Dimension, element: HTMLElement) => number) | undefined}
-   * @default element.offsetWidth | element.offsetHeight
-   */
-  getDimensionValue?:
-    ((dimension: Dimension, element: HTMLElement) => number) | undefined;
 
   /**
    * You must provide a single JSX child element to this component and that element cannot be a \<React.Fragment\>
@@ -69,52 +53,27 @@ export interface CollapseProps
   children: React.ReactElement;
 }
 
-const MARGINS: Record<Dimension, string[]> = {
-  height: ['marginTop', 'marginBottom'],
-  width: ['marginLeft', 'marginRight'],
-};
-
-function getDefaultDimensionValue(
-  dimension: Dimension,
-  elem: HTMLElement,
-): number {
-  const offset = `offset${dimension[0].toUpperCase()}${dimension.slice(1)}`;
-  const value = elem[offset];
-  const margins = MARGINS[dimension];
-
-  return (
-    value +
-    // @ts-expect-error TODO
-    parseInt(css(elem, margins[0]), 10) +
-    // @ts-expect-error TODO
-    parseInt(css(elem, margins[1]), 10)
-  );
-}
-
-const collapseStyles = {
+// Bootstrap 6 animates the size in CSS (`interpolate-size`): `.show` is the
+// only state class, so it is removed as soon as the exit starts.
+const collapseStyles: Record<TransitionStatus, string> = {
+  unmounted: 'collapse',
   exited: 'collapse',
-  exiting: 'collapsing',
-  entering: 'collapsing',
+  exiting: 'collapse',
+  entering: 'collapse show',
   entered: 'collapse show',
 };
 
 const Collapse = React.forwardRef<Transition<any>, CollapseProps>(
   (
     {
-      onEnter,
-      onEntering,
-      onEntered,
-      onExit,
-      onExiting,
       className,
       children,
       dimension = 'height',
       in: inProp = false,
-      timeout = 300,
+      timeout = 350,
       mountOnEnter = false,
       unmountOnExit = false,
       appear = false,
-      getDimensionValue = getDefaultDimensionValue,
       ...props
     },
     ref,
@@ -123,65 +82,12 @@ const Collapse = React.forwardRef<Transition<any>, CollapseProps>(
     const computedDimension =
       typeof dimension === 'function' ? dimension() : dimension;
 
-    /* -- Expanding -- */
-    const handleEnter = useMemo(
-      () =>
-        createChainedFunction((elem) => {
-          elem.style[computedDimension] = '0';
-        }, onEnter),
-      [computedDimension, onEnter],
-    );
-
-    const handleEntering = useMemo(
-      () =>
-        createChainedFunction((elem) => {
-          const scroll = `scroll${computedDimension[0].toUpperCase()}${computedDimension.slice(
-            1,
-          )}`;
-          elem.style[computedDimension] = `${elem[scroll]}px`;
-        }, onEntering),
-      [computedDimension, onEntering],
-    );
-
-    const handleEntered = useMemo(
-      () =>
-        createChainedFunction((elem) => {
-          elem.style[computedDimension] = null;
-        }, onEntered),
-      [computedDimension, onEntered],
-    );
-
-    /* -- Collapsing -- */
-    const handleExit = useMemo(
-      () =>
-        createChainedFunction((elem) => {
-          elem.style[computedDimension] = `${getDimensionValue(
-            computedDimension,
-            elem,
-          )}px`;
-          triggerBrowserReflow(elem);
-        }, onExit),
-      [onExit, getDimensionValue, computedDimension],
-    );
-    const handleExiting = useMemo(
-      () =>
-        createChainedFunction((elem) => {
-          elem.style[computedDimension] = null;
-        }, onExiting),
-      [computedDimension, onExiting],
-    );
-
     return (
       <TransitionWrapper
         ref={ref}
         addEndListener={transitionEndListener}
         {...props}
         aria-expanded={props.role ? inProp : null}
-        onEnter={handleEnter}
-        onEntering={handleEntering}
-        onEntered={handleEntered}
-        onExit={handleExit}
-        onExiting={handleExiting}
         childRef={getChildRef(children)}
         in={inProp}
         timeout={timeout}

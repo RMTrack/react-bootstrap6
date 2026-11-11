@@ -4,7 +4,7 @@ import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 function ToggleButtonGroupUncontrolled() {
   return (
     <>
-      <ToggleButtonGroup type="checkbox" defaultValue={[1, 3]} className="mb-2">
+      <ToggleButtonGroup type="checkbox" defaultValue={[1, 3]} className="mb-3">
         <ToggleButton id="tbg-check-1" value={1}>
           Checkbox 1 (pre-checked)
         </ToggleButton>

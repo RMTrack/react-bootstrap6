@@ -7,7 +7,7 @@ function NoAnimationExample() {
       defaultActiveKey="home"
       transition={false}
       id="noanim-tab-example"
-      className="mb-3"
+      className="mb-5"
     >
       <Tab eventKey="home" title="Home">
         Tab content for Home
