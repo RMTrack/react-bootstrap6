@@ -54,16 +54,15 @@ const Spinner: DynamicRefForwardingComponent<'div', SpinnerProps> =
       ref,
     ) => {
       bsPrefix = useBootstrapPrefix(bsPrefix, 'spinner');
-      const bsSpinnerPrefix = `${bsPrefix}-${animation}`;
       return (
         <Component
           ref={ref}
           {...props}
           className={clsx(
             className,
-            bsSpinnerPrefix,
-            size && `${bsSpinnerPrefix}-${size}`,
-            variant && `text-${variant}`,
+            `${bsPrefix}-${animation}`,
+            size && `${bsPrefix}-${size}`,
+            variant && `fg-${variant}`,
           )}
         />
       );

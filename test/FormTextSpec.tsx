@@ -24,12 +24,12 @@ describe('<FormText>', () => {
     expect(formText.tagName).toEqual('SMALL');
   });
 
-  it('Should have "form-text" & "text-muted" class', () => {
+  it('Should have "form-text" & "fg-secondary" class', () => {
     render(<FormText data-testid="foo" muted />);
 
     const formText = screen.getByTestId('foo');
     expect(formText.classList).toHaveLength(2);
     expect(formText.classList).toContain('form-text');
-    expect(formText.classList).toContain('text-muted');
+    expect(formText.classList).toContain('fg-secondary');
   });
 });

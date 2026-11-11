@@ -8,10 +8,9 @@ import {
 } from '@restart/ui/types';
 import { useUncontrolled } from 'uncontrollable';
 import NavbarBrand from './NavbarBrand.js';
-import NavbarCollapse from './NavbarCollapse.js';
 import NavbarToggle from './NavbarToggle.js';
-import NavbarOffcanvas from './NavbarOffcanvas.js';
-import { useBootstrapPrefix } from './ThemeProvider.js';
+import NavbarDrawer from './NavbarDrawer.js';
+import { toBreakpointName, useBootstrapPrefix } from './ThemeProvider.js';
 import NavbarContext, { type NavbarContextType } from './NavbarContext.js';
 import NavbarText from './NavbarText.js';
 import type { LiteralUnion } from './types.js';
@@ -31,19 +30,20 @@ export interface NavbarProps extends Omit<
   bsPrefix?: string | undefined;
 
   /**
-   * The general visual variant of the Navbar.
-   * Use in combination with the `bg` prop, `background-color` utilities,
-   * or your own background styles.
+   * Scope the Navbar to a color mode with `data-bs-theme`. Use `dark` for a
+   * dark navbar; omit it to follow the page's color mode.
    */
   variant?: LiteralUnion<'light' | 'dark', string> | undefined;
 
   /**
-   * The breakpoint, below which, the Navbar will collapse.
-   * When `true` the Navbar will always be expanded regardless of screen size.
+   * The breakpoint, below which, the Navbar will collapse
+   * (`.md:navbar-expand`). When `true` the Navbar will always be expanded
+   * regardless of screen size. Below the breakpoint, the navigation goes in a
+   * `<Navbar.Drawer>` drawer.
    */
   expand?:
     | boolean
-    | LiteralUnion<'sm' | 'md' | 'lg' | 'xl' | 'xxl', string>
+    | LiteralUnion<'sm' | 'md' | 'lg' | 'xl' | '2xl', string>
     | undefined;
 
   /**
@@ -51,12 +51,12 @@ export interface NavbarProps extends Omit<
    */
   defaultExpand?:
     | boolean
-    | LiteralUnion<'sm' | 'md' | 'lg' | 'xl' | 'xxl', string>
+    | LiteralUnion<'sm' | 'md' | 'lg' | 'xl' | '2xl', string>
     | undefined;
 
   /**
    * A convenience prop for adding `bg-*` utility classes since they are so commonly used here.
-   * `light` and `dark` are common choices but any `bg-*` class is supported, including any custom ones you might define.
+   * The neutral surfaces `1` and `2` are common choices but any `bg-*` class is supported, including any custom ones you might define.
    *
    * Pairs nicely with the `variant` prop.
    */
@@ -176,7 +176,8 @@ const Navbar: DynamicRefForwardingComponent<'nav', NavbarProps> =
       controlledProps.role = 'navigation';
     }
     let expandClass = `${bsPrefix}-expand`;
-    if (typeof expand === 'string') expandClass = `${expandClass}-${expand}`;
+    if (typeof expand === 'string')
+      expandClass = `${toBreakpointName(expand)}:${expandClass}`;
 
     const navbarContext = useMemo<NavbarContextType>(
       () => ({
@@ -193,12 +194,14 @@ const Navbar: DynamicRefForwardingComponent<'nav', NavbarProps> =
         <SelectableContext.Provider value={handleCollapse}>
           <Component
             ref={ref}
+            // Bootstrap 6 dropped .navbar-light/.navbar-dark; the navbar
+            // follows the color mode, so `variant` scopes one.
+            data-bs-theme={variant}
             {...controlledProps}
             className={clsx(
               className,
               bsPrefix,
               expand && expandClass,
-              variant && `${bsPrefix}-${variant}`,
               bg && `bg-${bg}`,
               sticky && `sticky-${sticky}`,
               fixed && `fixed-${fixed}`,
@@ -213,8 +216,7 @@ Navbar.displayName = 'Navbar';
 
 export default Object.assign(Navbar, {
   Brand: NavbarBrand,
-  Collapse: NavbarCollapse,
-  Offcanvas: NavbarOffcanvas,
+  Drawer: NavbarDrawer,
   Text: NavbarText,
   Toggle: NavbarToggle,
 });

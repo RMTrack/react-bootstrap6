@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row';
 
 function FormFloatingLayoutExample() {
   return (
-    <Row className="g-2">
+    <Row className="g-3">
       <Col md>
         <FloatingLabel controlId="floatingInputGrid" label="Email address">
           <Form.Control type="email" placeholder="name@example.com" />

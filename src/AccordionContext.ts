@@ -11,6 +11,11 @@ export interface AccordionContextValue {
   activeEventKey?: AccordionEventKey | undefined;
   onSelect?: AccordionSelectCallback | undefined;
   alwaysOpen?: boolean | undefined;
+  /**
+   * The `name` shared by the items' `<details>` elements, which makes them an
+   * exclusive group. Not set when `alwaysOpen` is enabled.
+   */
+  name?: string | undefined;
 }
 
 export function isAccordionItemSelected(

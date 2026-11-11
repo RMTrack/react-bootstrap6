@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import * as React from 'react';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import FormCheck from './FormCheck.js';
@@ -19,10 +18,12 @@ export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   as?: React.ElementType | undefined;
 
   /**
-   * Mark a form as having been validated. Setting it to `true` will
-   * toggle any validation styles on the forms elements.
+   * Opt in to Bootstrap's client-side validation styles by rendering
+   * `data-bs-validate` on the form. Controls are styled with `:user-invalid`,
+   * i.e. once the user has interacted with them or tried to submit the form.
+   * Use `'valid'` to also show success styles on valid controls.
    */
-  validated?: boolean;
+  validated?: boolean | 'valid';
 }
 
 const Form: DynamicRefForwardingComponent<'form', FormProps> = React.forwardRef<
@@ -42,7 +43,10 @@ const Form: DynamicRefForwardingComponent<'form', FormProps> = React.forwardRef<
     <Component
       {...props}
       ref={ref}
-      className={clsx(className, validated && 'was-validated')}
+      className={className}
+      data-bs-validate={
+        validated ? (validated === 'valid' ? 'valid' : '') : undefined
+      }
     />
   ),
 );

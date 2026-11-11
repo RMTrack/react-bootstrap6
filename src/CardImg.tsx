@@ -18,7 +18,7 @@ export interface CardImgProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   /**
    * Defines image position inside the card.
    */
-  variant?: LiteralUnion<'top' | 'bottom', string>;
+  variant?: LiteralUnion<'top' | 'bottom' | 'start' | 'end', string>;
 }
 
 const CardImg: DynamicRefForwardingComponent<'img', CardImgProps> =

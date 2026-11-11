@@ -9,7 +9,7 @@ export interface FormSelectProps extends Omit<
   'size'
 > {
   /**
-   * @default 'form-select'
+   * @default 'form-control'
    */
   bsPrefix?: string | undefined;
 
@@ -69,7 +69,8 @@ const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
     ref,
   ) => {
     const { controlId } = useContext(FormContext);
-    bsPrefix = useBootstrapPrefix(bsPrefix, 'form-select');
+    // Bootstrap 6 styles <select> with .form-control.
+    bsPrefix = useBootstrapPrefix(bsPrefix, 'form-control');
 
     return (
       <select

@@ -15,12 +15,6 @@ describe('<InputGroup>', () => {
     expect(screen.getByTestId('test').classList).toContain('input-group-sm');
   });
 
-  it('Should render hasValidation correctly', () => {
-    render(<InputGroup hasValidation data-testid="test" />);
-
-    expect(screen.getByTestId('test').classList).toContain('has-validation');
-  });
-
   describe('<Checkbox>', () => {
     it('Should forward props to underlying input element', () => {
       const name = 'foobar';

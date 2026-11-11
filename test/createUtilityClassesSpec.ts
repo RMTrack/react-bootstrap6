@@ -25,7 +25,7 @@ describe('createUtilityClassName', () => {
     });
 
     expect(classList).toHaveLength(2);
-    expect(classList).toEqual(expect.arrayContaining(['gap-0', 'gap-md-0']));
+    expect(classList).toEqual(expect.arrayContaining(['gap-0', 'md:gap-0']));
   });
 
   it('should return `utilityName-value` when value is a primitive', () => {
@@ -44,7 +44,7 @@ describe('createUtilityClassName', () => {
 
     expect(classList).toHaveLength(3);
     expect(classList).toEqual(
-      expect.arrayContaining(['gap-2', 'gap-lg-3', 'gap-xxl-4']),
+      expect.arrayContaining(['gap-2', 'lg:gap-3', '2xl:gap-4']),
     );
   });
 
@@ -58,11 +58,11 @@ describe('createUtilityClassName', () => {
     expect(classList).toEqual(
       expect.arrayContaining([
         'gap-2',
-        'gap-lg-3',
-        'gap-xxl-4',
+        'lg:gap-3',
+        '2xl:gap-4',
         'text-start',
-        'text-md-end',
-        'text-xl-start',
+        'md:text-end',
+        'xl:text-start',
       ]),
     );
   });
@@ -77,7 +77,7 @@ describe('createUtilityClassName', () => {
 
     expect(classList).toHaveLength(2);
     expect(classList).toEqual(
-      expect.arrayContaining(['gap-2', 'gap-custom-3']),
+      expect.arrayContaining(['gap-2', 'custom:gap-3']),
     );
   });
 });

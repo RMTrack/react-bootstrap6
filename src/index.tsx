@@ -2,11 +2,6 @@ export { default as Accordion } from './Accordion.js';
 export type { AccordionProps } from './Accordion.js';
 
 export { default as AccordionContext } from './AccordionContext.js';
-export { default as AccordionCollapse } from './AccordionCollapse.js';
-export type { AccordionCollapseProps } from './AccordionCollapse.js';
-
-export { default as AccordionButton } from './AccordionButton.js';
-export type { AccordionButtonProps } from './AccordionButton.js';
 
 export { default as AccordionBody } from './AccordionBody.js';
 export type { AccordionBodyProps } from './AccordionBody.js';
@@ -68,9 +63,6 @@ export type { CardImgProps } from './CardImg.js';
 export { default as CardImgOverlay } from './CardImgOverlay.js';
 export type { CardImgOverlayProps } from './CardImgOverlay.js';
 
-export { default as CardLink } from './CardLink.js';
-export type { CardLinkProps } from './CardLink.js';
-
 export { default as CardSubtitle } from './CardSubtitle.js';
 export type { CardSubtitleProps } from './CardSubtitle.js';
 
@@ -82,9 +74,6 @@ export type { CardTitleProps } from './CardTitle.js';
 
 export { default as Carousel } from './Carousel.js';
 export type { CarouselProps } from './Carousel.js';
-
-export { default as CarouselCaption } from './CarouselCaption.js';
-export type { CarouselCaptionProps } from './CarouselCaption.js';
 
 export { default as CarouselItem } from './CarouselItem.js';
 export type { CarouselItemProps } from './CarouselItem.js';
@@ -101,29 +90,31 @@ export type { CollapseProps } from './Collapse.js';
 export { default as Container } from './Container.js';
 export type { ContainerProps } from './Container.js';
 
-export { default as Dropdown } from './Dropdown.js';
-export type { DropdownProps } from './Dropdown.js';
+export { default as Dialog } from './Dialog.js';
+export type { DialogProps } from './Dialog.js';
 
-export { default as DropdownButton } from './DropdownButton.js';
-export type { DropdownButtonProps } from './DropdownButton.js';
+export { default as DialogBody } from './DialogBody.js';
 
-export { default as DropdownDivider } from './DropdownDivider.js';
-export type { DropdownDividerProps } from './DropdownDivider.js';
+export { default as DialogFooter } from './DialogFooter.js';
+export type { DialogFooterProps } from './DialogFooter.js';
 
-export { default as DropdownHeader } from './DropdownHeader.js';
-export type { DropdownHeaderProps } from './DropdownHeader.js';
+export { default as DialogHeader } from './DialogHeader.js';
+export type { DialogHeaderProps } from './DialogHeader.js';
 
-export { default as DropdownItem } from './DropdownItem.js';
-export type { DropdownItemProps } from './DropdownItem.js';
+export { default as DialogTitle } from './DialogTitle.js';
+export type { DialogTitleProps } from './DialogTitle.js';
 
-export { default as DropdownItemText } from './DropdownItemText.js';
-export type { DropdownItemTextProps } from './DropdownItemText.js';
+export { default as Drawer } from './Drawer.js';
+export type { DrawerProps } from './Drawer.js';
 
-export { default as DropdownMenu } from './DropdownMenu.js';
-export type { DropdownMenuProps } from './DropdownMenu.js';
+export { default as DrawerBody } from './DrawerBody.js';
+export type { DrawerBodyProps } from './DrawerBody.js';
 
-export { default as DropdownToggle } from './DropdownToggle.js';
-export type { DropdownToggleProps } from './DropdownToggle.js';
+export { default as DrawerHeader } from './DrawerHeader.js';
+export type { DrawerHeaderProps } from './DrawerHeader.js';
+
+export { default as DrawerTitle } from './DrawerTitle.js';
+export type { DrawerTitleProps } from './DrawerTitle.js';
 
 export { default as Fade } from './Fade.js';
 export type { FadeProps } from './Fade.js';
@@ -177,22 +168,29 @@ export type { ListGroupProps } from './ListGroup.js';
 export { default as ListGroupItem } from './ListGroupItem.js';
 export type { ListGroupItemProps } from './ListGroupItem.js';
 
-export { default as Modal } from './Modal.js';
-export type { ModalProps } from './Modal.js';
+export { default as Menu } from './Menu.js';
+export type { MenuProps } from './Menu.js';
 
-export { default as ModalBody } from './ModalBody.js';
+export { default as MenuButton } from './MenuButton.js';
+export type { MenuButtonProps } from './MenuButton.js';
 
-export { default as ModalDialog } from './ModalDialog.js';
-export type { ModalDialogProps } from './ModalDialog.js';
+export { default as MenuDivider } from './MenuDivider.js';
+export type { MenuDividerProps } from './MenuDivider.js';
 
-export { default as ModalFooter } from './ModalFooter.js';
-export type { ModalFooterProps } from './ModalFooter.js';
+export { default as MenuHeader } from './MenuHeader.js';
+export type { MenuHeaderProps } from './MenuHeader.js';
 
-export { default as ModalHeader } from './ModalHeader.js';
-export type { ModalHeaderProps } from './ModalHeader.js';
+export { default as MenuItem } from './MenuItem.js';
+export type { MenuItemProps } from './MenuItem.js';
 
-export { default as ModalTitle } from './ModalTitle.js';
-export type { ModalTitleProps } from './ModalTitle.js';
+export { default as MenuPanel } from './MenuPanel.js';
+export type { MenuPanelProps } from './MenuPanel.js';
+
+export { default as MenuText } from './MenuText.js';
+export type { MenuTextProps } from './MenuText.js';
+
+export { default as MenuToggle } from './MenuToggle.js';
+export type { MenuToggleProps } from './MenuToggle.js';
 
 export { default as Nav } from './Nav.js';
 export type { NavProps } from './Nav.js';
@@ -203,11 +201,8 @@ export type { NavbarProps } from './Navbar.js';
 export { default as NavbarBrand } from './NavbarBrand.js';
 export type { NavbarBrandProps } from './NavbarBrand.js';
 
-export { default as NavbarCollapse } from './NavbarCollapse.js';
-export type { NavbarCollapseProps } from './NavbarCollapse.js';
-
-export { default as NavbarOffcanvas } from './NavbarOffcanvas.js';
-export type { NavbarOffcanvasProps } from './NavbarOffcanvas.js';
+export { default as NavbarDrawer } from './NavbarDrawer.js';
+export type { NavbarDrawerProps } from './NavbarDrawer.js';
 
 export { default as NavbarText } from './NavbarText.js';
 export type { NavbarTextProps } from './NavbarText.js';
@@ -215,29 +210,14 @@ export type { NavbarTextProps } from './NavbarText.js';
 export { default as NavbarToggle } from './NavbarToggle.js';
 export type { NavbarToggleProps } from './NavbarToggle.js';
 
-export { default as NavDropdown } from './NavDropdown.js';
-export type { NavDropdownProps } from './NavDropdown.js';
-
 export { default as NavItem } from './NavItem.js';
 export type { NavItemProps } from './NavItem.js';
 
 export { default as NavLink } from './NavLink.js';
 export type { NavLinkProps } from './NavLink.js';
 
-export { default as Offcanvas } from './Offcanvas.js';
-export type { OffcanvasProps } from './Offcanvas.js';
-
-export { default as OffcanvasBody } from './OffcanvasBody.js';
-export type { OffcanvasBodyProps } from './OffcanvasBody.js';
-
-export { default as OffcanvasHeader } from './OffcanvasHeader.js';
-export type { OffcanvasHeaderProps } from './OffcanvasHeader.js';
-
-export { default as OffcanvasTitle } from './OffcanvasTitle.js';
-export type { OffcanvasTitleProps } from './OffcanvasTitle.js';
-
-export { default as OffcanvasToggling } from './OffcanvasToggling.js';
-export type { OffcanvasTogglingProps } from './OffcanvasToggling.js';
+export { default as NavMenu } from './NavMenu.js';
+export type { NavMenuProps } from './NavMenu.js';
 
 export { default as Overlay } from './Overlay.js';
 export type { OverlayProps } from './Overlay.js';

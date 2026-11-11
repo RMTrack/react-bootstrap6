@@ -13,10 +13,10 @@ export default function MDXContentWrapper(props: Props): React.JSX.Element {
   return (
     <>
       {frontMatter.description && (
-        <p className="lead">{frontMatter.description}</p>
+        <p className="fs-lg fw-light">{frontMatter.description}</p>
       )}
 
-      <CarbonAds className="my-4" />
+      <CarbonAds className="my-7" />
 
       <MDXContent {...props} />
     </>

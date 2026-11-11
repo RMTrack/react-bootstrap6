@@ -38,4 +38,15 @@ describe('<FloatingLabel>', () => {
     expect(label.tagName).toEqual('SPAN');
     expect(label.classList).toContain('form-floating');
   });
+  it('should render the label before the control', () => {
+    render(
+      <FloatingLabel label="Email" controlId="email" data-testid="test">
+        <Form.Control type="email" placeholder="name@example.com" />
+      </FloatingLabel>,
+    );
+
+    const wrapper = screen.getByTestId('test');
+    expect(wrapper.children[0].tagName).toEqual('LABEL');
+    expect(wrapper.children[1].tagName).toEqual('INPUT');
+  });
 });

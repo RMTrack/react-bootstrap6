@@ -1,8 +1,21 @@
 import crypto from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import type { Plugin } from '@docusaurus/types';
-import bootstrapPackageJson from 'bootstrap/package.json';
 import rbPackageJson from '../../package.json';
+
+// Bootstrap 6's package.json `exports` map doesn't expose `./package.json`,
+// so find the package root through an exported file instead.
+const bootstrapPackageJson: { version: string } = JSON.parse(
+  readFileSync(
+    path.resolve(
+      path.dirname(require.resolve('bootstrap/dist/css/bootstrap.min.css')),
+      '../../package.json',
+    ),
+    'utf8',
+  ),
+);
 
 interface BootstrapMetadata {
   bootstrapVersion: string;

@@ -4,6 +4,8 @@ description: Bootstrap’s cards provide a flexible and extensible content conta
 ---
 
 import CardBasic from '!!raw-loader!../examples/Card/Basic';
+import CardSubtle from '!!raw-loader!../examples/Card/Subtle';
+import CardHorizontal from '!!raw-loader!../examples/Card/Horizontal';
 import CardBgColor from '!!raw-loader!../examples/Card/BgColor';
 import CardBodyOnly from '!!raw-loader!../examples/Card/BodyOnly';
 import CardBodyShorthand from '!!raw-loader!../examples/Card/BodyShorthand';
@@ -49,8 +51,12 @@ only, and no other children
 ### Title, text, and links
 
 Using `<Card.Title>`, `<Card.Subtitle>`, and
-`<Card.Text>` inside the `<Card.Body>` will line them up nicely.
-`<Card.Link>`s are used to line up links next to each other.
+`<Card.Text>` inside the `<Card.Body>` will line them up nicely. In
+Bootstrap 6, `.card-title` and `.card-text` are unstyled hooks: the
+`.card-body` is a flex column that spaces its children with a gap.
+
+Bootstrap 6 removed `.card-link`, so `Card.Link` was removed too. Use plain
+links, and flex or gap utilities to line them up next to each other.
 
 `<Card.Text>` outputs `<p>` tags around the content, so you can
 use multiple `<Card.Text>`s to create separate paragraphs.
@@ -112,6 +118,15 @@ caps”—images at the top or bottom of a card.
   {CardImageAndText}
 </CodeBlock>
 
+### Horizontal
+
+Add `.card-row` to lay a card out horizontally, and use `<Card.Img variant="start">`
+(or `"end"`) for an image on the side.
+
+<CodeBlock language="jsx" live>
+  {CardHorizontal}
+</CodeBlock>
+
 ### Image Overlays
 
 Turn an image into a card background and overlay your card’s text.
@@ -137,12 +152,23 @@ Add some navigation to a card’s header (or block) with React Bootstrap’s
 
 ## Card Styles
 
-### Background Color
+### Theme colors
 
-You can change a card's appearance by changing their `<bg>`, and `<text>` props.
+The `bg` prop applies a theme color with `.theme-*`, which colors the card's border.
+Use the `text` prop to set a text color with `.fg-*`.
 
 <CodeBlock language="jsx" live>
   {CardBgColor}
+</CodeBlock>
+
+### Subtle
+
+Add `variant="subtle"` (`.card-subtle`) to tint the header, footer and borders with the
+theme color. `variant="translucent"` (`.card-translucent`) renders a frosted, see-through
+card for use over images or colored backgrounds.
+
+<CodeBlock language="jsx" live>
+  {CardSubtle}
 </CodeBlock>
 
 ### Border Color
@@ -154,6 +180,9 @@ You can change a card's appearance by changing their `<bg>`, and `<text>` props.
 ## Card layout
 
 ### Card Groups
+
+Card groups use a container query, so the cards only sit side by side when a parent
+is a query container. Add `.contains-inline` to a parent, as in the example below.
 
 <CodeBlock language="jsx" live>
   {CardGroup}
@@ -192,10 +221,6 @@ Use `Row`'s [grid column](../layout/grid#setting-column-widths-in-row) props to 
 ### CardImgOverlay
 
 <PropsTable name="CardImgOverlay" />
-
-### CardLink
-
-<PropsTable name="CardLink" />
 
 ### CardSubtitle
 

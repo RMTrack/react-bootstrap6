@@ -6,8 +6,8 @@ description: Documentation and examples for how to use Bootstrap’s included na
 import NavAlignment from '!!raw-loader!../examples/Nav/Alignment';
 import NavBasic from '!!raw-loader!../examples/Nav/Basic';
 import NavList from '!!raw-loader!../examples/Nav/List';
-import NavDropdown from '!!raw-loader!../examples/Nav/Dropdown';
-import NavDropdownImpl from '!!raw-loader!../examples/Nav/DropdownImpl';
+import NavMenuExample from '!!raw-loader!../examples/Nav/Menu';
+import NavMenuImpl from '!!raw-loader!../examples/Nav/MenuImpl';
 import NavFill from '!!raw-loader!../examples/Nav/Fill';
 import NavJustified from '!!raw-loader!../examples/Nav/Justified';
 import NavStacked from '!!raw-loader!../examples/Nav/Stacked';
@@ -107,22 +107,22 @@ If you want each NavItem to be the same size use `justify`.
   {NavJustified}
 </CodeBlock>
 
-## Using dropdowns
+## Using menus
 
-You can mix and match the Dropdown components with the NavLink and
-NavItem components to create a Dropdown that plays well in a Nav
+You can mix and match the Menu components with the NavLink and
+NavItem components to create a Menu that plays well in a Nav
 component
 
 <CodeBlock language="jsx" live>
-  {NavDropdownImpl}
+  {NavMenuImpl}
 </CodeBlock>
 
 The above demonstrates how flexible the component model can be. But if
 you didn't want to roll your own versions we've included a
-straight-forward `<NavDropdown>` that works for most cases.
+straight-forward `<NavMenu>` that works for most cases.
 
 <CodeBlock language="jsx" live>
-  {NavDropdown}
+  {NavMenuExample}
 </CodeBlock>
 
 ## API
@@ -139,6 +139,6 @@ straight-forward `<NavDropdown>` that works for most cases.
 
 <PropsTable name="NavLink" />
 
-### NavDropdown
+### NavMenu
 
-<PropsTable name="NavDropdown" />
+<PropsTable name="NavMenu" />

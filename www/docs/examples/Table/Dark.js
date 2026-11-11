@@ -2,7 +2,7 @@ import Table from 'react-bootstrap/Table';
 
 function DarkExample() {
   return (
-    <Table striped bordered hover variant="dark">
+    <Table striped bordered hover data-bs-theme="dark">
       <thead>
         <tr>
           <th>#</th>

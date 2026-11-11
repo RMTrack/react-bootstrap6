@@ -4,7 +4,7 @@ function CheckExample() {
   return (
     <Form>
       {['checkbox', 'radio'].map((type) => (
-        <div key={`default-${type}`} className="mb-3">
+        <div key={`default-${type}`} className="mb-5">
           <Form.Check // prettier-ignore
             type={type}
             id={`default-${type}`}

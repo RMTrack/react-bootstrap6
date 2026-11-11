@@ -4,7 +4,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 function CheckboxesExample() {
   return (
     <>
-      <InputGroup className="mb-3">
+      <InputGroup className="mb-5">
         <InputGroup.Checkbox aria-label="Checkbox for following text input" />
         <Form.Control aria-label="Text input with checkbox" />
       </InputGroup>

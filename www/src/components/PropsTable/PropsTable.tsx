@@ -21,7 +21,7 @@ const PropsTable: React.FC<PropsTableProps> = ({ name }) => {
       <CodeBlock language="jsx">{`import ${name} from 'react-bootstrap/${name}'`}</CodeBlock>
 
       {data.description && (
-        <div className="my-3">
+        <div className="my-5">
           <Markdown>{data.description}</Markdown>
         </div>
       )}
@@ -41,7 +41,7 @@ const PropsTable: React.FC<PropsTableProps> = ({ name }) => {
               <tr key={prop.name}>
                 <td className="font-monospace">
                   {prop.name}{' '}
-                  {prop.required && <sup className="text-danger">Required</sup>}
+                  {prop.required && <sup className="fg-danger">Required</sup>}
                 </td>
                 <td className="font-monospace">
                   <div>
@@ -52,7 +52,7 @@ const PropsTable: React.FC<PropsTableProps> = ({ name }) => {
                 <td>
                   {prop.deprecated && (
                     <div className="mb-1">
-                      <strong className="text-danger">Deprecated</strong>
+                      <strong className="fg-danger">Deprecated</strong>
                     </div>
                   )}
                   {prop.controllable && (

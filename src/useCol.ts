@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import {
+  breakpointPrefix,
   useBootstrapPrefix,
   useBootstrapBreakpoints,
   useBootstrapMinBreakpoint,
@@ -39,15 +40,15 @@ export default function useCol({
       span = propValue;
     }
 
-    const infix = brkPoint !== minBreakpoint ? `-${brkPoint}` : '';
+    const prefix = breakpointPrefix(brkPoint, minBreakpoint);
 
     if (span)
       spans.push(
-        span === true ? `${bsPrefix}${infix}` : `${bsPrefix}${infix}-${span}`,
+        span === true ? `${prefix}${bsPrefix}` : `${prefix}${bsPrefix}-${span}`,
       );
 
-    if (order != null) classes.push(`order${infix}-${order}`);
-    if (offset != null) classes.push(`offset${infix}-${offset}`);
+    if (order != null) classes.push(`${prefix}order-${order}`);
+    if (offset != null) classes.push(`${prefix}offset-${offset}`);
   });
 
   return [

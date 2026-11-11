@@ -34,7 +34,10 @@ describe('<Navbar>', () => {
 
   it('Should variant=dark', () => {
     render(<Navbar variant="dark" data-testid="test" />);
-    expect(screen.getByTestId('test').classList).toContain('navbar-dark');
+    const navbar = screen.getByTestId('test');
+    // Bootstrap 6 dropped .navbar-dark; the navbar follows the color mode.
+    expect(navbar.classList).not.toContain('navbar-dark');
+    expect(navbar.getAttribute('data-bs-theme')).toEqual('dark');
   });
 
   it('Should override role attribute', () => {
@@ -94,44 +97,48 @@ describe('<Navbar>', () => {
     expect(onClickSpy).toHaveBeenCalledOnce();
   });
 
-  it('Should render collapse', () => {
+  it('Should render the navigation drawer in place', () => {
     render(
-      <Navbar>
-        <Navbar.Collapse data-testid="test">hello</Navbar.Collapse>
+      <Navbar data-testid="navbar">
+        <Navbar.Drawer data-testid="test">hello</Navbar.Drawer>
       </Navbar>,
     );
-    expect(screen.getByTestId('test').classList).toContain('navbar-collapse');
+    const drawer = screen.getByTestId('test');
+    expect(drawer.tagName).toEqual('DIALOG');
+    expect(drawer.classList).toContain('drawer');
+    // Kept in the navbar so an expanded navbar can show it inline.
+    expect(drawer.parentElement).toEqual(screen.getByTestId('navbar'));
   });
 
-  it('Should pass expanded to Collapse', () => {
+  it('Should pass expanded to the drawer', () => {
     render(
       <Navbar expanded>
-        <Navbar.Collapse data-testid="test">hello</Navbar.Collapse>
+        <Navbar.Drawer data-testid="test">hello</Navbar.Drawer>
       </Navbar>,
     );
-    const toggleElem = screen.getByTestId('test');
-    expect(toggleElem.classList).toContain('show');
+    expect((screen.getByTestId('test') as HTMLDialogElement).open).toEqual(
+      true,
+    );
   });
 
-  it('Should wire the toggle to the collapse', async () => {
+  it('Should wire the toggle to the drawer', async () => {
     render(
       <Navbar>
         <Navbar.Toggle data-testid="toggler" />
-        <Navbar.Collapse data-testid="collapse">hello</Navbar.Collapse>
+        <Navbar.Drawer data-testid="drawer">hello</Navbar.Drawer>
       </Navbar>,
     );
 
     const toggleElem = screen.getByTestId('toggler');
-    const collapseElem = screen.getByTestId('collapse');
+    const drawerElem = screen.getByTestId('drawer') as HTMLDialogElement;
 
-    expect(collapseElem.classList).not.toContain('show');
-    expect(toggleElem.classList).toContain('collapsed');
+    expect(drawerElem.open).toEqual(false);
+    expect(toggleElem.getAttribute('aria-expanded')).toEqual('false');
 
     fireEvent.click(toggleElem);
 
-    await waitFor(() => expect(collapseElem.classList).toContain('show'));
-
-    expect(toggleElem.classList).not.toContain('collapsed');
+    await waitFor(() => expect(drawerElem.open).toEqual(true));
+    expect(toggleElem.getAttribute('aria-expanded')).toEqual('true');
   });
 
   it('Should open external href link in collapseOnSelect', () => {
@@ -143,7 +150,7 @@ describe('<Navbar>', () => {
     render(
       <Navbar>
         <Navbar.Toggle />
-        <Navbar.Collapse>
+        <Navbar.Drawer>
           <Nav as="div">
             <Nav.Link
               href="https://www.google.com"
@@ -151,7 +158,7 @@ describe('<Navbar>', () => {
               onClick={onClickSpy}
             />
           </Nav>
-        </Navbar.Collapse>
+        </Navbar.Drawer>
       </Navbar>,
     );
     const linkItem = screen.getByTestId('test');
@@ -171,7 +178,7 @@ describe('<Navbar>', () => {
     render(
       <Navbar expanded>
         <Navbar.Toggle />
-        <Navbar.Collapse>
+        <Navbar.Drawer>
           <Nav as="div">
             <Nav.Link href="https://www.google.com" onClick={onClickSpy}>
               <span className="link-text" data-testid="test">
@@ -179,7 +186,7 @@ describe('<Navbar>', () => {
               </span>
             </Nav.Link>
           </Nav>
-        </Navbar.Collapse>
+        </Navbar.Drawer>
       </Navbar>,
     );
     const innerLinkItem = screen.getByTestId('test');
@@ -194,7 +201,7 @@ describe('<Navbar>', () => {
     render(
       <Navbar collapseOnSelect onToggle={onToggleSpy} expanded>
         <Navbar.Toggle />
-        <Navbar.Collapse>
+        <Navbar.Drawer>
           <Nav as="div">
             <Nav.Link href="#" onClick={onClickSpy}>
               <span className="link-text" data-testid="test">
@@ -202,7 +209,7 @@ describe('<Navbar>', () => {
               </span>
             </Nav.Link>
           </Nav>
-        </Navbar.Collapse>
+        </Navbar.Drawer>
       </Navbar>,
     );
     const innerLinkElem = screen.getByTestId('test');
@@ -220,7 +227,7 @@ describe('<Navbar>', () => {
     render(
       <Navbar onSelect={onSelectSpy}>
         <Navbar.Toggle />
-        <Navbar.Collapse>
+        <Navbar.Drawer>
           <Nav as="div">
             <Nav.Link href="#home" onClick={onClickSpy}>
               <span className="link-text" data-testid="test">
@@ -228,7 +235,7 @@ describe('<Navbar>', () => {
               </span>
             </Nav.Link>
           </Nav>
-        </Navbar.Collapse>
+        </Navbar.Drawer>
       </Navbar>,
     );
     const innerLinkElem = screen.getByTestId('test');
@@ -246,13 +253,13 @@ describe('<Navbar>', () => {
 
   it('Should render correctly when expand is a string', () => {
     render(<Navbar expand="sm" data-testid="test" />);
-    expect(screen.getByTestId('test').classList).toContain('navbar-expand-sm');
+    expect(screen.getByTestId('test').classList).toContain('sm:navbar-expand');
   });
 
   it('should allow custom breakpoints for expand', () => {
     render(<Navbar expand="custom" data-testid="test" />);
     expect(screen.getByTestId('test').classList).toContain(
-      'navbar-expand-custom',
+      'custom:navbar-expand',
     );
   });
 

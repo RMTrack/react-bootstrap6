@@ -1,9 +1,10 @@
 ---
 title: Breadcrumbs
-description: Indicate the current page’s location within a navigational hierarchy that automatically adds separators via CSS.
+description: Indicate the current page’s location within a navigational hierarchy.
 ---
 
 import Breadcrumb from '!!raw-loader!../examples/Breadcrumb';
+import BreadcrumbDivider from '!!raw-loader!../examples/BreadcrumbDivider';
 
 ## Example
 
@@ -11,6 +12,18 @@ Add `active` prop to the active `Breadcrumb.Item`. Do not set both `active` and 
 
 <CodeBlock language="jsx" live>
   {Breadcrumb}
+</CodeBlock>
+
+Bootstrap 6 renders the separators as explicit `.breadcrumb-divider` items between
+the `.breadcrumb-item`s, and links get `.breadcrumb-link`. `Breadcrumb` adds the
+dividers for you. An empty divider shows Bootstrap's default chevron.
+
+## Dividers
+
+Use the `divider` prop to put text or an icon in each divider.
+
+<CodeBlock language="jsx" live>
+  {BreadcrumbDivider}
 </CodeBlock>
 
 ## API

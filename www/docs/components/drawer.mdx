@@ -1,0 +1,107 @@
+---
+title: Drawers
+description: Build hidden sidebars into your project for navigation, shopping carts, and more.
+---
+
+import Basic from '!!raw-loader!../examples/Drawer/Basic';
+import Backdrop from '!!raw-loader!../examples/Drawer/Backdrop';
+import NoAnimation from '!!raw-loader!../examples/Drawer/NoAnimation';
+import StaticBackdrop from '!!raw-loader!../examples/Drawer/StaticBackdrop';
+import Responsive from '!!raw-loader!../examples/Drawer/Responsive';
+import Placement from '!!raw-loader!../examples/Drawer/Placement';
+
+## Overview
+
+`Drawer` (React-Bootstrap's `Offcanvas` before Bootstrap 6) renders Bootstrap 6's Drawer
+component: a native
+`<dialog class="drawer">` that slides in from an edge of the viewport.
+
+- By default the drawer opens as a modal dialog, so the browser traps focus inside it,
+  makes the rest of the page inert and draws the native `::backdrop`. With `scroll` and
+  `backdrop={false}` it opens as a non-modal dialog and the page stays interactive.
+- Page scrolling is locked with `.dialog-open` on `<html>` unless `scroll` is set.
+- The drawer renders in place and stays mounted while closed, so a navbar or a
+  responsive breakpoint can show it inline.
+- The `ref` points to the `HTMLDialogElement`.
+- Focus trapping and restoration are handled by the browser, so the `autoFocus`,
+  `enforceFocus` and `restoreFocus` props were removed, along with `backdropClassName`,
+  `container` and `manager`.
+
+## Examples
+
+Drawer includes support for a header with a close button and an optional body class
+for some initial padding. We suggest that you include drawer headers with dismiss
+actions whenever possible, or provide an explicit dismiss action.
+
+### Basic Example
+
+<CodeBlock language="jsx" live>
+  {Basic}
+</CodeBlock>
+
+### Responsive
+
+The `responsive` prop shows the drawer's contents inline from the specified breakpoint and
+up (`responsive="lg"` renders `.lg:drawer`). Below that breakpoint it behaves as a regular drawer.
+
+<CodeBlock language="jsx" live>
+  {Responsive}
+</CodeBlock>
+
+### Placement
+
+Drawer supports a few different placements:
+
+- `start` places the drawer on the left of the viewport
+- `end` places the drawer on the right of the viewport
+- `top` places the drawer on the top of the viewport
+- `bottom` places the drawer on the bottom of the viewport
+
+<CodeBlock language="jsx" live noInline>
+  {Placement}
+</CodeBlock>
+
+### Without animation
+
+Set `animation={false}` to open and close the drawer instantly (`.drawer-instant`).
+
+<CodeBlock language="jsx" live>
+  {NoAnimation}
+</CodeBlock>
+
+### Backdrop
+
+Scrolling the `<body>` element is disabled when a drawer and its backdrop are
+visible. Use the `scroll` prop to toggle `<body>` scrolling and the `backdrop` prop
+to toggle the backdrop.
+
+<CodeBlock language="jsx" live noInline>
+  {Backdrop}
+</CodeBlock>
+
+### Static backdrop
+
+When `backdrop` is set to `static`, the drawer will not close when clicking outside of it, and
+plays a short "bounce" animation (`.drawer-static`) instead.
+
+<CodeBlock language="jsx" live>
+  {StaticBackdrop}
+</CodeBlock>
+
+## API
+
+### Drawer
+
+<PropsTable name="Drawer" />
+
+### DrawerHeader
+
+<PropsTable name="DrawerHeader" />
+
+### DrawerTitle
+
+<PropsTable name="DrawerTitle" />
+
+### DrawerBody
+
+<PropsTable name="DrawerBody" />

@@ -6,7 +6,7 @@ import type {
   DynamicRefForwardingComponent,
   TransitionComponent,
 } from '@restart/ui/types';
-import ToastFade from './ToastFade.js';
+import { ShowTransition } from './CssTransition.js';
 import ToastHeader from './ToastHeader.js';
 import ToastBody from './ToastBody.js';
 import { useBootstrapPrefix } from './ThemeProvider.js';
@@ -26,7 +26,7 @@ export interface ToastProps
   bsPrefix?: string | undefined;
 
   /**
-   * Apply a CSS fade transition to the toast
+   * Fade the toast in and out. When `false` the toast gets `.toast-instant`.
    */
   animation?: boolean | undefined;
 
@@ -55,7 +55,7 @@ export interface ToastProps
   /**
    * A `react-transition-group` Transition component used to animate the Toast on dismissal.
    *
-   * @default ToastFade
+   * @default ShowTransition
    */
   transition?: TransitionComponent | undefined;
 
@@ -73,7 +73,7 @@ const Toast: DynamicRefForwardingComponent<'div', ToastProps> =
       {
         bsPrefix,
         className,
-        transition: Transition = ToastFade,
+        transition: Transition = ShowTransition,
         show = true,
         animation = true,
         delay = 5000,
@@ -135,8 +135,9 @@ const Toast: DynamicRefForwardingComponent<'div', ToastProps> =
           className={clsx(
             bsPrefix,
             className,
-            bg && `bg-${bg}`,
-            !hasAnimation && (show ? 'show' : 'hide'),
+            bg && `theme-${bg}`,
+            !animation && `${bsPrefix}-instant`,
+            !hasAnimation && show && 'show',
           )}
         />
       );

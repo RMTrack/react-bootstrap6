@@ -13,7 +13,7 @@ function GridAutoSizingExample() {
             Name
           </Form.Label>
           <Form.Control
-            className="mb-2"
+            className="mb-3"
             id="inlineFormInput"
             placeholder="Jane Doe"
           />
@@ -22,7 +22,7 @@ function GridAutoSizingExample() {
           <Form.Label htmlFor="inlineFormInputGroup" visuallyHidden>
             Username
           </Form.Label>
-          <InputGroup className="mb-2">
+          <InputGroup className="mb-3">
             <InputGroup.Text>@</InputGroup.Text>
             <Form.Control id="inlineFormInputGroup" placeholder="Username" />
           </InputGroup>
@@ -31,12 +31,12 @@ function GridAutoSizingExample() {
           <Form.Check
             type="checkbox"
             id="autoSizingCheck"
-            className="mb-2"
+            className="mb-3"
             label="Remember me"
           />
         </Col>
         <Col xs="auto">
-          <Button type="submit" className="mb-2">
+          <Button type="submit" className="mb-3">
             Submit
           </Button>
         </Col>

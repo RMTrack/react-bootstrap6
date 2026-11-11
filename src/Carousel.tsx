@@ -1,28 +1,20 @@
 import useEventCallback from '@restart/hooks/useEventCallback';
 import useUpdateEffect from '@restart/hooks/useUpdateEffect';
-import useCommittedRef from '@restart/hooks/useCommittedRef';
-import useTimeout from '@restart/hooks/useTimeout';
-import Anchor from '@restart/ui/Anchor';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import clsx from 'clsx';
-import type { TransitionStatus } from 'react-transition-group';
 import * as React from 'react';
 import {
   useCallback,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState,
 } from 'react';
 import { useUncontrolled } from 'uncontrollable';
-import CarouselCaption from './CarouselCaption.js';
 import CarouselItem from './CarouselItem.js';
 import { map, forEach } from './ElementChildren.js';
 import { useBootstrapPrefix, useIsRTL } from './ThemeProvider.js';
 import transitionEndListener from './transitionEndListener.js';
-import triggerBrowserReflow from './triggerBrowserReflow.js';
-import TransitionWrapper from './TransitionWrapper.js';
 import type { LiteralUnion } from './types.js';
 
 export type CarouselVariant = LiteralUnion<'dark', string>;
@@ -48,7 +40,8 @@ export interface CarouselProps extends Omit<
   bsPrefix?: string | undefined;
 
   /**
-   * Enables animation on the Carousel as it transitions between slides.
+   * Animate the scroll between slides. When `false` the carousel jumps to
+   * the slide.
    */
   slide?: boolean | undefined;
 
@@ -56,6 +49,12 @@ export interface CarouselProps extends Omit<
    * Animates slides with a crossfade animation instead of the default slide animation.
    */
   fade?: boolean | undefined;
+
+  /**
+   * Overlay the controls and indicators on top of the slides
+   * (`.carousel-overlay`). When `false` they are laid out below the slides.
+   */
+  overlay?: boolean | undefined;
 
   /**
    * Show the Carousel previous and next arrows for changing the current slide.
@@ -101,11 +100,7 @@ export interface CarouselProps extends Omit<
   /**
    * Callback fired when a slide transition starts.
    *
-   * ```js
-   * (eventKey: number, direction: 'left' | 'right') => void
-   * ```
-   *
-   * @type {((eventKey: number, direction: 'left' | 'right') => void) | undefined}
+   * @type {((eventKey: number, direction: 'start' | 'end') => void) | undefined}
    */
   onSlide?:
     ((eventKey: number, direction: 'start' | 'end') => void) | undefined;
@@ -113,13 +108,16 @@ export interface CarouselProps extends Omit<
   /**
    * Callback fired when a slide transition ends.
    *
-   * ```js
-   * (eventKey: number, direction: 'left' | 'right') => void
-   * ```
-   *
-   * @type {((eventKey: number, direction: 'left' | 'right') => void) | undefined}
+   * @type {((eventKey: number, direction: 'start' | 'end') => void) | undefined}
    */
   onSlid?: ((eventKey: number, direction: 'start' | 'end') => void) | undefined;
+
+  /**
+   * Automatically cycle through the slides every `interval`. As in Bootstrap 6
+   * this is opt-in, and any interaction with the carousel (controls,
+   * indicators, keyboard, swiping) stops it for good.
+   */
+  autoplay?: boolean | undefined;
 
   /**
    * The amount of time to delay between automatically cycling an item. If `null`, carousel will not automatically cycle.
@@ -132,24 +130,16 @@ export interface CarouselProps extends Omit<
   keyboard?: boolean | undefined;
 
   /**
-   * If set to `"hover"`, pauses the cycling of the carousel on `mouseenter` and resumes the cycling of the carousel on
-   * `mouseleave`. If set to `false`, hovering over the carousel won't pause it.
-   *
-   * On touch-enabled devices, when set to `"hover"`, cycling will pause on `touchend` (once the user finished interacting
-   * with the carousel) for two intervals, before automatically resuming. Note that this is in addition to the above mouse
-   * behavior.
+   * If set to `"hover"`, pauses autoplay while the pointer is over the
+   * carousel. If set to `false`, hovering over the carousel won't pause it.
    */
   pause?: 'hover' | false | undefined;
 
   /**
-   * Whether the carousel should cycle continuously or have hard stops.
+   * Whether the carousel should cycle continuously or have hard stops. Without
+   * wrapping, the controls are disabled at either end.
    */
   wrap?: boolean | undefined;
-
-  /**
-   * Whether the carousel should support left/right swipe interactions on touchscreen devices.
-   */
-  touch?: boolean | undefined;
 
   /**
    * Override the default button icon for the "previous" control.
@@ -174,8 +164,8 @@ export interface CarouselProps extends Omit<
   nextLabel?: React.ReactNode | undefined;
 
   /**
-   * Color variant that controls the colors of the controls, indicators
-   * and captions.
+   * Color variant of the controls and indicators. `dark` renders the
+   * carousel with `data-bs-theme="dark"`.
    */
   variant?: CarouselVariant | undefined;
 
@@ -185,68 +175,125 @@ export interface CarouselProps extends Omit<
   ref?: React.Ref<CarouselRef> | undefined;
 }
 
-const SWIPE_THRESHOLD = 40;
+// The direction the slides move: 'start' when going to the next slide,
+// 'end' when going back.
+type Direction = 'start' | 'end';
 
-function isVisible(element) {
+// How long the scroll position must be still before a slide is "settled".
+const SCROLL_SETTLE_DELAY = 100;
+// Duration (ms) of a programmatic slide, as in Bootstrap's carousel.
+const SCROLL_DURATION = 300;
+
+const easeInOutCubic = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+
+/**
+ * Scrolls the carousel viewport to `targetLeft`, then calls `onComplete`.
+ *
+ * Like Bootstrap's carousel plugin, snapping is suspended while scrolling and
+ * the position is stepped each frame: the slides' `scroll-snap-stop: always`
+ * would otherwise stop a smooth scroll at the first slide it passes, which
+ * breaks multi-slide jumps (indicators, wrapping from the last slide).
+ */
+function scrollViewport(
+  viewport: HTMLElement,
+  targetLeft: number,
+  animate: boolean,
+  onComplete: () => void,
+): () => void {
+  let frame: number | null = null;
+  viewport.style.scrollSnapType = 'none';
+  const restoreSnap = () => {
+    viewport.style.scrollSnapType = '';
+  };
+  // `instant` also overrides the CSS `scroll-behavior: smooth`.
+  const jumpTo = (left: number) =>
+    viewport.scrollTo({ left, top: 0, behavior: 'instant' });
+
+  const prefersReducedMotion =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   if (
-    !element ||
-    !element.style ||
-    !element.parentNode ||
-    !element.parentNode.style
+    !animate ||
+    prefersReducedMotion ||
+    typeof requestAnimationFrame === 'undefined'
   ) {
-    return false;
+    jumpTo(targetLeft);
+    restoreSnap();
+    onComplete();
+    return () => {};
   }
 
-  const elementStyle = getComputedStyle(element);
+  const startLeft = viewport.scrollLeft;
+  const distance = targetLeft - startLeft;
+  let startTime: number | null = null;
 
-  return (
-    elementStyle.display !== 'none' &&
-    elementStyle.visibility !== 'hidden' &&
-    getComputedStyle(element.parentNode).display !== 'none'
-  );
+  const step = (now: number) => {
+    if (startTime === null) startTime = now;
+    const progress = Math.min((now - startTime) / SCROLL_DURATION, 1);
+    jumpTo(startLeft + distance * easeInOutCubic(progress));
+
+    if (progress < 1) {
+      frame = requestAnimationFrame(step);
+      return;
+    }
+
+    frame = null;
+    // Land exactly on the target, guarding against floating-point drift.
+    jumpTo(targetLeft);
+    restoreSnap();
+    onComplete();
+  };
+  frame = requestAnimationFrame(step);
+
+  return () => {
+    if (frame !== null) cancelAnimationFrame(frame);
+    restoreSnap();
+  };
 }
 
+/**
+ * Bootstrap 6's carousel is built on CSS scroll snap: `.carousel-inner` is a
+ * horizontal scroll container. Navigating scrolls it to the active slide, and
+ * scrolling it natively (swipe, trackpad) updates the active slide.
+ */
 const Carousel: DynamicRefForwardingComponent<'div', CarouselProps> =
   React.forwardRef<CarouselRef, CarouselProps>(
-    ({ defaultActiveIndex = 0, ...uncontrolledProps }, ref) => {
+    ({ ...uncontrolledProps }, ref) => {
       const {
         // Need to define the default "as" during prop destructuring to be compatible with styled-components github.com/react-bootstrap/react-bootstrap/issues/3595
         as: Component = 'div',
         bsPrefix,
         slide = true,
         fade = false,
+        overlay = true,
         controls = true,
         indicators = true,
         indicatorLabels = [],
-        activeIndex,
+        activeIndex = 0,
         onSelect,
         onSlide,
         onSlid,
+        autoplay = false,
         interval = 5000,
         keyboard = true,
         onKeyDown,
         pause = 'hover',
-        onMouseOver,
-        onMouseOut,
+        onMouseEnter,
+        onMouseLeave,
         wrap = true,
-        touch = true,
-        onTouchStart,
-        onTouchMove,
-        onTouchEnd,
-        prevIcon = (
-          <span aria-hidden="true" className="carousel-control-prev-icon" />
-        ),
+        prevIcon = <span aria-hidden="true" className="carousel-icon-prev" />,
         prevLabel = 'Previous',
-        nextIcon = (
-          <span aria-hidden="true" className="carousel-control-next-icon" />
-        ),
+        nextIcon = <span aria-hidden="true" className="carousel-icon-next" />,
         nextLabel = 'Next',
         variant,
         className,
+        style,
         children,
         ...props
       } = useUncontrolled(
-        { defaultActiveIndex, ...uncontrolledProps },
+        { defaultActiveIndex: 0, ...uncontrolledProps },
         {
           activeIndex: 'onSelect',
         },
@@ -255,43 +302,11 @@ const Carousel: DynamicRefForwardingComponent<'div', CarouselProps> =
       const prefix = useBootstrapPrefix(bsPrefix, 'carousel');
       const isRTL = useIsRTL();
 
-      const nextDirectionRef = useRef<string | null>(null);
-      const [direction, setDirection] = useState('next');
-      const [paused, setPaused] = useState(false);
-      const [isSliding, setIsSliding] = useState(false);
-      const [renderedActiveIndex, setRenderedActiveIndex] = useState<number>(
-        activeIndex || 0,
-      );
-
-      useEffect(() => {
-        if (!isSliding && activeIndex !== renderedActiveIndex) {
-          if (nextDirectionRef.current) {
-            setDirection(nextDirectionRef.current);
-          } else {
-            setDirection(
-              (activeIndex || 0) > renderedActiveIndex ? 'next' : 'prev',
-            );
-          }
-
-          if (slide) {
-            setIsSliding(true);
-          }
-
-          setRenderedActiveIndex(activeIndex || 0);
-        }
-      }, [activeIndex, isSliding, renderedActiveIndex, slide]);
-
-      useEffect(() => {
-        if (nextDirectionRef.current) {
-          nextDirectionRef.current = null;
-        }
-      });
+      const elementRef = useRef<HTMLElement>(null);
+      const innerRef = useRef<HTMLDivElement>(null);
 
       let numChildren = 0;
       let activeChildInterval: number | undefined;
-
-      // Iterate to grab all of the children's interval values
-      // (and count them, too)
       forEach(children, (child, index) => {
         ++numChildren;
         if (index === activeIndex) {
@@ -299,50 +314,49 @@ const Carousel: DynamicRefForwardingComponent<'div', CarouselProps> =
         }
       });
 
-      const activeChildIntervalRef = useCommittedRef(activeChildInterval);
-
-      const prev = useCallback(
-        (event?) => {
-          if (isSliding) {
-            return;
-          }
-
-          let nextActiveIndex = renderedActiveIndex - 1;
-          if (nextActiveIndex < 0) {
-            if (!wrap) {
-              return;
-            }
-
-            nextActiveIndex = numChildren > 0 ? numChildren - 1 : 0;
-          }
-
-          nextDirectionRef.current = 'prev';
-          onSelect?.(nextActiveIndex, event);
-        },
-        [isSliding, renderedActiveIndex, onSelect, wrap, numChildren],
+      const renderedActiveIndex = Math.max(
+        0,
+        Math.min(activeIndex, numChildren - 1),
       );
 
-      // This is used in the setInterval, so it should not invalidate.
-      const next = useEventCallback((event?) => {
-        if (isSliding) {
-          return;
+      // -- Navigation --------------------------------------------------------
+
+      const [isSliding, setIsSliding] = useState(false);
+      // Read by `select`, which can run before a re-render picks up
+      // `isSliding` (slides finish in an animation frame).
+      const isSlidingRef = useRef(false);
+      const directionRef = useRef<Direction>('start');
+      const programmaticScrollRef = useRef(false);
+
+      // Autoplay stops for good once the user interacts with the carousel.
+      const [autoplayStopped, setAutoplayStopped] = useState(false);
+      const stopAutoplay = useCallback(() => setAutoplayStopped(true), []);
+
+      const select = useEventCallback(
+        (index: number, direction: Direction, event?: any) => {
+          if (isSlidingRef.current || index === renderedActiveIndex) return;
+          directionRef.current = direction;
+          onSelect?.(index, event);
+        },
+      );
+
+      const prev = useEventCallback((event?) => {
+        let index = renderedActiveIndex - 1;
+        if (index < 0) {
+          if (!wrap) return;
+          index = numChildren - 1;
         }
-
-        let nextActiveIndex = renderedActiveIndex + 1;
-        if (nextActiveIndex >= numChildren) {
-          if (!wrap) {
-            return;
-          }
-
-          nextActiveIndex = 0;
-        }
-
-        nextDirectionRef.current = 'next';
-
-        onSelect?.(nextActiveIndex, event);
+        select(index, 'end', event);
       });
 
-      const elementRef = useRef<HTMLElement>(null);
+      const next = useEventCallback((event?) => {
+        let index = renderedActiveIndex + 1;
+        if (index >= numChildren) {
+          if (!wrap) return;
+          index = 0;
+        }
+        select(index, 'start', event);
+      });
 
       useImperativeHandle(ref, () => ({
         element: elementRef.current,
@@ -350,289 +364,283 @@ const Carousel: DynamicRefForwardingComponent<'div', CarouselProps> =
         next,
       }));
 
-      // This is used in the setInterval, so it should not invalidate.
-      const nextWhenVisible = useEventCallback(() => {
-        if (!document.hidden && isVisible(elementRef.current)) {
-          if (isRTL) {
-            prev();
+      const getItems = () =>
+        Array.from(innerRef.current?.children ?? []) as HTMLElement[];
+
+      // Bring the active slide into view whenever it changes.
+      useUpdateEffect(() => {
+        const index = renderedActiveIndex;
+        const direction = directionRef.current;
+        directionRef.current = 'start';
+
+        isSlidingRef.current = true;
+        setIsSliding(true);
+        onSlide?.(index, direction);
+
+        let done = false;
+        let cancelScroll: (() => void) | undefined;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          programmaticScrollRef.current = false;
+          isSlidingRef.current = false;
+          setIsSliding(false);
+          onSlid?.(index, direction);
+        };
+
+        const inner = innerRef.current;
+        const item = getItems()[index];
+
+        if (fade) {
+          // The crossfade is a CSS opacity transition on the items.
+          if (item) transitionEndListener(item, finish);
+          else finish();
+        } else if (inner && item) {
+          const delta =
+            item.getBoundingClientRect().left -
+            inner.getBoundingClientRect().left;
+
+          if (Math.abs(delta) < 1) {
+            finish();
           } else {
-            next();
+            // Keeps the scroll events of this navigation from being read as
+            // the user scrolling.
+            programmaticScrollRef.current = true;
+            cancelScroll = scrollViewport(
+              inner,
+              inner.scrollLeft + delta,
+              slide,
+              finish,
+            );
           }
+        } else {
+          finish();
+        }
+
+        return () => {
+          done = true;
+          programmaticScrollRef.current = false;
+          isSlidingRef.current = false;
+          cancelScroll?.();
+        };
+      }, [renderedActiveIndex]);
+
+      // Native scrolling (swipe, trackpad, scrollbar) picks the slide that
+      // settles at the start of the viewport.
+      const settleTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+      useEffect(() => () => clearTimeout(settleTimeoutRef.current!), []);
+
+      const handleScrollSettled = useEventCallback(() => {
+        if (programmaticScrollRef.current) return;
+
+        const inner = innerRef.current;
+        if (!inner || fade) return;
+
+        const innerLeft = inner.getBoundingClientRect().left;
+        let closest = renderedActiveIndex;
+        let closestDistance = Infinity;
+        getItems().forEach((item, index) => {
+          const distance = Math.abs(
+            item.getBoundingClientRect().left - innerLeft,
+          );
+          if (distance < closestDistance) {
+            closest = index;
+            closestDistance = distance;
+          }
+        });
+
+        if (closest !== renderedActiveIndex) {
+          stopAutoplay();
+          select(closest, closest > renderedActiveIndex ? 'start' : 'end');
         }
       });
 
-      const slideDirection = direction === 'next' ? 'start' : 'end';
+      const handleScroll = () => {
+        clearTimeout(settleTimeoutRef.current!);
+        settleTimeoutRef.current = setTimeout(
+          handleScrollSettled,
+          SCROLL_SETTLE_DELAY,
+        );
+      };
 
-      useUpdateEffect(() => {
-        if (slide) {
-          // These callbacks will be handled by the <Transition> callbacks.
+      // -- Interaction -------------------------------------------------------
+
+      const handlePrevClick = (e: React.MouseEvent) => {
+        stopAutoplay();
+        prev(e);
+      };
+
+      const handleNextClick = (e: React.MouseEvent) => {
+        stopAutoplay();
+        next(e);
+      };
+
+      const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+        onKeyDown?.(event);
+
+        if (
+          !keyboard ||
+          event.defaultPrevented ||
+          /input|textarea/i.test((event.target as HTMLElement).tagName)
+        ) {
           return;
         }
 
-        onSlide?.(renderedActiveIndex, slideDirection);
-        onSlid?.(renderedActiveIndex, slideDirection);
-      }, [renderedActiveIndex]);
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault();
+          stopAutoplay();
+          if ((event.key === 'ArrowLeft') !== isRTL) prev(event);
+          else next(event);
+        }
+      };
 
-      const orderClassName = `${prefix}-item-${direction}`;
-      const directionalClassName = `${prefix}-item-${slideDirection}`;
+      const [isHovered, setIsHovered] = useState(false);
 
-      const handleEnter = useCallback(
-        (node) => {
-          triggerBrowserReflow(node);
+      const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+        if (pause === 'hover') setIsHovered(true);
+        onMouseEnter?.(event);
+      };
 
-          onSlide?.(renderedActiveIndex, slideDirection);
-        },
-        [onSlide, renderedActiveIndex, slideDirection],
-      );
+      const handleMouseLeave = (event: React.MouseEvent<HTMLElement>) => {
+        setIsHovered(false);
+        onMouseLeave?.(event);
+      };
 
-      const handleEntered = useCallback(() => {
-        setIsSliding(false);
+      // -- Autoplay ----------------------------------------------------------
 
-        onSlid?.(renderedActiveIndex, slideDirection);
-      }, [onSlid, renderedActiveIndex, slideDirection]);
+      const isPlaying =
+        autoplay && interval != null && !autoplayStopped && numChildren > 1;
+      const activeInterval = activeChildInterval ?? interval ?? 0;
 
-      const handleKeyDown = useCallback(
-        (event) => {
-          if (keyboard && !/input|textarea/i.test(event.target.tagName)) {
-            switch (event.key) {
-              case 'ArrowLeft':
-                event.preventDefault();
-                if (isRTL) {
-                  next(event);
-                } else {
-                  prev(event);
-                }
-                return;
-              case 'ArrowRight':
-                event.preventDefault();
-                if (isRTL) {
-                  prev(event);
-                } else {
-                  next(event);
-                }
-                return;
-              default:
-            }
-          }
-
-          onKeyDown?.(event);
-        },
-        [keyboard, onKeyDown, prev, next, isRTL],
-      );
-
-      const handleMouseOver = useCallback(
-        (event) => {
-          if (pause === 'hover') {
-            setPaused(true);
-          }
-
-          onMouseOver?.(event);
-        },
-        [pause, onMouseOver],
-      );
-
-      const handleMouseOut = useCallback(
-        (event) => {
-          setPaused(false);
-
-          onMouseOut?.(event);
-        },
-        [onMouseOut],
-      );
-
-      const touchStartXRef = useRef(0);
-      const touchDeltaXRef = useRef(0);
-      const touchUnpauseTimeout = useTimeout();
-
-      const handleTouchStart = useCallback(
-        (event) => {
-          touchStartXRef.current = event.touches[0].clientX;
-          touchDeltaXRef.current = 0;
-
-          if (pause === 'hover') {
-            setPaused(true);
-          }
-
-          onTouchStart?.(event);
-        },
-        [pause, onTouchStart],
-      );
-
-      const handleTouchMove = useCallback(
-        (event) => {
-          if (event.touches && event.touches.length > 1) {
-            touchDeltaXRef.current = 0;
-          } else {
-            touchDeltaXRef.current =
-              event.touches[0].clientX - touchStartXRef.current;
-          }
-
-          onTouchMove?.(event);
-        },
-        [onTouchMove],
-      );
-
-      const handleTouchEnd = useCallback(
-        (event) => {
-          if (touch) {
-            const touchDeltaX = touchDeltaXRef.current;
-
-            if (Math.abs(touchDeltaX) > SWIPE_THRESHOLD) {
-              if (touchDeltaX > 0) {
-                prev(event);
-              } else {
-                next(event);
-              }
-            }
-          }
-
-          if (pause === 'hover') {
-            touchUnpauseTimeout.set(() => {
-              setPaused(false);
-            }, interval || undefined);
-          }
-
-          onTouchEnd?.(event);
-        },
-        [touch, pause, prev, next, touchUnpauseTimeout, interval, onTouchEnd],
-      );
-
-      const shouldPlay = interval != null && !paused && !isSliding;
-
-      const intervalHandleRef = useRef<number | null>(null);
+      const nextWhenVisible = useEventCallback(() => {
+        if (
+          !document.hidden &&
+          elementRef.current &&
+          elementRef.current.offsetParent !== null
+        ) {
+          next();
+        }
+      });
 
       useEffect(() => {
-        if (!shouldPlay) {
-          return undefined;
-        }
+        if (!isPlaying || isHovered || isSliding) return undefined;
 
-        const nextFunc = isRTL ? prev : next;
-        intervalHandleRef.current = window.setInterval(
-          document.visibilityState ? nextWhenVisible : nextFunc,
-          activeChildIntervalRef.current ?? interval ?? undefined,
-        );
-
-        return () => {
-          if (intervalHandleRef.current !== null) {
-            clearInterval(intervalHandleRef.current);
-          }
-        };
+        const timer = setTimeout(nextWhenVisible, activeInterval);
+        return () => clearTimeout(timer);
       }, [
-        shouldPlay,
-        prev,
-        next,
-        activeChildIntervalRef,
-        interval,
+        isPlaying,
+        isHovered,
+        isSliding,
+        activeInterval,
+        renderedActiveIndex,
         nextWhenVisible,
-        isRTL,
       ]);
 
-      const indicatorOnClicks = useMemo(
-        () =>
-          indicators &&
-          Array.from({ length: numChildren }, (_, index) => (event) => {
-            onSelect?.(index, event);
-          }),
-        [indicators, numChildren, onSelect],
+      // -- Render ------------------------------------------------------------
+
+      const handleIndicatorClick = (index: number, event: React.MouseEvent) => {
+        stopAutoplay();
+        select(index, index > renderedActiveIndex ? 'start' : 'end', event);
+      };
+
+      const controlClassName = clsx(
+        'btn-icon btn-sm',
+        overlay && 'btn-subtle theme-secondary',
+      );
+
+      const prevControl = controls && (
+        <button
+          type="button"
+          className={controlClassName}
+          onClick={handlePrevClick}
+          disabled={!wrap && renderedActiveIndex === 0}
+        >
+          {prevIcon}
+          {prevLabel && <span className="visually-hidden">{prevLabel}</span>}
+        </button>
+      );
+
+      const nextControl = controls && (
+        <button
+          type="button"
+          className={controlClassName}
+          onClick={handleNextClick}
+          disabled={!wrap && renderedActiveIndex === numChildren - 1}
+        >
+          {nextIcon}
+          {nextLabel && <span className="visually-hidden">{nextLabel}</span>}
+        </button>
+      );
+
+      const indicatorList = indicators && (
+        <div className={`${prefix}-indicators`}>
+          {map(children, (_, index) => (
+            <button
+              key={index}
+              type="button"
+              data-bs-target="" // Bootstrap requires this in their css.
+              aria-label={
+                indicatorLabels?.length
+                  ? indicatorLabels[index]
+                  : `Slide ${index + 1}`
+              }
+              className={index === renderedActiveIndex ? 'active' : undefined}
+              onClick={(event) => handleIndicatorClick(index, event)}
+              aria-current={index === renderedActiveIndex}
+            />
+          ))}
+        </div>
       );
 
       return (
         <Component
           ref={elementRef}
           {...props}
+          data-bs-theme={variant}
+          style={{
+            ...style,
+            ...(isPlaying && {
+              '--bs-carousel-interval': `${activeInterval}ms`,
+            }),
+          }}
           onKeyDown={handleKeyDown}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           className={clsx(
             className,
             prefix,
-            slide && 'slide',
             fade && `${prefix}-fade`,
-            variant && `${prefix}-${variant}`,
+            overlay && `${prefix}-overlay`,
+            isPlaying && `${prefix}-playing`,
           )}
         >
-          {indicators && (
-            <div className={`${prefix}-indicators`}>
-              {map(children, (_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  data-bs-target="" // Bootstrap requires this in their css.
-                  aria-label={
-                    indicatorLabels?.length
-                      ? indicatorLabels[index]
-                      : `Slide ${index + 1}`
-                  }
-                  className={
-                    index === renderedActiveIndex ? 'active' : undefined
-                  }
-                  onClick={
-                    indicatorOnClicks ? indicatorOnClicks[index] : undefined
-                  }
-                  aria-current={index === renderedActiveIndex}
-                />
-              ))}
-            </div>
-          )}
-
-          <div className={`${prefix}-inner`}>
-            {map(children, (child, index) => {
-              const isActive = index === renderedActiveIndex;
-
-              return slide ? (
-                <TransitionWrapper
-                  in={isActive}
-                  onEnter={isActive ? handleEnter : undefined}
-                  onEntered={isActive ? handleEntered : undefined}
-                  addEndListener={transitionEndListener}
-                >
-                  {(
-                    status: TransitionStatus,
-                    innerProps: Record<string, unknown>,
-                  ) =>
-                    React.cloneElement(child, {
-                      ...innerProps,
-                      className: clsx(
-                        child.props.className,
-                        isActive && status !== 'entered' && orderClassName,
-                        (status === 'entered' || status === 'exiting') &&
-                          'active',
-                        (status === 'entering' || status === 'exiting') &&
-                          directionalClassName,
-                      ),
-                    })
-                  }
-                </TransitionWrapper>
-              ) : (
-                React.cloneElement(child, {
-                  className: clsx(child.props.className, isActive && 'active'),
-                })
-              );
-            })}
+          <div
+            ref={innerRef}
+            className={`${prefix}-inner`}
+            onScroll={handleScroll}
+          >
+            {map(children, (child, index) =>
+              React.cloneElement(child, {
+                className: clsx(
+                  child.props.className,
+                  index === renderedActiveIndex && 'active',
+                ),
+              }),
+            )}
           </div>
 
-          {controls && (
-            <>
-              {(wrap || activeIndex !== 0) && (
-                <Anchor className={`${prefix}-control-prev`} onClick={prev}>
-                  {prevIcon}
-                  {prevLabel && (
-                    <span className="visually-hidden">{prevLabel}</span>
-                  )}
-                </Anchor>
-              )}
-              {(wrap || activeIndex !== numChildren - 1) && (
-                <Anchor className={`${prefix}-control-next`} onClick={next}>
-                  {nextIcon}
-                  {nextLabel && (
-                    <span className="visually-hidden">{nextLabel}</span>
-                  )}
-                </Anchor>
-              )}
-            </>
+          {(controls || indicators) && (
+            <div
+              className={
+                overlay
+                  ? `${prefix}-overlay-controls`
+                  : 'd-flex align-items-center justify-content-between gap-2'
+              }
+            >
+              {prevControl}
+              {indicatorList}
+              {nextControl}
+            </div>
           )}
         </Component>
       );
@@ -642,6 +650,5 @@ const Carousel: DynamicRefForwardingComponent<'div', CarouselProps> =
 Carousel.displayName = 'Carousel';
 
 export default Object.assign(Carousel, {
-  Caption: CarouselCaption,
   Item: CarouselItem,
 });

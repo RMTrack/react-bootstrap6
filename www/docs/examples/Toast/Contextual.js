@@ -10,8 +10,8 @@ function ContextualExample() {
         'Danger',
         'Warning',
         'Info',
-        'Light',
-        'Dark',
+        'Accent',
+        'Inverse',
       ].map((variant, idx) => (
         <Toast
           className="d-inline-block m-1"
@@ -21,15 +21,13 @@ function ContextualExample() {
           <Toast.Header>
             <img
               src="holder.js/20x20?text=%20"
-              className="rounded me-2"
+              className="rounded me-3"
               alt=""
             />
             <strong className="me-auto">Bootstrap</strong>
             <small>11 mins ago</small>
           </Toast.Header>
-          <Toast.Body className={variant === 'Dark' && 'text-white'}>
-            Hello, world! This is a toast message.
-          </Toast.Body>
+          <Toast.Body>Hello, world! This is a toast message.</Toast.Body>
         </Toast>
       ))}
     </>

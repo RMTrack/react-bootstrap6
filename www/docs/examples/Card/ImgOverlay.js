@@ -2,7 +2,7 @@ import Card from 'react-bootstrap/Card';
 
 function ImgOverlayExample() {
   return (
-    <Card className="bg-dark text-white">
+    <Card className="bg-black fg-white">
       <Card.Img src="holder.js/100px270" alt="Card image" />
       <Card.ImgOverlay>
         <Card.Title>Card title</Card.Title>

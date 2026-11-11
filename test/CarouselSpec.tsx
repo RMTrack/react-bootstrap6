@@ -25,6 +25,9 @@ describe('<Carousel>', () => {
     </Carousel.Item>,
   ];
 
+  const getIndicator = (label: string) =>
+    screen.getByLabelText(label, { selector: '.carousel-indicators button' });
+
   it('should not throw an error with StrictMode', () => {
     const ref = React.createRef<CarouselRef>();
 
@@ -41,15 +44,46 @@ describe('<Carousel>', () => {
     });
   });
 
-  it('should show the first item by default and render all', () => {
+  it('should render Bootstrap 6 markup', () => {
     const { container } = render(<Carousel>{items}</Carousel>);
+    const carousel = container.firstElementChild!;
+
+    expect(carousel.className).toEqual('carousel carousel-overlay');
+    expect(carousel.classList).not.toContain('slide');
+
+    const inner = carousel.querySelector('.carousel-inner')!;
+    expect(inner.children).toHaveLength(items.length);
+
+    const controls = carousel.querySelector('.carousel-overlay-controls')!;
+    const [prev, indicators, next] = Array.from(controls.children);
+    expect(prev.tagName).toEqual('BUTTON');
+    expect(prev.querySelector('.carousel-icon-prev')).toBeTruthy();
+    expect(indicators.classList).toContain('carousel-indicators');
+    expect(next.tagName).toEqual('BUTTON');
+    expect(next.querySelector('.carousel-icon-next')).toBeTruthy();
+
+    expect(carousel.querySelector('.carousel-control-prev')).toBeNull();
+    expect(carousel.querySelector('.carousel-control-next')).toBeNull();
+  });
+
+  it('should lay out controls below the slides when overlay is false', () => {
+    const { container } = render(<Carousel overlay={false}>{items}</Carousel>);
+    const carousel = container.firstElementChild!;
+
+    expect(carousel.classList).not.toContain('carousel-overlay');
+    expect(carousel.querySelector('.carousel-overlay-controls')).toBeNull();
+    expect(carousel.lastElementChild!.querySelectorAll('button')).toHaveLength(
+      items.length + 2,
+    );
+  });
+
+  it('should show the first item by default and render all', () => {
+    render(<Carousel>{items}</Carousel>);
 
     const carouselItems = screen.getAllByTestId(CarouselItemTestId);
     expect(carouselItems[0].classList).toContain('active');
     expect(carouselItems[1].classList).not.toContain('active');
-    expect(
-      container.querySelectorAll('.carousel-indicators > button'),
-    ).toHaveLength(items.length);
+    expect(carouselItems).toHaveLength(items.length);
   });
 
   it('should show the correct item with defaultActiveIndex', () => {
@@ -61,14 +95,14 @@ describe('<Carousel>', () => {
   });
 
   it('should handle falsy children', () => {
-    const { container } = render(
+    render(
       <Carousel>
         {null}
         <Carousel.Item data-testid={CarouselItemTestId}>
           Item 1 content
         </Carousel.Item>
+        {null}
         {false}
-        {undefined}
         <Carousel.Item data-testid={CarouselItemTestId}>
           Item 2 content
         </Carousel.Item>
@@ -77,45 +111,51 @@ describe('<Carousel>', () => {
 
     const carouselItems = screen.getAllByTestId(CarouselItemTestId);
     expect(carouselItems[0].classList).toContain('active');
-    expect(carouselItems[0].innerText).toEqual('Item 1 content');
+    expect(carouselItems).toHaveLength(2);
     expect(
-      container.querySelectorAll('.carousel-indicators > button'),
+      screen.getAllByLabelText(/Slide/, {
+        selector: '.carousel-indicators > button',
+      }),
     ).toHaveLength(2);
   });
 
   it('should call onSelect when indicator selected', () => {
     const onSelect = vi.fn();
 
-    const { getByLabelText } = render(
+    render(
       <Carousel activeIndex={1} onSelect={onSelect} interval={null}>
         {items}
       </Carousel>,
     );
 
-    fireEvent.click(getByLabelText('Slide 1'));
+    fireEvent.click(getIndicator('Slide 1'));
 
     expect(onSelect).toHaveBeenCalledOnce();
     expect(onSelect).toHaveBeenCalledWith(0, expect.anything());
   });
 
-  it('should render custom indicator labels', () => {
-    const indicatorLabels = ['custom1', 'custom2', 'custom3'];
+  it('should mark the active indicator', () => {
+    render(<Carousel defaultActiveIndex={1}>{items}</Carousel>);
 
-    const { getByLabelText } = render(
-      <Carousel
-        activeIndex={1}
-        interval={null}
-        indicatorLabels={indicatorLabels}
-      >
+    const indicator = getIndicator('Slide 2');
+    expect(indicator.classList).toContain('active');
+    expect(indicator.getAttribute('aria-current')).toEqual('true');
+    // Bootstrap styles indicators through [data-bs-target].
+    expect(indicator.hasAttribute('data-bs-target')).toEqual(true);
+  });
+
+  it('should render custom indicator labels', () => {
+    const labels = ['custom1', 'custom2', 'custom3'];
+
+    render(
+      <Carousel activeIndex={1} interval={null} indicatorLabels={labels}>
         {items}
       </Carousel>,
     );
 
-    for (let i = 0; i < indicatorLabels.length; i++) {
-      expect(
-        getByLabelText(indicatorLabels[i], { selector: '[aria-label]' }),
-      ).toBeDefined();
-    }
+    labels.forEach((label) => {
+      expect(getIndicator(label)).toBeDefined();
+    });
   });
 
   it('should render variant', () => {
@@ -131,8 +171,19 @@ describe('<Carousel>', () => {
     );
 
     const carousel = screen.getByTestId('test');
-    expect(carousel.classList).toContain('carousel');
-    expect(carousel.classList).toContain('carousel-dark');
+    // Bootstrap 6 dropped .carousel-dark in favor of color modes.
+    expect(carousel.classList).not.toContain('carousel-dark');
+    expect(carousel.getAttribute('data-bs-theme')).toEqual('dark');
+  });
+
+  it('should render correctly when fade is set', () => {
+    render(
+      <Carousel defaultActiveIndex={1} fade data-testid="test">
+        {items}
+      </Carousel>,
+    );
+
+    expect(screen.getByTestId('test').classList).toContain('carousel-fade');
   });
 
   describe('ref testing', () => {
@@ -154,7 +205,7 @@ describe('<Carousel>', () => {
 
       expect(ref.current).toHaveProperty('next');
       expect(ref.current).toHaveProperty('prev');
-      expect(ref.current).toHaveProperty('element');
+      expect(ref.current!.element).toBeInstanceOf(HTMLElement);
 
       act(() => {
         ref.current!.next();
@@ -164,138 +215,113 @@ describe('<Carousel>', () => {
       await waitFor(() => expect(onSlidSpy).toHaveBeenCalledWith(2, 'start'));
 
       act(() => {
-        ref.current!.next();
+        ref.current!.prev();
       });
 
       await waitFor(() => expect(onSelectSpy).toHaveBeenCalledTimes(2));
+      await waitFor(() => expect(onSlidSpy).toHaveBeenCalledWith(1, 'end'));
     });
   });
 
-  it(`should call onSlide with previous index and direction`, () => {
+  it('should call onSlide with previous index and direction', () => {
     const onEventSpy = vi.fn();
 
-    const { getByLabelText } = render(
+    render(
       <Carousel defaultActiveIndex={1} interval={null} onSlide={onEventSpy}>
         {items}
       </Carousel>,
     );
 
-    fireEvent.click(
-      getByLabelText('Slide 1', {
-        selector: '.carousel-indicators button',
-      }),
-    );
+    fireEvent.click(getIndicator('Slide 1'));
 
     expect(onEventSpy).toHaveBeenCalledWith(0, 'end');
   });
 
-  it(`should call onSlide with next index and direction`, () => {
+  it('should call onSlide with next index and direction', () => {
     const onEventSpy = vi.fn();
 
-    const { getByLabelText } = render(
+    render(
       <Carousel defaultActiveIndex={1} interval={null} onSlide={onEventSpy}>
         {items}
       </Carousel>,
     );
 
-    fireEvent.click(
-      getByLabelText('Slide 3', {
-        selector: '.carousel-indicators button',
-      }),
-    );
+    fireEvent.click(getIndicator('Slide 3'));
 
     expect(onEventSpy).toHaveBeenCalledWith(items.length - 1, 'start');
   });
 
-  it(`should call onSlid with previous index and direction`, async () => {
+  it('should call onSlid with previous index and direction', async () => {
     const onEventSpy = vi.fn();
 
-    const { getByLabelText } = render(
+    render(
       <Carousel defaultActiveIndex={1} interval={null} onSlid={onEventSpy}>
         {items}
       </Carousel>,
     );
 
-    fireEvent.click(
-      getByLabelText('Slide 1', {
-        selector: '.carousel-indicators button',
-      }),
-    );
+    fireEvent.click(getIndicator('Slide 1'));
 
     await waitFor(() => expect(onEventSpy).toHaveBeenCalledWith(0, 'end'));
   });
 
-  it(`should call onSlid with next index and direction`, async () => {
+  it('should call onSlid with next index and direction', async () => {
     const onEventSpy = vi.fn();
 
-    const { getByLabelText } = render(
+    render(
       <Carousel defaultActiveIndex={1} interval={null} onSlid={onEventSpy}>
         {items}
       </Carousel>,
     );
 
-    fireEvent.click(
-      getByLabelText('Slide 3', {
-        selector: '.carousel-indicators button',
-      }),
-    );
+    fireEvent.click(getIndicator('Slide 3'));
 
     await waitFor(() =>
       expect(onEventSpy).toHaveBeenCalledWith(items.length - 1, 'start'),
     );
   });
 
-  describe('Buttons and labels with and without wrapping', () => {
-    it('should show back button control on the first image if wrap is true', () => {
-      const { container } = render(
-        <Carousel controls wrap>
-          {items}
-        </Carousel>,
-      );
+  describe('controls with and without wrapping', () => {
+    it('should enable the prev control on the first slide if wrap is true', () => {
+      render(<Carousel defaultActiveIndex={0}>{items}</Carousel>);
 
-      expect(
-        container.querySelectorAll('a.carousel-control-prev'),
-      ).toHaveLength(1);
+      expect(screen.getByText('Previous').closest('button')!.disabled).toEqual(
+        false,
+      );
     });
 
-    it('should show next button control on the last image if wrap is true', () => {
-      const lastElementIndex = items.length - 1;
-
-      const { container } = render(
-        <Carousel defaultActiveIndex={lastElementIndex} controls wrap>
+    it('should disable the prev control on the first slide if wrap is false', () => {
+      render(
+        <Carousel defaultActiveIndex={0} wrap={false}>
           {items}
         </Carousel>,
       );
 
-      expect(
-        container.querySelectorAll('a.carousel-control-next'),
-      ).toHaveLength(1);
+      expect(screen.getByText('Previous').closest('button')!.disabled).toEqual(
+        true,
+      );
+      expect(screen.getByText('Next').closest('button')!.disabled).toEqual(
+        false,
+      );
     });
 
-    it('should not show the prev button on the first image if wrap is false', () => {
-      const { container } = render(
-        <Carousel controls wrap={false}>
+    it('should disable the next control on the last slide if wrap is false', () => {
+      render(
+        <Carousel defaultActiveIndex={items.length - 1} wrap={false}>
           {items}
         </Carousel>,
       );
 
-      expect(
-        container.querySelectorAll('a.carousel-control-prev'),
-      ).toHaveLength(0);
+      expect(screen.getByText('Next').closest('button')!.disabled).toEqual(
+        true,
+      );
     });
 
-    it('should not show the next button on the last image if wrap is false', () => {
-      const lastElementIndex = items.length - 1;
+    it('should not render controls when controls is false', () => {
+      render(<Carousel controls={false}>{items}</Carousel>);
 
-      const { container } = render(
-        <Carousel defaultActiveIndex={lastElementIndex} controls wrap={false}>
-          {items}
-        </Carousel>,
-      );
-
-      expect(
-        container.querySelectorAll('a.carousel-control-next'),
-      ).toHaveLength(0);
+      expect(screen.queryByText('Previous')).toBeNull();
+      expect(screen.queryByText('Next')).toBeNull();
     });
   });
 
@@ -303,25 +329,23 @@ describe('<Carousel>', () => {
     render(
       <Carousel
         controls
-        defaultActiveIndex={1}
-        prevIcon={<span className="ficon ficon-left" data-testid="prev-icon" />}
-        nextIcon={
-          <span className="ficon ficon-right" data-testid="next-icon" />
-        }
+        indicators={false}
+        prevIcon={<span className="ficon ficon-left" />}
+        nextIcon={<span className="ficon ficon-right" />}
       >
         {items}
       </Carousel>,
     );
 
-    expect(screen.getByTestId('prev-icon').classList).toContain('ficon-left');
-    expect(screen.getByTestId('next-icon').classList).toContain('ficon-right');
+    expect(document.querySelector('.ficon-left')).toBeTruthy();
+    expect(document.querySelector('.ficon-right')).toBeTruthy();
   });
 
   it('should allow user to specify a previous and next SR label', () => {
-    const { container } = render(
+    render(
       <Carousel
         controls
-        defaultActiveIndex={1}
+        indicators={false}
         prevLabel="Previous awesomeness"
         nextLabel="Next awesomeness"
       >
@@ -329,62 +353,26 @@ describe('<Carousel>', () => {
       </Carousel>,
     );
 
-    const labels = container.querySelectorAll<HTMLElement>('.visually-hidden');
-
-    expect(labels).toHaveLength(2);
-    expect(labels[0].innerText).toContain('Previous awesomeness');
-    expect(labels[1].innerText).toContain('Next awesomeness');
+    expect(screen.getByText('Previous awesomeness').className).toEqual(
+      'visually-hidden',
+    );
+    expect(screen.getByText('Next awesomeness')).toBeDefined();
   });
 
   it('should not render labels when values are null or undefined', () => {
-    // undefined (as in nothing passed) renders default labels
-    [null, ''].forEach((falsyValue) => {
-      const { container } = render(
-        <Carousel
-          controls
-          defaultActiveIndex={1}
-          prevLabel={falsyValue}
-          nextLabel={falsyValue}
-        >
-          {items}
-        </Carousel>,
-      );
-
-      expect(container.querySelectorAll('.visually-hidden')).toHaveLength(0);
-    });
-  });
-
-  it('should transition properly when slide animation is disabled', () => {
-    const spy = vi.fn();
-    const { container } = render(
-      <Carousel slide={false} onSelect={spy}>
+    render(
+      <Carousel controls indicators={false} prevLabel={null} nextLabel="">
         {items}
       </Carousel>,
     );
 
-    fireEvent.click(
-      container.querySelector<HTMLElement>('a.carousel-control-next')!,
-    );
-
-    expect(spy).toHaveBeenCalledOnce();
-
-    fireEvent.click(
-      container.querySelector<HTMLElement>('a.carousel-control-prev')!,
-    );
-
-    expect(spy).toHaveBeenCalledTimes(2);
+    expect(document.querySelectorAll('.visually-hidden')).toHaveLength(0);
   });
 
   it('should render on update, active item > new child length', () => {
-    const { queryAllByLabelText, queryAllByText, rerender } = render(
+    const { rerender } = render(
       <Carousel defaultActiveIndex={items.length - 1}>{items}</Carousel>,
     );
-
-    expect(
-      queryAllByLabelText(/Slide/, {
-        selector: '.carousel-indicators > button',
-      }),
-    ).toHaveLength(items.length);
 
     const fewerItems = items.slice(2);
 
@@ -392,30 +380,132 @@ describe('<Carousel>', () => {
       <Carousel defaultActiveIndex={items.length - 1}>{fewerItems}</Carousel>,
     );
 
-    expect(
-      queryAllByLabelText(/Slide/, {
-        selector: '.carousel-indicators > button',
-      }),
-    ).toHaveLength(fewerItems.length);
-
-    expect(
-      queryAllByText(/Item \d content/, {
-        selector: 'div.carousel-item',
-      }),
-    ).toHaveLength(fewerItems.length);
+    const carouselItems = screen.getAllByTestId(CarouselItemTestId);
+    expect(carouselItems).toHaveLength(fewerItems.length);
+    expect(carouselItems[0].classList).toContain('active');
   });
 
-  it('should render correctly when fade is set', () => {
-    render(
-      <Carousel defaultActiveIndex={1} fade data-testid="test">
-        {items}
-      </Carousel>,
+  describe('scrolling', () => {
+    // A minimal stand-in for Bootstrap's scroll-snap layout, including its
+    // `scroll-snap-stop: always`.
+    const layout = (
+      <style>{`
+        .carousel-inner { display: flex; width: 100px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+        .carousel-item { flex: 0 0 100%; height: 50px; scroll-snap-align: start; scroll-snap-stop: always; }
+      `}</style>
     );
 
-    expect(screen.getByTestId('test').classList).toContain('carousel-fade');
+    it('should jump several slides at once', async () => {
+      const onSlid = vi.fn();
+      const { container } = render(
+        <>
+          {layout}
+          <Carousel defaultActiveIndex={0} onSlid={onSlid}>
+            {items}
+          </Carousel>
+        </>,
+      );
+      const inner = container.querySelector<HTMLElement>('.carousel-inner')!;
+
+      fireEvent.click(getIndicator('Slide 3'));
+
+      await waitFor(() => expect(onSlid).toHaveBeenCalledWith(2, 'start'));
+      expect(Math.round(inner.scrollLeft)).toEqual(200);
+      // Snapping is only suspended while scrolling.
+      expect(inner.style.scrollSnapType).toEqual('');
+    });
+
+    it('should wrap from the last slide back to the first', async () => {
+      const onSlid = vi.fn();
+      const { container } = render(
+        <>
+          {layout}
+          <Carousel defaultActiveIndex={0} onSlid={onSlid}>
+            {items}
+          </Carousel>
+        </>,
+      );
+      const inner = container.querySelector<HTMLElement>('.carousel-inner')!;
+
+      fireEvent.click(getIndicator('Slide 3'));
+      await waitFor(() => expect(onSlid).toHaveBeenCalledWith(2, 'start'));
+
+      fireEvent.click(screen.getByText('Next'));
+      await waitFor(() => expect(onSlid).toHaveBeenCalledWith(0, 'start'));
+      expect(Math.round(inner.scrollLeft)).toEqual(0);
+      expect(screen.getAllByTestId(CarouselItemTestId)[0].classList).toContain(
+        'active',
+      );
+    });
+
+    it('should scroll the active slide into view', async () => {
+      const onSlid = vi.fn();
+      const { container, rerender } = render(
+        <>
+          {layout}
+          <Carousel activeIndex={0} slide={false} onSlid={onSlid}>
+            {items}
+          </Carousel>
+        </>,
+      );
+      const inner = container.querySelector<HTMLElement>('.carousel-inner')!;
+
+      rerender(
+        <>
+          {layout}
+          <Carousel activeIndex={2} slide={false} onSlid={onSlid}>
+            {items}
+          </Carousel>
+        </>,
+      );
+
+      expect(inner.scrollLeft).toEqual(200);
+      await waitFor(() => expect(onSlid).toHaveBeenCalledWith(2, 'start'));
+    });
+
+    (['Next', 'Previous'] as const).forEach((control) => {
+      it(`should call onSelect once if ${control} is double clicked while sliding`, () => {
+        const onSelectSpy = vi.fn();
+        render(
+          <>
+            {layout}
+            <Carousel onSelect={onSelectSpy}>{items}</Carousel>
+          </>,
+        );
+
+        const button = screen.getByText(control);
+        fireEvent.click(button);
+        fireEvent.click(button);
+
+        expect(onSelectSpy).toHaveBeenCalledOnce();
+      });
+    });
+
+    it('should select the slide the user scrolls to', async () => {
+      const onSelect = vi.fn();
+      const { container } = render(
+        <>
+          {layout}
+          <Carousel defaultActiveIndex={0} onSelect={onSelect}>
+            {items}
+          </Carousel>
+        </>,
+      );
+      const inner = container.querySelector<HTMLElement>('.carousel-inner')!;
+
+      inner.scrollTo({ left: 100, behavior: 'instant' });
+      fireEvent.scroll(inner);
+
+      await waitFor(() => expect(onSelect).toHaveBeenCalledWith(1, undefined));
+      await waitFor(() =>
+        expect(
+          screen.getAllByTestId(CarouselItemTestId)[1].classList,
+        ).toContain('active'),
+      );
+    });
   });
 
-  describe('automatic traversal', () => {
+  describe('autoplay', () => {
     let clock: ReturnType<typeof vi.useFakeTimers>;
 
     beforeEach(() => {
@@ -424,6 +514,22 @@ describe('<Carousel>', () => {
 
     afterEach(() => {
       clock.useRealTimers();
+    });
+
+    it('should not autoplay by default', () => {
+      const onSelectSpy = vi.fn();
+
+      render(
+        <Carousel interval={500} onSelect={onSelectSpy}>
+          {items}
+        </Carousel>,
+      );
+
+      act(() => {
+        clock.advanceTimersByTime(2000);
+      });
+
+      expect(onSelectSpy).not.toHaveBeenCalled();
     });
 
     it('should go through the items after given seconds', () => {
@@ -431,7 +537,7 @@ describe('<Carousel>', () => {
       const interval = 500;
 
       render(
-        <Carousel interval={interval} onSelect={onSelectSpy}>
+        <Carousel autoplay interval={interval} onSelect={onSelectSpy}>
           {items}
         </Carousel>,
       );
@@ -441,20 +547,18 @@ describe('<Carousel>', () => {
       });
 
       expect(onSelectSpy).toHaveBeenCalledOnce();
+      expect(onSelectSpy).toHaveBeenCalledWith(1, undefined);
     });
 
     it('should go through the items given the specified intervals', () => {
       const onSelectSpy = vi.fn();
       render(
-        <Carousel interval={5000} onSelect={onSelectSpy}>
+        <Carousel autoplay interval={5000} onSelect={onSelectSpy}>
           <Carousel.Item interval={1000}>Item 1 content</Carousel.Item>
           <Carousel.Item>Item 2 content</Carousel.Item>
         </Carousel>,
       );
 
-      // should be long enough to handle false positive issues
-      // but short enough to not trigger auto-play to occur twice
-      // (since the interval for the second item should be `5000`)
       act(() => {
         clock.advanceTimersByTime(1100);
       });
@@ -462,96 +566,150 @@ describe('<Carousel>', () => {
       expect(onSelectSpy).toHaveBeenCalledWith(1, undefined);
     });
 
-    it('should stop going through items on hover and continue afterwards', () => {
-      const onSelectSpy = vi.fn();
-      const interval = 500;
-
+    it('should mark the carousel as playing', () => {
       render(
-        <Carousel interval={interval} onSelect={onSelectSpy} data-testid="test">
+        <Carousel autoplay interval={2000} data-testid="test">
           {items}
         </Carousel>,
       );
 
       const carousel = screen.getByTestId('test');
-
-      fireEvent.mouseOver(carousel);
-      act(() => {
-        clock.advanceTimersByTime(interval * 1.5);
-      });
-      expect(onSelectSpy).not.toHaveBeenCalled();
-
-      fireEvent.mouseOut(carousel);
-      act(() => {
-        clock.advanceTimersByTime(interval * 1.5);
-      });
-      expect(onSelectSpy).toHaveBeenCalledOnce();
+      expect(carousel.classList).toContain('carousel-playing');
+      expect(carousel.style.getPropertyValue('--bs-carousel-interval')).toEqual(
+        '2000ms',
+      );
     });
 
-    it('should ignore hover if the prop is passed', () => {
+    it('should not autoplay when interval is null', () => {
+      const onSelectSpy = vi.fn();
+      render(
+        <Carousel autoplay interval={null} onSelect={onSelectSpy}>
+          {items}
+        </Carousel>,
+      );
+
+      act(() => {
+        clock.advanceTimersByTime(10000);
+      });
+
+      expect(onSelectSpy).not.toHaveBeenCalled();
+    });
+
+    it('should pause on hover and continue afterwards', () => {
       const onSelectSpy = vi.fn();
       const interval = 500;
 
       render(
         <Carousel
+          autoplay
           interval={interval}
           onSelect={onSelectSpy}
-          pause={false}
           data-testid="test"
         >
           {items}
         </Carousel>,
       );
 
-      fireEvent.mouseOver(screen.getByTestId('test'));
+      const carousel = screen.getByTestId('test');
+      fireEvent.mouseEnter(carousel);
+
+      act(() => {
+        clock.advanceTimersByTime(interval * 2);
+      });
+
+      expect(onSelectSpy).not.toHaveBeenCalled();
+
+      fireEvent.mouseLeave(carousel);
 
       act(() => {
         clock.advanceTimersByTime(interval * 1.5);
       });
+
+      expect(onSelectSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should ignore hover if pause is false', () => {
+      const onSelectSpy = vi.fn();
+      const interval = 500;
+
+      render(
+        <Carousel
+          autoplay
+          interval={interval}
+          pause={false}
+          onSelect={onSelectSpy}
+          data-testid="test"
+        >
+          {items}
+        </Carousel>,
+      );
+
+      fireEvent.mouseEnter(screen.getByTestId('test'));
+
+      act(() => {
+        clock.advanceTimersByTime(interval * 1.5);
+      });
+
+      expect(onSelectSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should stop for good when the user interacts with the controls', () => {
+      const onSelectSpy = vi.fn();
+      const interval = 500;
+
+      render(
+        <Carousel
+          autoplay
+          interval={interval}
+          onSelect={onSelectSpy}
+          data-testid="test"
+        >
+          {items}
+        </Carousel>,
+      );
+
+      fireEvent.click(screen.getByText('Next'));
+      expect(onSelectSpy).toHaveBeenCalledOnce();
+      expect(screen.getByTestId('test').classList).not.toContain(
+        'carousel-playing',
+      );
+
+      act(() => {
+        clock.advanceTimersByTime(interval * 10);
+      });
+
       expect(onSelectSpy).toHaveBeenCalledOnce();
     });
 
     it('should stop going through the items after unmounting', () => {
       const onSelectSpy = vi.fn();
-      const interval = 500;
-
       const { unmount } = render(
-        <Carousel interval={interval} onSelect={onSelectSpy}>
+        <Carousel autoplay interval={500} onSelect={onSelectSpy}>
           {items}
         </Carousel>,
       );
 
       unmount();
+
       act(() => {
-        clock.advanceTimersByTime(interval * 1.5);
+        clock.advanceTimersByTime(1000);
       });
+
       expect(onSelectSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('wrapping', () => {
-    let clock: ReturnType<typeof vi.useFakeTimers>;
-
-    beforeEach(() => {
-      clock = vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      clock.useRealTimers();
-    });
-
     it('should wrap to last from first', () => {
       const onSelectSpy = vi.fn();
 
       render(
-        <Carousel activeIndex={0} onSelect={onSelectSpy} data-testid="test">
+        <Carousel activeIndex={0} onSelect={onSelectSpy}>
           {items}
         </Carousel>,
       );
 
-      fireEvent.keyDown(screen.getByTestId('test'), {
-        key: 'ArrowLeft',
-      });
-      clock.advanceTimersByTime(50);
+      fireEvent.click(screen.getByText('Previous'));
 
       expect(onSelectSpy).toHaveBeenCalledOnce();
       expect(onSelectSpy).toHaveBeenCalledWith(
@@ -560,118 +718,75 @@ describe('<Carousel>', () => {
       );
     });
 
-    it('should wrap from first to last', () => {
+    it('should wrap from last to first', () => {
       const onSelectSpy = vi.fn();
 
       render(
+        <Carousel activeIndex={items.length - 1} onSelect={onSelectSpy}>
+          {items}
+        </Carousel>,
+      );
+
+      fireEvent.click(screen.getByText('Next'));
+
+      expect(onSelectSpy).toHaveBeenCalledOnce();
+      expect(onSelectSpy).toHaveBeenCalledWith(0, expect.anything());
+    });
+
+    it('should not wrap when wrap is false', () => {
+      const onSelectSpy = vi.fn();
+      const ref = React.createRef<CarouselRef>();
+
+      render(
         <Carousel
+          ref={ref}
           activeIndex={items.length - 1}
+          wrap={false}
           onSelect={onSelectSpy}
-          data-testid="test"
         >
           {items}
         </Carousel>,
       );
 
-      fireEvent.keyDown(screen.getByTestId('test'), {
-        key: 'ArrowRight',
+      act(() => {
+        ref.current!.next();
       });
-      clock.advanceTimersByTime(50);
-      expect(onSelectSpy).toHaveBeenCalledOnce();
-      expect(onSelectSpy).toHaveBeenCalledWith(0, expect.anything());
-    });
 
-    [
-      {
-        caseName: 'previous at first',
-        activeIndex: 0,
-        eventPayload: {
-          key: 'ArrowLeft',
-        },
-      },
-      {
-        caseName: 'next at last',
-        activeIndex: items.length - 1,
-        eventPayload: {
-          key: 'ArrowRight',
-        },
-      },
-    ].forEach(({ caseName, activeIndex, eventPayload }) => {
-      it(`should not wrap with wrap unset for ${caseName}`, () => {
-        const onSelectSpy = vi.fn();
-
-        render(
-          <Carousel
-            activeIndex={activeIndex}
-            wrap={false}
-            onSelect={onSelectSpy}
-            data-testid="test"
-          >
-            {items}
-          </Carousel>,
-        );
-
-        const carousel = screen.getByTestId('test');
-
-        fireEvent.keyDown(carousel, eventPayload);
-        clock.advanceTimersByTime(50);
-
-        const carouselItems = screen.getAllByTestId(CarouselItemTestId);
-        expect(carouselItems[activeIndex].classList).toContain('active');
-        expect(onSelectSpy).not.toHaveBeenCalled();
-      });
+      expect(onSelectSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('keyboard events', () => {
-    let clock: ReturnType<typeof vi.useFakeTimers>;
-
-    beforeEach(() => {
-      clock = vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      clock.useRealTimers();
-    });
-
     it('should go back for the keyboard event ArrowLeft', () => {
       const onSelectSpy = vi.fn();
-
       render(
         <Carousel activeIndex={1} onSelect={onSelectSpy} data-testid="test">
           {items}
         </Carousel>,
       );
 
-      fireEvent.keyDown(screen.getByTestId('test'), {
-        key: 'ArrowLeft',
-      });
+      fireEvent.keyDown(screen.getByTestId('test'), { key: 'ArrowLeft' });
 
-      clock.advanceTimersByTime(50);
       expect(onSelectSpy).toHaveBeenCalledOnce();
       expect(onSelectSpy).toHaveBeenCalledWith(0, expect.anything());
     });
 
     it('should go forward for the keyboard event ArrowRight', () => {
       const onSelectSpy = vi.fn();
-
       render(
         <Carousel activeIndex={1} onSelect={onSelectSpy} data-testid="test">
           {items}
         </Carousel>,
       );
 
-      fireEvent.keyDown(screen.getByTestId('test'), {
-        key: 'ArrowRight',
-      });
-      clock.advanceTimersByTime(50);
+      fireEvent.keyDown(screen.getByTestId('test'), { key: 'ArrowRight' });
+
       expect(onSelectSpy).toHaveBeenCalledOnce();
       expect(onSelectSpy).toHaveBeenCalledWith(2, expect.anything());
     });
 
     it('should ignore keyEvents when the keyboard is disabled', () => {
       const onSelectSpy = vi.fn();
-
       render(
         <Carousel
           activeIndex={1}
@@ -683,366 +798,83 @@ describe('<Carousel>', () => {
         </Carousel>,
       );
 
-      fireEvent.keyDown(screen.getByTestId('test'), {
-        key: 'ArrowRight',
-      });
-      clock.advanceTimersByTime(50);
+      fireEvent.keyDown(screen.getByTestId('test'), { key: 'ArrowRight' });
+
       expect(onSelectSpy).not.toHaveBeenCalled();
     });
 
     it('should handle a defined custom key event', () => {
       const onKeyDownSpy = vi.fn();
-
       render(
         <Carousel activeIndex={1} onKeyDown={onKeyDownSpy} data-testid="test">
           {items}
         </Carousel>,
       );
 
-      fireEvent.keyDown(screen.getByTestId('test'), {
-        key: 'ArrowUp',
-      });
-      clock.advanceTimersByTime(50);
+      fireEvent.keyDown(screen.getByTestId('test'), { key: 'ArrowRight' });
+
       expect(onKeyDownSpy).toHaveBeenCalledOnce();
     });
 
     ['ArrowUp', 'ArrowRightLeft', 'Onwards'].forEach((key) => {
-      it('should do nothing for non left or right keys', () => {
+      it(`should do nothing for the key ${key}`, () => {
         const onSelectSpy = vi.fn();
-
         render(
           <Carousel activeIndex={1} onSelect={onSelectSpy} data-testid="test">
             {items}
           </Carousel>,
         );
 
-        fireEvent.keyDown(screen.getByTestId('test'), {
-          key,
-        });
-        clock.advanceTimersByTime(50);
+        fireEvent.keyDown(screen.getByTestId('test'), { key });
+
         expect(onSelectSpy).not.toHaveBeenCalled();
       });
     });
   });
 
   describe('mouse events', () => {
-    let clock: ReturnType<typeof vi.useFakeTimers>;
-
-    beforeEach(() => {
-      clock = vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      clock.useRealTimers();
-    });
-
-    it('should handle a defined mouse over event', () => {
-      const onMouseOverSpy = vi.fn();
+    it('should handle a defined mouse enter and leave event', () => {
+      const onMouseEnterSpy = vi.fn();
+      const onMouseLeaveSpy = vi.fn();
 
       render(
         <Carousel
-          activeIndex={1}
-          onMouseOver={onMouseOverSpy}
+          onMouseEnter={onMouseEnterSpy}
+          onMouseLeave={onMouseLeaveSpy}
           data-testid="test"
         >
           {items}
         </Carousel>,
       );
 
-      fireEvent.mouseOver(screen.getByTestId('test'));
-      clock.advanceTimersByTime(1500);
-      expect(onMouseOverSpy).toHaveBeenCalledOnce();
-    });
+      fireEvent.mouseEnter(screen.getByTestId('test'));
+      fireEvent.mouseLeave(screen.getByTestId('test'));
 
-    it('should handle a defined mouse out event', () => {
-      const onMouseOutSpy = vi.fn();
-
-      render(
-        <Carousel activeIndex={1} onMouseOut={onMouseOutSpy} data-testid="test">
-          {items}
-        </Carousel>,
-      );
-
-      fireEvent.mouseOut(screen.getByTestId('test'));
-      clock.advanceTimersByTime(50);
-      expect(onMouseOutSpy).toHaveBeenCalledOnce();
-    });
-  });
-
-  describe('touch events', () => {
-    let clock: ReturnType<typeof vi.useFakeTimers>,
-      carousel: HTMLElement,
-      onSelectSpy: ReturnType<typeof vi.fn<(...args: any[]) => any>>,
-      onTouchStartSpy: ReturnType<typeof vi.fn<(...args: any[]) => any>>,
-      onTouchMoveSpy: ReturnType<typeof vi.fn<(...args: any[]) => any>>,
-      onTouchEndSpy: ReturnType<typeof vi.fn<(...args: any[]) => any>>;
-
-    beforeEach(() => {
-      onSelectSpy = vi.fn();
-      onTouchStartSpy = vi.fn();
-      onTouchMoveSpy = vi.fn();
-      onTouchEndSpy = vi.fn();
-
-      render(
-        <Carousel
-          activeIndex={1}
-          interval={null}
-          onSelect={onSelectSpy}
-          onTouchStart={onTouchStartSpy}
-          onTouchMove={onTouchMoveSpy}
-          onTouchEnd={onTouchEndSpy}
-          touch
-          data-testid="carousel-test"
-        >
-          {items}
-        </Carousel>,
-      );
-
-      carousel = screen.getByTestId('carousel-test');
-
-      clock = vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      clock.useRealTimers();
-    });
-
-    function generateTouchEvents(params: {
-      target: HTMLElement;
-      startX: number;
-      endX: number;
-    }): void {
-      const { target, startX, endX } = params;
-
-      fireEvent.touchStart(target, {
-        touches: [
-          new Touch({
-            identifier: 1,
-            target,
-            clientX: startX,
-          }),
-        ],
-      });
-      fireEvent.touchMove(target, {
-        touches: [
-          new Touch({
-            identifier: 1,
-            target,
-            clientX: endX,
-          }),
-        ],
-      });
-
-      fireEvent.touchEnd(target);
-    }
-
-    it('should swipe right', () => {
-      generateTouchEvents({ target: carousel, startX: 50, endX: 0 });
-
-      act(() => {
-        clock.advanceTimersByTime(50);
-      });
-      expect(onSelectSpy).toHaveBeenCalledOnce();
-      expect(onSelectSpy).toHaveBeenCalledWith(2, expect.anything());
-    });
-
-    it('should swipe left', () => {
-      generateTouchEvents({ target: carousel, startX: 0, endX: 50 });
-
-      act(() => {
-        clock.advanceTimersByTime(50);
-      });
-      expect(onSelectSpy).toHaveBeenCalledOnce();
-      expect(onSelectSpy).toHaveBeenCalledWith(0, expect.anything());
-    });
-
-    it('should not swipe if swipe detected is under the swipe threshold', () => {
-      generateTouchEvents({ target: carousel, startX: 0, endX: 35 });
-
-      act(() => {
-        clock.advanceTimersByTime(50);
-      });
-      expect(onSelectSpy).not.toHaveBeenCalled();
-    });
-
-    it('should handle a custom touch start and end event', () => {
-      generateTouchEvents({ target: carousel, startX: 50, endX: 0 });
-
-      act(() => {
-        clock.advanceTimersByTime(50);
-      });
-      expect(onTouchStartSpy).toHaveBeenCalledOnce();
-      expect(onTouchMoveSpy).toHaveBeenCalledOnce();
-      expect(onTouchEndSpy).toHaveBeenCalledOnce();
-    });
-
-    it('should handle a custom multi-touch move event', () => {
-      /** @see generateTouchEvents */
-
-      // fireEvent.touchMove(carousel, {
-      //   touches: [
-      //     new Touch({ identifier: 1, target: carousel, clientX: 0 }),
-      //     new Touch({ identifier: 1, target: carousel, clientX: 50 }),
-      //   ],
-      // });
-
-      fireEvent.touchMove(carousel, {
-        touches: [
-          new Touch({ identifier: 1, target: carousel, clientX: 0 }),
-          new Touch({ identifier: 1, target: carousel, clientX: 50 }),
-        ],
-      });
-
-      clock.advanceTimersByTime(50);
-      expect(onTouchMoveSpy).toHaveBeenCalledOnce();
-    });
-
-    it('should do nothing with disabled touch right', () => {
-      const { container } = render(
-        <Carousel
-          activeIndex={1}
-          interval={null}
-          onSelect={onSelectSpy}
-          touch={false}
-          data-testid="test"
-        >
-          {items}
-        </Carousel>,
-      );
-
-      const noTouchCarousel = screen.getByTestId('test');
-      generateTouchEvents({ target: noTouchCarousel, startX: 50, endX: 0 });
-
-      act(() => {
-        clock.advanceTimersByTime(50);
-      });
-      expect(onSelectSpy).not.toHaveBeenCalled();
-
-      const carouselItems = container.querySelectorAll('.carousel-item');
-      expect(carouselItems).toHaveLength(3);
-
-      expect(carouselItems[1].classList).toContain('active');
+      expect(onMouseEnterSpy).toHaveBeenCalledOnce();
+      expect(onMouseLeaveSpy).toHaveBeenCalledOnce();
     });
   });
 
   describe('callback tests', () => {
-    let clock: ReturnType<typeof vi.useFakeTimers>;
-
-    beforeEach(() => {
-      clock = vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      clock.useRealTimers();
-    });
-
-    it('should call onSlide when slide animation is disabled', () => {
+    it('should call onSlide and onSlid when slide animation is disabled', async () => {
       const onSlideSpy = vi.fn();
-      const onSelectSpy = vi.fn();
-
-      const { container } = render(
-        <Carousel slide={false} onSelect={onSelectSpy} onSlide={onSlideSpy}>
-          {items}
-        </Carousel>,
-      );
-
-      fireEvent.click(
-        container.querySelector<HTMLElement>('a.carousel-control-next')!,
-      );
-
-      act(() => {
-        clock.advanceTimersByTime(150);
-      });
-      expect(onSlideSpy).toHaveBeenCalledOnce();
-
-      fireEvent.click(
-        container.querySelector<HTMLElement>('a.carousel-control-prev')!,
-      );
-
-      act(() => {
-        clock.advanceTimersByTime(150);
-      });
-      expect(onSlideSpy).toHaveBeenCalledTimes(2);
-    });
-
-    it('should call onSlid when slide animation is disabled', () => {
       const onSlidSpy = vi.fn();
-      const onSelectSpy = vi.fn();
 
-      const { container } = render(
-        <Carousel slide={false} onSelect={onSelectSpy} onSlid={onSlidSpy}>
+      render(
+        <Carousel slide={false} onSlide={onSlideSpy} onSlid={onSlidSpy}>
           {items}
         </Carousel>,
       );
 
-      fireEvent.click(
-        container.querySelector<HTMLElement>('a.carousel-control-next')!,
-      );
-      act(() => {
-        clock.advanceTimersByTime(150);
-      });
-      expect(onSlidSpy).toHaveBeenCalledOnce();
+      fireEvent.click(screen.getByText('Next'));
 
-      fireEvent.click(
-        container.querySelector<HTMLElement>('a.carousel-control-prev')!,
-      );
-      act(() => {
-        clock.advanceTimersByTime(150);
-      });
-      expect(onSlidSpy).toHaveBeenCalledTimes(2);
-    });
-
-    it('should transition/call onSelect once if previous arrow double clicked', () => {
-      const onSelectSpy = vi.fn();
-
-      const { container } = render(
-        <Carousel onSelect={onSelectSpy}>{items}</Carousel>,
-      );
-
-      const prev = container.querySelector<HTMLElement>(
-        'a.carousel-control-prev',
-      )!;
-      fireEvent.click(prev);
-      fireEvent.click(prev);
-
-      act(() => {
-        clock.advanceTimersByTime(1000);
-      });
-      expect(onSelectSpy).toHaveBeenCalledOnce();
-    });
-
-    it('should transition/call onSelect once if next arrow double clicked', () => {
-      const onSelectSpy = vi.fn();
-
-      const { container } = render(
-        <Carousel onSelect={onSelectSpy}>{items}</Carousel>,
-      );
-
-      const next = container.querySelector<HTMLElement>(
-        'a.carousel-control-next',
-      )!;
-      fireEvent.click(next);
-      fireEvent.click(next);
-
-      act(() => {
-        clock.advanceTimersByTime(1000);
-      });
-      expect(onSelectSpy).toHaveBeenCalledOnce();
+      expect(onSlideSpy).toHaveBeenCalledWith(1, 'start');
+      await waitFor(() => expect(onSlidSpy).toHaveBeenCalledWith(1, 'start'));
     });
   });
 
   describe('RTL', () => {
-    let clock: ReturnType<typeof vi.useFakeTimers>;
-
-    beforeEach(() => {
-      clock = vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      clock.useRealTimers();
-    });
-
-    it('should slide in correct direction on ArrowLeft when dir=rtl', () => {
+    it('should go forward on ArrowLeft when dir=rtl', () => {
       const onSelectSpy = vi.fn();
 
       render(
@@ -1053,18 +885,13 @@ describe('<Carousel>', () => {
         </ThemeProvider>,
       );
 
-      fireEvent.keyDown(screen.getByTestId('test'), {
-        key: 'ArrowLeft',
-      });
-      act(() => {
-        clock.advanceTimersByTime(50);
-      });
+      fireEvent.keyDown(screen.getByTestId('test'), { key: 'ArrowLeft' });
 
       expect(onSelectSpy).toHaveBeenCalledOnce();
       expect(onSelectSpy).toHaveBeenCalledWith(2, expect.anything());
     });
 
-    it('should slide in correct direction on ArrowLeft when dir=rtl', () => {
+    it('should go back on ArrowRight when dir=rtl', () => {
       const onSelectSpy = vi.fn();
 
       render(
@@ -1075,35 +902,10 @@ describe('<Carousel>', () => {
         </ThemeProvider>,
       );
 
-      fireEvent.keyDown(screen.getByTestId('test'), {
-        key: 'ArrowRight',
-      });
-      act(() => {
-        clock.advanceTimersByTime(50);
-      });
+      fireEvent.keyDown(screen.getByTestId('test'), { key: 'ArrowRight' });
 
       expect(onSelectSpy).toHaveBeenCalledOnce();
       expect(onSelectSpy).toHaveBeenCalledWith(0, expect.anything());
-    });
-
-    it('should slide in correct direction automatically when dir=rtl', () => {
-      const onSelectSpy = vi.fn();
-      const interval = 300;
-
-      render(
-        <ThemeProvider dir="rtl">
-          <Carousel activeIndex={1} onSelect={onSelectSpy} interval={interval}>
-            {items}
-          </Carousel>
-        </ThemeProvider>,
-      );
-
-      act(() => {
-        clock.advanceTimersByTime(interval * 1.5);
-      });
-
-      expect(onSelectSpy).toHaveBeenCalledOnce();
-      expect(onSelectSpy).toHaveBeenCalledWith(0, undefined);
     });
   });
 });

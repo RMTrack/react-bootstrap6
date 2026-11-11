@@ -15,7 +15,7 @@ describe('Row', () => {
         Row
       </Row>,
     );
-    expect(screen.getByText('Row').classList).toContain('row-cols-md-8');
+    expect(screen.getByText('Row').classList).toContain('md:row-cols-8');
     expect(screen.getByText('Row').classList).toContain('row-cols-4');
   });
 
@@ -25,7 +25,7 @@ describe('Row', () => {
         Row
       </Row>,
     );
-    expect(screen.getByText('Row').classList).toContain('row-cols-md-8');
+    expect(screen.getByText('Row').classList).toContain('md:row-cols-8');
     expect(screen.getByText('Row').classList).toContain('row-cols-4');
   });
 
@@ -35,7 +35,7 @@ describe('Row', () => {
         Row
       </Row>,
     );
-    expect(screen.getByText('Row').classList).toContain('row-cols-md-auto');
+    expect(screen.getByText('Row').classList).toContain('md:row-cols-auto');
     expect(screen.getByText('Row').classList).toContain('row-cols-auto');
   });
 
@@ -45,7 +45,7 @@ describe('Row', () => {
         Row
       </Row>,
     );
-    expect(screen.getByText('Row').classList).toContain('row-cols-md-auto');
+    expect(screen.getByText('Row').classList).toContain('md:row-cols-auto');
     expect(screen.getByText('Row').classList).toContain('row-cols-auto');
   });
 
@@ -74,7 +74,7 @@ describe('Row', () => {
         <Row custom="3">test</Row>
       </ThemeProvider>,
     );
-    expect(screen.getByText('test').classList).toContain('row-cols-custom-3');
+    expect(screen.getByText('test').classList).toContain('custom:row-cols-3');
   });
 
   it('should allow custom breakpoints smaller than default "xs"', () => {
@@ -87,6 +87,6 @@ describe('Row', () => {
     );
 
     expect(screen.getByText('test').classList).toContain('row-cols-3');
-    expect(screen.getByText('test').classList).toContain('row-cols-xs-2');
+    expect(screen.getByText('test').classList).toContain('xs:row-cols-2');
   });
 });

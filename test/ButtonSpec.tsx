@@ -101,7 +101,7 @@ describe('<Button>', () => {
   it('Should apply variant class', () => {
     render(<Button variant="danger">Title</Button>);
 
-    expect(screen.getByRole('button').classList).toContain('btn-danger');
+    expect(screen.getByRole('button').classList).toContain('theme-danger');
   });
 
   it('Should have size class', () => {
@@ -119,19 +119,19 @@ describe('<Button>', () => {
 
     const button = screen.getByRole('button');
     expect(button.classList).toContain('bob');
-    expect(button.classList).toContain('btn-danger');
+    expect(button.classList).toContain('theme-danger');
   });
 
   it('Should default to variant="primary"', () => {
     render(<Button>Title</Button>);
 
-    expect(screen.getByRole('button').classList).toContain('btn-primary');
+    expect(screen.getByRole('button').classList).toContain('theme-primary');
   });
 
   it('Should remove default variant', () => {
     render(<Button variant={null as any}>Title</Button>);
 
-    expect(screen.getByRole('button').classList).not.toContain('btn-primary');
+    expect(screen.getByRole('button').classList).not.toContain('theme-primary');
   });
 
   it('Should not output null variant', () => {
@@ -160,7 +160,40 @@ describe('<Button>', () => {
     );
 
     const button = screen.getByRole('button');
-    expect(button.classList).toContain('my-btn');
-    expect(button.classList).toContain('my-btn-danger');
+    expect(button.classList).toContain('my-btn-solid');
+    expect(button.classList).toContain('theme-danger');
+  });
+  describe('Bootstrap 6 variants', () => {
+    (
+      [
+        ['primary', 'btn-solid theme-primary'],
+        ['outline-success', 'btn-outline theme-success'],
+        ['subtle-danger', 'btn-subtle theme-danger'],
+        ['text-info', 'btn-text theme-info'],
+        ['styled-accent', 'btn-solid btn-styled theme-accent'],
+        ['outline', 'btn-outline'],
+        ['link', 'btn-link'],
+      ] as const
+    ).forEach(([variant, className]) => {
+      it(`maps variant="${variant}" to "${className}"`, () => {
+        render(<Button variant={variant}>Title</Button>);
+
+        expect(screen.getByRole('button').className).toEqual(className);
+      });
+    });
+
+    it('defaults to a solid primary button', () => {
+      render(<Button variant={undefined}>Title</Button>);
+
+      expect(screen.getByRole('button').className).toEqual(
+        'btn-solid theme-primary',
+      );
+    });
+
+    it('renders the xs size', () => {
+      render(<Button size="xs">Title</Button>);
+
+      expect(screen.getByRole('button').classList).toContain('btn-xs');
+    });
   });
 });

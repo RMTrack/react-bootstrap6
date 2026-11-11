@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Alert from '../src/Alert';
 
 describe('<Alert>', () => {
@@ -16,15 +16,18 @@ describe('<Alert>', () => {
     );
   });
 
-  it('Should have dismissible style', () => {
+  it('Should render the close button after the content', () => {
     render(
       <Alert data-testid="test-alert" dismissible>
         <strong>Message</strong>
       </Alert>,
     );
-    expect(screen.getByTestId('test-alert').classList).toContain(
-      'alert-dismissible',
-    );
+    const alert = screen.getByTestId('test-alert');
+    // Bootstrap 6 has no .alert-dismissible; the flex layout places the button.
+    expect(alert.classList).not.toContain('alert-dismissible');
+    const button = alert.lastElementChild!;
+    expect(button.classList).toContain('btn-close');
+    expect(button.classList).toContain('ms-auto');
   });
 
   it('Should call onClose callback on dismiss click', () => {
@@ -41,7 +44,7 @@ describe('<Alert>', () => {
   it('Should default to variant="primary"', () => {
     render(<Alert data-testid="test-alert">Message</Alert>);
     expect(screen.getByTestId('test-alert').classList).toContain(
-      'alert-primary',
+      'theme-primary',
     );
   });
 
@@ -52,7 +55,7 @@ describe('<Alert>', () => {
       </Alert>,
     );
     expect(screen.getByTestId('test-alert').classList).toContain(
-      'alert-danger',
+      'theme-danger',
     );
   });
 
@@ -63,7 +66,7 @@ describe('<Alert>', () => {
       </Alert>,
     );
     expect(screen.getByTestId('test-alert').classList).not.toContain(
-      'alert-primary',
+      'theme-primary',
     );
   });
 
@@ -110,13 +113,29 @@ describe('<Alert>', () => {
     );
   });
 
-  it('should use Fade when transition=true', () => {
+  it('should not use .fade when transition=true', () => {
     render(
       <Alert variant="danger" transition data-testid="test-alert">
         Message
       </Alert>,
     );
-    expect(screen.getByTestId('test-alert').classList).toContain('fade');
+    expect(screen.getByTestId('test-alert').classList).not.toContain('fade');
+  });
+
+  it('should add .hiding while closing', async () => {
+    const { rerender } = render(
+      <Alert data-testid="test-alert">Message</Alert>,
+    );
+    const alert = screen.getByTestId('test-alert');
+
+    rerender(
+      <Alert data-testid="test-alert" show={false}>
+        Message
+      </Alert>,
+    );
+
+    expect(alert.classList).toContain('hiding');
+    await waitFor(() => expect(alert.isConnected).toEqual(false));
   });
 
   it('should render null when transition and show are false', () => {
@@ -131,17 +150,6 @@ describe('<Alert>', () => {
       </Alert>,
     );
     expect(container.innerHTML).toEqual('');
-  });
-
-  it('should render close button variant', () => {
-    render(
-      <Alert dismissible closeVariant="white">
-        Message
-      </Alert>,
-    );
-    expect(screen.getByLabelText('Close alert').classList).toContain(
-      'btn-close-white',
-    );
   });
 
   describe('Web Accessibility', () => {

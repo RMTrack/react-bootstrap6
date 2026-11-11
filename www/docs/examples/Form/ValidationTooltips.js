@@ -37,7 +37,7 @@ function FormExample() {
     >
       {({ handleSubmit, handleChange, values, touched, errors }) => (
         <Form noValidate onSubmit={handleSubmit}>
-          <Row className="mb-3">
+          <Row className="mb-5">
             <Form.Group
               as={Col}
               md="4"
@@ -71,9 +71,14 @@ function FormExample() {
 
               <Form.Control.Feedback tooltip>Looks good!</Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} md="4" controlId="validationFormikUsername2">
+            <Form.Group
+              as={Col}
+              md="4"
+              controlId="validationFormikUsername2"
+              className="form-field"
+            >
               <Form.Label>Username</Form.Label>
-              <InputGroup hasValidation>
+              <InputGroup>
                 <InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
                 <Form.Control
                   type="text"
@@ -84,13 +89,13 @@ function FormExample() {
                   onChange={handleChange}
                   isInvalid={!!errors.username}
                 />
-                <Form.Control.Feedback type="invalid" tooltip>
-                  {errors.username}
-                </Form.Control.Feedback>
               </InputGroup>
+              <Form.Control.Feedback type="invalid" tooltip>
+                {errors.username}
+              </Form.Control.Feedback>
             </Form.Group>
           </Row>
-          <Row className="mb-3">
+          <Row className="mb-5">
             <Form.Group
               as={Col}
               md="6"
@@ -151,7 +156,7 @@ function FormExample() {
               </Form.Control.Feedback>
             </Form.Group>
           </Row>
-          <Form.Group className="position-relative mb-3">
+          <Form.Group className="position-relative mb-5">
             <Form.Label>File</Form.Label>
             <Form.Control
               type="file"
@@ -164,7 +169,7 @@ function FormExample() {
               {errors.file}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group className="position-relative mb-3">
+          <Form.Group className="position-relative mb-5">
             <Form.Check
               required
               name="terms"

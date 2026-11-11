@@ -7,8 +7,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 function ToolbarExample() {
   return (
     <>
-      <ButtonToolbar className="mb-3" aria-label="Toolbar with Button groups">
-        <ButtonGroup className="me-2" aria-label="First group">
+      <ButtonToolbar className="mb-5" aria-label="Toolbar with Button groups">
+        <ButtonGroup className="me-3" aria-label="First group">
           <Button variant="secondary">1</Button>
           <Button variant="secondary">2</Button>
           <Button variant="secondary">3</Button>

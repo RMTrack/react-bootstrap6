@@ -5,13 +5,13 @@ function LinksExample() {
     <>
       {[
         'primary',
+        'accent',
         'secondary',
         'success',
         'danger',
         'warning',
         'info',
-        'light',
-        'dark',
+        'inverse',
       ].map((variant) => (
         <Alert key={variant} variant={variant}>
           This is a {variant} alert with{' '}

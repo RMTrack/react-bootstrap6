@@ -17,9 +17,9 @@ import {
   Col,
   Collapse,
   Row,
-  Dropdown,
-  DropdownButton,
-  DropdownMenu,
+  Menu,
+  MenuButton,
+  MenuPanel,
   Fade,
   Figure,
   Form,
@@ -27,10 +27,10 @@ import {
   Image,
   InputGroup,
   ListGroup,
-  Modal,
+  Dialog,
   Nav,
   Navbar,
-  NavDropdown,
+  NavMenu,
   Overlay,
   OverlayTrigger,
   Tooltip,
@@ -47,9 +47,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Toast,
-  ModalDialog,
 } from '../src';
-import BootstrapModalManager from '../src/BootstrapModalManager';
 
 import { CarouselRef } from '../src/Carousel';
 
@@ -228,7 +226,8 @@ const MegaComponent = () => (
       prevIcon={<span />}
       prevLabel="previous"
       slide
-      touch
+      overlay={false}
+      autoplay
       wrap={false}
       bsPrefix="carousel"
       style={style}
@@ -239,10 +238,10 @@ const MegaComponent = () => (
           src="holder.js/800x400?text=First slide&bg=373940"
           alt="First slide"
         />
-        <Carousel.Caption as="div" bsPrefix="caption" style={style}>
+        <div className="position-absolute bottom-0 p-5">
           <h3>First slide label</h3>
           <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-        </Carousel.Caption>
+        </div>
       </Carousel.Item>
       <Carousel.Item>
         <img
@@ -251,10 +250,10 @@ const MegaComponent = () => (
           alt="Second slide"
         />
 
-        <Carousel.Caption>
+        <div className="position-absolute bottom-0 p-5">
           <h3>Second slide label</h3>
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </Carousel.Caption>
+        </div>
       </Carousel.Item>
       <Carousel.Item>
         <img
@@ -263,12 +262,12 @@ const MegaComponent = () => (
           alt="Third slide"
         />
 
-        <Carousel.Caption>
+        <div className="position-absolute bottom-0 p-5">
           <h3>Third slide label</h3>
           <p>
             Praesent commodo cursus magna, vel scelerisque nisl consectetur.
           </p>
-        </Carousel.Caption>
+        </div>
       </Carousel.Item>
     </Carousel>
     <Container as="div" fluid bsPrefix="container" style={style}>
@@ -309,7 +308,7 @@ const MegaComponent = () => (
       />
     </Container>
     <Container fluid="sm" />
-    <Dropdown
+    <Menu
       align="end"
       as="div"
       drop="up"
@@ -321,7 +320,7 @@ const MegaComponent = () => (
       bsPrefix="dropdown"
       style={style}
     >
-      <Dropdown.Toggle
+      <Menu.Toggle
         as="button"
         childBsPrefix="childprefix"
         variant="success"
@@ -329,10 +328,10 @@ const MegaComponent = () => (
         split
         style={style}
       >
-        Dropdown Button
-      </Dropdown.Toggle>
+        Menu Button
+      </Menu.Toggle>
 
-      <Dropdown.Menu
+      <Menu.Panel
         as="div"
         flip
         onSelect={noop}
@@ -344,7 +343,7 @@ const MegaComponent = () => (
         style={style}
         align={{ sm: 'start' }}
       >
-        <Dropdown.Item
+        <Menu.Item
           active
           as="a"
           disabled
@@ -356,17 +355,17 @@ const MegaComponent = () => (
           style={style}
         >
           Action
-        </Dropdown.Item>
-        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-        <Dropdown.Header as="div" bsPrefix="dropdownheader" style={style} />
-        <Dropdown.Divider as="div" bsPrefix="dropdowndivider" style={style} />
-        <Dropdown.Divider as="div" bsPrefix="prefix" style={style} />
-      </Dropdown.Menu>
-      <Dropdown.Menu align="start" />
-      <Dropdown.Menu align="end" />
-    </Dropdown>
-    <DropdownButton
+        </Menu.Item>
+        <Menu.Item href="#/action-2">Another action</Menu.Item>
+        <Menu.Item href="#/action-3">Something else</Menu.Item>
+        <Menu.Header as="div" bsPrefix="dropdownheader" style={style} />
+        <Menu.Divider as="div" bsPrefix="dropdowndivider" style={style} />
+        <Menu.Divider as="div" bsPrefix="prefix" style={style} />
+      </Menu.Panel>
+      <Menu.Panel align="start" />
+      <Menu.Panel align="end" />
+    </Menu>
+    <MenuButton
       disabled
       href="#"
       id="dropdown-basic-button"
@@ -375,16 +374,16 @@ const MegaComponent = () => (
       renderMenuOnMount
       rootCloseEvent="click"
       size="lg"
-      title="Dropdown button"
+      title="Menu button"
       variant="primary"
       bsPrefix="dropdownbtn"
       style={style}
       align={{ sm: 'start' }}
     >
-      <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-      <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-      <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-    </DropdownButton>
+      <Menu.Item href="#/action-1">Action</Menu.Item>
+      <Menu.Item href="#/action-2">Another action</Menu.Item>
+      <Menu.Item href="#/action-3">Something else</Menu.Item>
+    </MenuButton>
     <Figure as="figure" bsPrefix="figure" style={style} />
     <Figure.Image
       fluid
@@ -449,7 +448,6 @@ const MegaComponent = () => (
           feedback="test"
           feedbackTooltip
           id="id"
-          inline
           isInvalid
           isValid
           label="label"
@@ -596,19 +594,13 @@ const MegaComponent = () => (
       </ListGroup.Item>
       <ListGroup.Item action>This one is a button</ListGroup.Item>
     </ListGroup>
-    <Modal
+    <Dialog
       animation
       aria-labelledby="label"
-      autoFocus
       backdrop="static"
-      backdropClassName="class"
-      centered
       container={React.createRef()}
-      dialogAs="div"
-      dialogClassName="class"
-      enforceFocus
       keyboard
-      manager={new BootstrapModalManager()}
+      modal
       onEnter={noop}
       onEntered={noop}
       onEntering={noop}
@@ -618,54 +610,38 @@ const MegaComponent = () => (
       onExiting={noop}
       onHide={noop}
       onShow={noop}
-      restoreFocus
-      restoreFocusOptions={{
-        preventScroll: false,
-      }}
-      scrollabel
+      scrollable
       show={false}
       size="xl"
-      bsPrefix="modal"
+      bsPrefix="dialog"
       style={style}
+      ref={React.createRef<HTMLDialogElement>()}
     >
-      <Modal.Header
+      <Dialog.Header
         closeButton
         closeLabel="close"
         onHide={noop}
         bsPrefix="header"
         style={style}
       >
-        <Modal.Title as="h4" bsPrefix="modaltitle" style={style}>
-          Modal heading
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body as="div" bsPrefix="modalbody" style={style}>
+        <Dialog.Title as="h4" bsPrefix="modaltitle" style={style}>
+          Dialog heading
+        </Dialog.Title>
+      </Dialog.Header>
+      <Dialog.Body as="div" bsPrefix="modalbody" style={style}>
         Woohoo, you are reading this text in a modal!
-      </Modal.Body>
-      <Modal.Footer as="div" bsPrefix="modalfooter" style={style}>
+      </Dialog.Body>
+      <Dialog.Footer as="div" bsPrefix="modalfooter" style={style}>
         <Button variant="secondary">Close</Button>
         <Button variant="primary">Save Changes</Button>
-      </Modal.Footer>
-    </Modal>
-    <Modal fullscreen />
-    <Modal fullscreen="sm-down" />
-    <Modal fullscreen="md-down" />
-    <Modal fullscreen="lg-down" />
-    <Modal fullscreen="xl-down" />
-    <Modal fullscreen="xxl-down" />
-    <Modal.Dialog fullscreen />
-    <Modal.Dialog fullscreen="sm-down" />
-    <Modal.Dialog fullscreen="md-down" />
-    <Modal.Dialog fullscreen="lg-down" />
-    <Modal.Dialog fullscreen="xl-down" />
-    <Modal.Dialog fullscreen="xxl-down" />
-    <Modal.Dialog
-      centered
-      scrollable
-      size="sm"
-      bsPrefix="modal"
-      style={style}
-    />
+      </Dialog.Footer>
+    </Dialog>
+    <Dialog fullscreen />
+    <Dialog fullscreen="sm-down" />
+    <Dialog fullscreen="md-down" />
+    <Dialog fullscreen="lg-down" />
+    <Dialog fullscreen="xl-down" />
+    <Dialog fullscreen="2xl-down" />
     <Nav
       as="div"
       fill
@@ -706,14 +682,14 @@ const MegaComponent = () => (
           NavLink 3 content
         </Nav.Link>
       </Nav.Item>
-      <NavDropdown
+      <NavMenu
         active
         disabled
         menuRole="role"
         onClick={noop}
         renderMenuOnMount
         rootCloseEvent="click"
-        title="Dropdown"
+        title="Menu"
         id="nav-dropdown"
         bsPrefix="prefix"
         style={style}
@@ -725,13 +701,13 @@ const MegaComponent = () => (
         focusFirstItemOnShow
         navbar
       >
-        <NavDropdown.Item eventKey="4.1">Action</NavDropdown.Item>
-        <NavDropdown.Item eventKey="4.2">Another action</NavDropdown.Item>
-        <NavDropdown.Item eventKey="4.3">Something else here</NavDropdown.Item>
-        <NavDropdown.Divider />
-        <NavDropdown.Item eventKey="4.4">Separated link</NavDropdown.Item>
-        <NavDropdown.ItemText bsPrefix="prefix" as="div" />
-      </NavDropdown>
+        <NavMenu.Item eventKey="4.1">Action</NavMenu.Item>
+        <NavMenu.Item eventKey="4.2">Another action</NavMenu.Item>
+        <NavMenu.Item eventKey="4.3">Something else here</NavMenu.Item>
+        <NavMenu.Divider />
+        <NavMenu.Item eventKey="4.4">Separated link</NavMenu.Item>
+        <NavMenu.Text bsPrefix="prefix" as="div" />
+      </NavMenu>
     </Nav>
     <Navbar
       as="div"
@@ -744,7 +720,7 @@ const MegaComponent = () => (
       onToggle={noop}
       role="role"
       sticky="top"
-      variant="light"
+      variant="dark"
       bsPrefix="prefix"
       style={style}
     />
@@ -756,7 +732,7 @@ const MegaComponent = () => (
       bsPrefix="prefix"
       style={style}
     />
-    <Navbar.Collapse bsPrefix="prefix" style={style} />
+    <Navbar.Drawer placement="end" responsive="lg" style={style} />
     <Overlay
       container={React.createRef()}
       onEnter={noop}
@@ -913,7 +889,7 @@ const MegaComponent = () => (
       focusFirstItemOnShow="keyboard"
       navbar
     >
-      <Dropdown.Item />
+      <Menu.Item />
     </SplitButton>
     <Table
       id="id"
@@ -1018,7 +994,7 @@ const MegaComponent = () => (
     {/*
     <Tabs invalidProp="2" />; // $ExpectError
     <Alert.Link invalidProp="2" />; // $ExpectError
-    <Dropdown.Item invalidProp="2" />; // $ExpectError
+    <Menu.Item invalidProp="2" />; // $ExpectError
     <Nav.Link invalidProp="2" />; // $ExpectError
     <Spinner invalidProp="2" animation="border" />; // $ExpectError
     <ToggleButton invalidProp="2" />; // $ExpectError
@@ -1043,18 +1019,17 @@ const CustomBreakpoints = () => (
   >
     <Container fluid="custom" />
     <Col customBreakpoint="2" />
-    <Dropdown align={{ custom: 'start' }}>
+    <Menu align={{ custom: 'start' }}>
       <div />
-    </Dropdown>
-    <DropdownButton align={{ custom: 'start' }} title="title">
+    </Menu>
+    <MenuButton align={{ custom: 'start' }} title="title">
       <div />
-    </DropdownButton>
-    <DropdownMenu align={{ custom: 'start' }}>
+    </MenuButton>
+    <MenuPanel align={{ custom: 'start' }}>
       <div />
-    </DropdownMenu>
+    </MenuPanel>
     <ListGroup horizontal="custom" />
-    <Modal fullscreen="custom" />
-    <ModalDialog fullscreen="custom" />
+    <Dialog fullscreen="custom" />
     <Navbar expand="custom" />
     <Row customBreakpoint="auto" />
     <SplitButton align={{ custom: 'start' }} title="title">

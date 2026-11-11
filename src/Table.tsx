@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import * as React from 'react';
-import { useBootstrapPrefix } from './ThemeProvider.js';
+import { toBreakpointName, useBootstrapPrefix } from './ThemeProvider.js';
+import type { Variant } from './types.js';
 
 export interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> {
   /**
@@ -36,19 +37,27 @@ export interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> 
   size?: string | undefined;
 
   /**
-   * Invert the colors of the table — with light text on dark backgrounds
-   * by setting variant as `dark`.
+   * The theme color of the table, applied with `.theme-*`.
    */
-  variant?: string | undefined;
+  variant?: Variant | undefined;
+
+  /**
+   * Stack each row into a block on narrow containers. Pass a breakpoint
+   * to stack below it only (`.md:table-stacked`). Stacked tables use a
+   * container query, so a parent needs to be a query container
+   * (e.g. `.contains-inline`).
+   */
+  stacked?: boolean | string | undefined;
 
   /**
    * Responsive tables allow tables to be scrolled horizontally with ease.
    * Across every breakpoint, use `responsive` for horizontally
    * scrolling tables. Responsive tables are wrapped automatically in a `div`.
-   * Use `responsive="sm"`, `responsive="md"`, `responsive="lg"`, or
-   * `responsive="xl"` as needed to create responsive tables up to
-   * a particular breakpoint. From that breakpoint and up, the table will
-   * behave normally and not scroll horizontally.
+   * Use `responsive="sm"`, `responsive="md"`, `responsive="lg"`,
+   * `responsive="xl"` or `responsive="2xl"` as needed to create responsive
+   * tables up to a particular breakpoint (`.md:table-responsive`). From that
+   * breakpoint and up, the table will behave normally and not scroll
+   * horizontally.
    */
   responsive?: boolean | string | undefined;
 }
@@ -65,6 +74,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
       size,
       variant,
       responsive,
+      stacked,
       ...props
     },
     ref,
@@ -74,7 +84,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
     const classes = clsx(
       className,
       decoratedBsPrefix,
-      variant && `${decoratedBsPrefix}-${variant}`,
+      variant && `theme-${variant}`,
       size && `${decoratedBsPrefix}-${size}`,
       striped &&
         `${decoratedBsPrefix}-${
@@ -83,13 +93,17 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
       bordered && `${decoratedBsPrefix}-bordered`,
       borderless && `${decoratedBsPrefix}-borderless`,
       hover && `${decoratedBsPrefix}-hover`,
+      stacked &&
+        (typeof stacked === 'string'
+          ? `${toBreakpointName(stacked)}:${decoratedBsPrefix}-stacked`
+          : `${decoratedBsPrefix}-stacked`),
     );
 
     const table = <table {...props} className={classes} ref={ref} />;
     if (responsive) {
       let responsiveClass = `${decoratedBsPrefix}-responsive`;
       if (typeof responsive === 'string') {
-        responsiveClass = `${responsiveClass}-${responsive}`;
+        responsiveClass = `${toBreakpointName(responsive)}:${responsiveClass}`;
       }
 
       return <div className={responsiveClass}>{table}</div>;

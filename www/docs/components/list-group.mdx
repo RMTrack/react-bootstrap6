@@ -87,7 +87,7 @@ Use the `horizontal` prop to make the ListGroup render horizontally. Currently *
   {ListGroupHorizontal}
 </CodeBlock>
 
-There are responsive variants to `horizontal`: setting it to `{sm|md|lg|xl|xxl}` makes the list group horizontal starting at that breakpoint’s `min-width`.
+There are responsive variants to `horizontal`: setting it to `{sm|md|lg|xl|2xl}` makes the list group horizontal starting at that breakpoint, for example `.md:list-group-horizontal`. Responsive list groups use a container query, so a parent must be a query container such as `.contains-inline`.
 
 <CodeBlock language="jsx" live previewClassName="list-group">
   {ListGroupHorizontalResponsive}

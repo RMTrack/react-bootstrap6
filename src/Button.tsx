@@ -6,7 +6,49 @@ import {
 } from '@restart/ui/Button';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import { useBootstrapPrefix } from './ThemeProvider.js';
-import type { ButtonVariant } from './types.js';
+import type { ButtonStyle, ButtonVariant } from './types.js';
+
+const BUTTON_STYLES: readonly string[] = [
+  'solid',
+  'outline',
+  'subtle',
+  'text',
+  'styled',
+] satisfies ButtonStyle[];
+
+/**
+ * Maps a button `variant` to Bootstrap 6 classes, which compose a style class
+ * with a `.theme-*` class:
+ *
+ * - `'primary'` -> `btn-solid theme-primary`
+ * - `'outline-primary'` -> `btn-outline theme-primary` (also `subtle-*`, `text-*`)
+ * - `'styled-primary'` -> `btn-solid btn-styled theme-primary`
+ * - `'link'` -> `btn-link`
+ *
+ * Without a variant only the base `.btn` class is used.
+ */
+export function getButtonVariantClasses(
+  prefix: string,
+  variant: ButtonVariant | null | undefined,
+): string[] {
+  if (!variant) return [prefix];
+  if (variant === 'link') return [`${prefix}-link`];
+
+  const dash = variant.indexOf('-');
+  const head = dash === -1 ? variant : variant.slice(0, dash);
+  let style = 'solid';
+  let theme: string = variant;
+  if (BUTTON_STYLES.includes(head)) {
+    style = head;
+    theme = dash === -1 ? '' : variant.slice(dash + 1);
+  }
+
+  return [
+    style === 'styled' ? `${prefix}-solid` : `${prefix}-${style}`,
+    style === 'styled' && `${prefix}-styled`,
+    theme && `theme-${theme}`,
+  ].filter(Boolean) as string[];
+}
 
 export interface ButtonProps extends BaseButtonProps {
   /**
@@ -20,26 +62,26 @@ export interface ButtonProps extends BaseButtonProps {
   active?: boolean | undefined;
 
   /**
-   * One or more button variant combinations
+   * The button style and theme color.
    *
-   * buttons may be one of a variety of visual variants such as:
+   * A theme color alone renders a solid button:
    *
-   * `'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'dark', 'light', 'link'`
+   * `'primary', 'accent', 'secondary', 'success', 'danger', 'warning', 'info', 'inverse'`
    *
-   * as well as "outline" versions (prefixed by 'outline-*')
+   * Prefix the theme color with a style for the other variants:
    *
-   * `'outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-dark', 'outline-light'`
+   * `'outline-primary', 'subtle-primary', 'text-primary', 'styled-primary'`
    *
-   * @type {'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark' | 'light' | 'link' | 'outline-primary' | 'outline-secondary' | 'outline-success' | 'outline-danger' | 'outline-warning' | 'outline-info' | 'outline-dark' | 'outline-light'}
+   * Use `'link'` for a button that looks like a link.
    */
   variant?: ButtonVariant | undefined;
 
   /**
-   * Specifies a large or small button.
+   * Specifies an extra small, small or large button.
    *
-   * @type {'sm' | 'lg'}
+   * @type {'xs' | 'sm' | 'lg'}
    */
-  size?: 'sm' | 'lg' | undefined;
+  size?: 'xs' | 'sm' | 'lg' | undefined;
 
   /**
    * Disables the Button, preventing mouse events,
@@ -87,9 +129,8 @@ const Button: DynamicRefForwardingComponent<'button', ButtonProps> =
           disabled={disabled}
           className={clsx(
             className,
-            prefix,
+            ...getButtonVariantClasses(prefix, variant),
             active && 'active',
-            variant && `${prefix}-${variant}`,
             size && `${prefix}-${size}`,
             props.href && disabled && 'disabled',
           )}

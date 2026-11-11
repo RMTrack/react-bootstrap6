@@ -1,36 +1,19 @@
 import * as React from 'react';
 import clsx from 'clsx';
-import type { LiteralUnion } from './types.js';
-
-export type CloseButtonVariant = LiteralUnion<'white', string>;
 
 export interface CloseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * An accessible label indicating the relevant information about the Close Button.
    */
   'aria-label'?: string | undefined;
-
-  /**
-   * Render different color variant for the button.
-   *
-   * Omitting this will render the default dark color.
-   */
-  variant?: CloseButtonVariant | undefined;
 }
 
 const CloseButton = React.forwardRef<HTMLButtonElement, CloseButtonProps>(
-  (
-    { className, variant, 'aria-label': ariaLabel = 'Close', ...props },
-    ref,
-  ) => (
+  ({ className, 'aria-label': ariaLabel = 'Close', ...props }, ref) => (
     <button
       ref={ref}
       type="button"
-      className={clsx(
-        'btn-close',
-        variant && `btn-close-${variant}`,
-        className,
-      )}
+      className={clsx('btn-close', className)}
       aria-label={ariaLabel}
       {...props}
     />

@@ -18,7 +18,7 @@ export interface TabsProps
   /**
    * Sets a default animation strategy for all children `<TabPane>`s.<tbcont
    *
-   * Defaults to `<Fade>` animation, else use `false` to disable or a
+   * Defaults to fading the pane in with `.show`, else use `false` to disable or a
    * react-transition-group `<Transition/>` component.
    */
   transition?: TransitionType | undefined;

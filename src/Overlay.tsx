@@ -7,7 +7,7 @@ import useEventCallback from '@restart/hooks/useEventCallback';
 import useIsomorphicEffect from '@restart/hooks/useIsomorphicEffect';
 import useMergedRefs from '@restart/hooks/useMergedRefs';
 import useOverlayOffset from './useOverlayOffset.js';
-import Fade from './Fade.js';
+import { ShowTransition } from './CssTransition.js';
 import type { TransitionType } from './helpers.js';
 import type {
   BaseOverlayProps,
@@ -42,10 +42,11 @@ export interface OverlayProps extends BaseOverlayProps {
   children: OverlayChildren;
 
   /**
-   * Animate the entering and exiting of the Overlay. `true` will use the `<Fade>` transition,
-   * or a custom react-transition-group `<Transition>` component can be provided.
+   * Animate the entering and exiting of the Overlay. `true` toggles `.show` and lets
+   * Bootstrap's CSS animate it, or a custom react-transition-group `<Transition>`
+   * component can be provided.
    *
-   * @default Fade
+   * @default ShowTransition
    */
   transition?: TransitionType | undefined;
 
@@ -79,7 +80,7 @@ const Overlay = React.forwardRef<HTMLElement, OverlayProps>(
   (
     {
       children: overlay,
-      transition = Fade,
+      transition = ShowTransition,
       popperConfig = {},
       rootClose = false,
       placement = 'top',
@@ -96,7 +97,7 @@ const Overlay = React.forwardRef<HTMLElement, OverlayProps>(
     const mergedRef = useMergedRefs(outerRef as any, ref);
 
     const actualTransition =
-      transition === true ? Fade : transition || undefined;
+      transition === true ? ShowTransition : transition || undefined;
 
     const handleFirstUpdate = useEventCallback((state) => {
       setFirstRenderedState(state);

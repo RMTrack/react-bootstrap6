@@ -6,7 +6,7 @@ function UncontrolledExample() {
     <Tabs
       defaultActiveKey="profile"
       id="uncontrolled-tab-example"
-      className="mb-3"
+      className="mb-5"
     >
       <Tab eventKey="home" title="Home">
         Tab content for Home

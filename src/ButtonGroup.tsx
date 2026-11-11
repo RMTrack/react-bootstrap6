@@ -17,7 +17,7 @@ export interface ButtonGroupProps extends React.HTMLAttributes<HTMLElement> {
   /**
    * Sets the size for all Buttons in the group.
    */
-  size?: 'sm' | 'lg' | undefined;
+  size?: 'xs' | 'sm' | 'lg' | undefined;
 
   /**
    * Make the set of Buttons appear vertically stacked.

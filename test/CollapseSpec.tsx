@@ -11,12 +11,7 @@ describe('<Collapse>', () => {
       const { children, ...props } = this.props;
 
       return (
-        <Collapse
-          getDimensionValue={() => 15}
-          data-testid="collapse-component"
-          {...props}
-          {...this.state}
-        >
+        <Collapse data-testid="collapse-component" {...props} {...this.state}>
           <div>
             <span data-testid={props.in ? 'status-show' : 'status-hide'} />
             {children}
@@ -49,6 +44,8 @@ describe('<Collapse>', () => {
     );
   });
 
+  // Bootstrap 6 animates the size in CSS (interpolate-size): .show is the
+  // only state class, without .collapsing or inline sizes.
   describe('from collapsed to expanded', () => {
     let renderResult: RenderResult;
 
@@ -56,66 +53,26 @@ describe('<Collapse>', () => {
       renderResult = render(<Component>Panel content</Component>);
     });
 
-    it('Should have collapsing class', () => {
+    it('Should add show at once', () => {
       renderResult.rerender(<Component in>Panel content</Component>);
 
-      expect(screen.getByTestId('collapse-component').classList).toContain(
-        'collapsing',
-      );
+      const collapse = screen.getByTestId('collapse-component');
+      expect(collapse.className).toEqual('collapse show');
+      expect(collapse.style.height).toEqual('');
     });
 
-    it('Should set initial 0px height', async () => {
-      const onEnterSpy = vi.fn();
-      const node = screen.getByTestId('collapse-component');
-
-      expect(node.style.height).toEqual('');
-
+    it('Should fire onEntered after the transition', async () => {
+      const onEntered = vi.fn();
       renderResult.rerender(
-        <Component
-          in
-          onEnter={() => {
-            expect(node.style.height).toEqual('0px');
-            onEnterSpy();
-          }}
-        >
+        <Component in onEntered={onEntered}>
           Panel content
         </Component>,
       );
 
-      await waitFor(() => expect(onEnterSpy).toHaveBeenCalled());
-    });
-
-    it('Should set node to height', () => {
-      const node = screen.getByTestId('collapse-component');
-
-      expect(node.style.height).toEqual('');
-
-      renderResult.rerender(<Component in>Panel content</Component>);
-
-      expect(node.style.height).toEqual(`${node.scrollHeight}px`);
-    });
-
-    it('Should transition from collapsing to not collapsing', async () => {
-      const node = screen.getByTestId('collapse-component');
-
-      renderResult.rerender(<Component in>Panel content</Component>);
-
-      expect(node.classList).toContain('collapsing');
-
-      await waitFor(() => expect(node.classList).toContain('collapse'));
-      expect(node.classList).toContain('show');
-    });
-
-    it('Should clear height after transition complete', async () => {
-      const node = screen.getByTestId('collapse-component');
-
-      expect(node.style.height).toEqual('');
-
-      renderResult.rerender(<Component in>Panel content</Component>);
-
-      expect(node.style.height).toEqual(`${node.scrollHeight}px`);
-
-      await waitFor(() => expect(node.style.height).toEqual(''));
+      await waitFor(() => expect(onEntered).toHaveBeenCalledOnce());
+      expect(screen.getByTestId('collapse-component').className).toEqual(
+        'collapse show',
+      );
     });
   });
 
@@ -126,62 +83,24 @@ describe('<Collapse>', () => {
       renderResult = render(<Component in>Panel content</Component>);
     });
 
-    it('Should have collapsing class', () => {
+    it('Should remove show at once', () => {
       renderResult.rerender(<Component in={false}>Panel content</Component>);
 
-      const node = screen.getByTestId('collapse-component');
-      expect(node.classList).toContain('collapsing');
+      const collapse = screen.getByTestId('collapse-component');
+      expect(collapse.className).toEqual('collapse');
+      expect(collapse.classList).not.toContain('collapsing');
+      expect(collapse.style.height).toEqual('');
     });
 
-    it('Should set initial height', async () => {
-      const onExitSpy = vi.fn();
-      const node = screen.getByTestId('collapse-component');
-
-      expect(node.style.height).toEqual('');
-
+    it('Should fire onExited after the transition', async () => {
+      const onExited = vi.fn();
       renderResult.rerender(
-        <Component
-          in={false}
-          onExit={() => {
-            expect(node.style.height).toEqual('15px');
-            onExitSpy();
-          }}
-        >
+        <Component in={false} onExited={onExited}>
           Panel content
         </Component>,
       );
 
-      await waitFor(() => expect(onExitSpy).toHaveBeenCalled());
-    });
-
-    it('Should set node to height', () => {
-      const node = screen.getByTestId('collapse-component');
-
-      expect(node.style.height).toEqual('');
-
-      renderResult.rerender(<Component in={false}>Panel content</Component>);
-
-      expect(node.style.height).toEqual('');
-    });
-
-    it('Should transition from collapsing to not collapsing', async () => {
-      const node = screen.getByTestId('collapse-component');
-
-      renderResult.rerender(<Component in={false}>Panel content</Component>);
-
-      expect(node.classList).toContain('collapsing');
-
-      await waitFor(() => expect(node.classList).toContain('collapse'));
-    });
-
-    it('Should have no height after transition complete', async () => {
-      const node = screen.getByTestId('collapse-component');
-
-      expect(node.style.height).toEqual('');
-
-      renderResult.rerender(<Component in={false}>Panel content</Component>);
-
-      await waitFor(() => expect(node.style.height).toEqual(''));
+      await waitFor(() => expect(onExited).toHaveBeenCalledOnce());
     });
   });
 

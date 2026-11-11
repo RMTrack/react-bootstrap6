@@ -1,0 +1,161 @@
+---
+title: Dialogs
+description: Add dialogs to your site for lightboxes, user notifications, or completely custom content.
+---
+
+import DialogStatic from '!!raw-loader!../examples/Dialog/Static';
+import DialogBasic from '!!raw-loader!../examples/Dialog/Basic';
+import DialogStaticBackdrop from '!!raw-loader!../examples/Dialog/StaticBackdrop';
+import DialogDefaultSizing from '!!raw-loader!../examples/Dialog/DefaultSizing';
+import DialogFullScreen from '!!raw-loader!../examples/Dialog/FullScreen';
+import DialogCustomSizing from '!!raw-loader!../examples/Dialog/CustomSizing';
+import DialogNonModal from '!!raw-loader!../examples/Dialog/NonModal';
+import DialogWithoutAnimation from '!!raw-loader!../examples/Dialog/WithoutAnimation';
+import DialogGrid from '!!raw-loader!../examples/Dialog/Grid';
+import DialogFocus from '!!raw-loader!../examples/Dialog/Focus';
+
+## Overview
+
+- `Dialog` (React-Bootstrap's `Modal` before Bootstrap 6) renders Bootstrap 6's Dialog
+  component: a single native
+  `<dialog class="dialog">` element opened with `showModal()`. There are no
+  `.modal-dialog` or `.modal-content` wrappers; the header, body and footer render
+  directly inside the `<dialog>`.
+- The dialog sits in the browser's top layer, above everything else in the document. The
+  backdrop is the native `::backdrop` pseudo-element, and the browser centers the dialog
+  in the viewport.
+- While a modal dialog is open, page scrolling is locked with `.dialog-open` on `<html>`.
+- The browser traps focus inside the dialog, makes the rest of the page inert, and returns
+  focus to the previously focused element when it closes.
+- Dialogs are <em>unmounted</em> when closed. Their children mount once the dialog is open,
+  so `autoFocus` on an element inside the dialog works.
+- The `ref` points to the `HTMLDialogElement`.
+- Native close requests call `onHide`, for example a `<form method="dialog">` submit
+  inside the dialog.
+
+## Examples
+
+### Static Markup
+
+Below is a <em>static</em> dialog (an open `<dialog class="dialog">` without the
+top-layer positioning) to demonstrate the look and feel of the Dialog. The
+`Dialog.Header`, `Dialog.Body` and `Dialog.Footer` sub components can be used on
+their own like this.
+
+<CodeBlock language="jsx" live>
+  {DialogStatic}
+</CodeBlock>
+
+### Live demo
+
+A dialog with header, body, and set of actions in the footer. Use `<Dialog/>` in combination with
+other components to show or hide your Dialog. The `<Dialog/>` Component comes with a few convenient
+"sub components": `<Dialog.Header/>`, `<Dialog.Title/>`, `<Dialog.Body/>`, and `<Dialog.Footer/>`,
+which you can use to build the Dialog content.
+
+<CodeBlock language="jsx" live>
+  {DialogBasic}
+</CodeBlock>
+
+### Static backdrop
+
+When backdrop is set to static, the dialog will not close when clicking outside it, and plays a
+short "bounce" animation (`.dialog-static`) instead. Setting `keyboard={false}` does the same
+when Escape is pressed. Click the button below to try it.
+
+<CodeBlock language="jsx" live>
+  {DialogStaticBackdrop}
+</CodeBlock>
+
+### Without Animation
+
+A Dialog can also be without an animation. For that set the `animation` prop to `false`, which
+adds `.dialog-instant`.
+
+<CodeBlock language="jsx" live>
+  {DialogWithoutAnimation}
+</CodeBlock>
+
+:::info Additional Import Options
+
+The Dialog Header, Title, Body, and Footer components are available as static properties of the `<Dialog/>`
+component, but you can also, import them directly like: `require("react-bootstrap/DialogHeader")`.
+
+:::
+
+### Non-modal dialogs
+
+Set `modal={false}` to open the dialog with `show()` instead of `showModal()`. It gets
+`.dialog-nonmodal`, has no backdrop, and the rest of the page stays interactive.
+
+<CodeBlock language="jsx" live>
+  {DialogNonModal}
+</CodeBlock>
+
+### Using the grid
+
+You can use grid layouts within a dialog using regular grid components inside the dialog content.
+
+<CodeBlock language="jsx" live noInline>
+  {DialogGrid}
+</CodeBlock>
+
+### Focus on specific element
+
+You can focus on an element inside the dialog using `autoFocus` attribute on the element.
+
+<CodeBlock language="jsx" live>
+  {DialogFocus}
+</CodeBlock>
+
+## Optional Sizes
+
+You can specify a Bootstrap large, extra large or small dialog by using the `size` prop
+(`.dialog-lg`, `.dialog-xl` and `.dialog-sm`).
+
+<CodeBlock language="jsx" live>
+  {DialogDefaultSizing}
+</CodeBlock>
+
+### Fullscreen Dialog
+
+You can use the `fullscreen` prop to make the dialog fullscreen. Specifying a breakpoint will
+only set the dialog as fullscreen **below** the breakpoint size, for example
+`fullscreen="md-down"` renders `.md-down:dialog-fullscreen`. The largest breakpoint is
+`2xl-down` (Bootstrap 5's `xxl-down`).
+
+<CodeBlock language="jsx" live>
+  {DialogFullScreen}
+</CodeBlock>
+
+### Sizing dialogs using custom CSS
+
+The `<dialog>` is the sized element, so pass a custom class with `className`. The
+`dialogClassName` and `contentClassName` props were removed along with the wrapper
+elements. The example uses a custom css class with width set to 90%.
+
+<CodeBlock language="jsx" live>
+  {DialogCustomSizing}
+</CodeBlock>
+
+## API
+
+### Dialog
+
+<PropsTable name="Dialog" />
+
+### DialogHeader
+
+<PropsTable name="DialogHeader" />
+
+### DialogTitle
+
+<PropsTable name="DialogTitle" />
+
+### DialogBody
+
+<PropsTable name="DialogBody" />
+
+### DialogFooter
+
+<PropsTable name="DialogFooter" />

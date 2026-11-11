@@ -18,16 +18,7 @@ const PROPS_OVERRIDE = {
       {
         name: 'onClick',
         type: 'function | undefined',
-        description: 'Click handler for the `AccordionButton` element',
-      },
-    ],
-  },
-  AccordionButton: {
-    additionalProps: [
-      {
-        name: 'onClick',
-        type: 'function | undefined',
-        description: 'A callback function for when this component is clicked',
+        description: 'Click handler for the `<summary>` element',
       },
     ],
   },
@@ -55,7 +46,7 @@ const PROPS_OVERRIDE = {
       },
     ],
   },
-  DropdownItem: {
+  MenuItem: {
     additionalProps: [
       {
         name: 'onClick',

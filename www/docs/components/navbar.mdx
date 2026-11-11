@@ -8,8 +8,7 @@ import NavbarBrand from '!!raw-loader!../examples/Navbar/Brand';
 import NavbarForm from '!!raw-loader!../examples/Navbar/Form';
 import NavbarCollapsible from '!!raw-loader!../examples/Navbar/Collapsible';
 import NavbarColorSchemes from '!!raw-loader!../examples/Navbar/ColorSchemes';
-import NavScroll from '!!raw-loader!../examples/Navbar/NavScroll';
-import NavbarOffcanvas from '!!raw-loader!../examples/Navbar/Offcanvas';
+import NavbarDrawerExample from '!!raw-loader!../examples/Navbar/Drawer';
 import NavbarTextLink from '!!raw-loader!../examples/Navbar/TextLink';
 import ContainerOutside from '!!raw-loader!../examples/Navbar/ContainerOutside';
 import ContainerInside from '!!raw-loader!../examples/Navbar/ContainerInside';
@@ -19,13 +18,19 @@ import ContainerInside from '!!raw-loader!../examples/Navbar/ContainerInside';
 Here’s what you need to know before getting started with the Navbar:
 
 - Use the `expand` prop to allow for collapsing the `Navbar` at lower breakpoints.
+  `expand="lg"` renders `.lg:navbar-expand`.
+- Below the `expand` breakpoint, the navigation goes in a `<Navbar.Drawer>`,
+  opened by `<Navbar.Toggle>`. Bootstrap 6 has no collapsing navbar, so
+  `Navbar.Collapse` was removed.
+- The navbar is a CSS query container, so `expand` responds to the navbar's own width,
+  not the viewport's. A navbar inside a narrow column stays collapsed.
 - `Navbar`s and their contents are fluid by default. Use optional
   [containers](#containers) to limit their horizontal width.
 - Use spacing and flex utilities to size and position content
 
 A responsive navigation header, including support for branding, navigation, and more.
-Here’s an example of all the sub-components included in a responsive light-themed
-navbar that automatically collapses at the lg (large) breakpoint.
+Here’s an example of all the sub-components included in a responsive navbar that
+automatically collapses into a drawer below the md (medium, 768px) breakpoint.
 
 <CodeBlock language="jsx" live>
   {NavbarBasic}
@@ -42,7 +47,7 @@ likely require custom styling to work well.
 
 ## Forms
 
-Use `<Form inline>` and your various form controls within the Navbar.
+Place a `<Form>` and your various form controls within the Navbar.
 Align the contents as needed with utility classes.
 
 <CodeBlock language="jsx" live>
@@ -60,18 +65,11 @@ correctly align it vertically.
 
 ## Color schemes
 
-Theming the navbar has never been easier thanks to the combination of theming classes
-and background-color utilities. Choose from `variant="light"` for use with light
-background colors, or `variant="dark"` for dark background colors. Then, customize
-with the `bg` prop or any custom css!
-
-:::caution Heads up!
-
-Dark variants for components were deprecated in Bootstrap v5.3.0 with the introduction
-of color modes. Instead of adding `variant="dark"`, set `data-bs-theme="dark"` on the
-`Navbar`.
-
-:::
+Bootstrap 6 removed `.navbar-light` and `.navbar-dark`. A navbar follows the page's
+color mode, and `variant` scopes one with `data-bs-theme`: `variant="dark"` renders
+`data-bs-theme="dark"`. Set the surface with the `bg` prop, which adds a `bg-*`
+utility. The neutral surfaces `bg="1"` and `bg="2"` are common choices, as is any theme
+color or custom css.
 
 <CodeBlock language="jsx" live>
   {NavbarColorSchemes}
@@ -88,7 +86,7 @@ to center it on a page, or add one within to only center the contents of a
 </CodeBlock>
 
 When the container is within your navbar, its horizontal padding is removed at
-breakpoints lower than your specified `expand={'sm' | 'md' | 'lg' | 'xl' | 'xxl'}`
+breakpoints lower than your specified `expand={'sm' | 'md' | 'lg' | 'xl' | '2xl'}`
 prop. This ensures we’re not doubling up on padding unnecessarily on lower
 viewports when your navbar is collapsed.
 
@@ -132,24 +130,15 @@ Since these positioning needs are so common for navbars, we've added convenience
 <Navbar sticky="bottom" />
 ```
 
-## Scrolling
-
-You can use the `navbarScroll` prop in a `<Nav>` to enable vertical scrolling within the toggleable
-contents of a collapsed navbar. See the <DocLink path="/components/navbar/#scrolling">Bootstrap docs</DocLink>
-for more information.
-
-<CodeBlock language="jsx" live>
-  {NavScroll}
-</CodeBlock>
-
 ## Responsive behaviors
 
-Use the `expand` prop as well as the `Navbar.Toggle` and `Navbar.Collapse` components to control
-when content collapses behind a button.
+Use the `expand` prop as well as the `Navbar.Toggle` and `Navbar.Drawer` components to control
+when content collapses behind a button. Above the breakpoint, the drawer's contents are laid out
+inline in the navbar.
 
-Set the `defaultExpanded` prop to make the Navbar start expanded. Set `collapseOnSelect` to make
-the Navbar collapse automatically when the user selects an item. You can also finely control
-the collapsing behavior by using the `expanded` and `onToggle` props.
+Set the `defaultExpanded` prop to make the Navbar start with its drawer open. Set `collapseOnSelect`
+to close the drawer automatically when the user selects an item. You can also finely control
+the behavior by using the `expanded` and `onToggle` props.
 
 :::caution
 
@@ -161,17 +150,16 @@ Watch out! You **need** to provide a breakpoint value to `expand` in order for t
   {NavbarCollapsible}
 </CodeBlock>
 
-### Offcanvas
+### Drawer
 
-Transform your expanding and collapsing navbar into an offcanvas drawer with the offcanvas component.
-We extend both the offcanvas default styles and use the `expand` prop to create a dynamic and
-flexible navigation sidebar.
+`Navbar.Drawer` accepts the `Drawer` props, such as `placement`, so you can choose which
+edge the drawer slides in from.
 
-In the example below, to create an offcanvas navbar that is always collapsed across all breakpoints,
+In the example below, to create a drawer navbar that is always collapsed across all breakpoints,
 set the `expand` prop to `false`.
 
 <CodeBlock language="jsx" live>
-  {NavbarOffcanvas}
+  {NavbarDrawerExample}
 </CodeBlock>
 
 ## API
@@ -188,6 +176,6 @@ set the `expand` prop to `false`.
 
 <PropsTable name="NavbarToggle" />
 
-### NavbarCollapse
+### NavbarDrawer
 
-<PropsTable name="NavbarCollapse" />
+<PropsTable name="NavbarDrawer" />

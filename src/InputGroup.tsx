@@ -34,13 +34,6 @@ export interface InputGroupProps extends React.HTMLAttributes<HTMLElement> {
    * Control the size of buttons and form elements from the top-level.
    */
   size?: 'sm' | 'lg' | undefined;
-
-  /**
-   * Handles the input's rounded corners when using form validation.
-   *
-   * Use this when your input group contains both an input and feedback element.
-   */
-  hasValidation?: boolean | undefined;
 }
 
 const InputGroup: DynamicRefForwardingComponent<'div', InputGroupProps> =
@@ -49,7 +42,6 @@ const InputGroup: DynamicRefForwardingComponent<'div', InputGroupProps> =
       {
         bsPrefix,
         size,
-        hasValidation,
         className,
         // Need to define the default "as" during prop destructuring to be compatible with styled-components github.com/react-bootstrap/react-bootstrap/issues/3595
         as: Component = 'div',
@@ -59,7 +51,7 @@ const InputGroup: DynamicRefForwardingComponent<'div', InputGroupProps> =
     ) => {
       bsPrefix = useBootstrapPrefix(bsPrefix, 'input-group');
 
-      // Intentionally an empty object. Used in detecting if a dropdown
+      // Intentionally an empty object. Used in detecting if a menu
       // exists under an input group.
       const contextValue = useMemo(() => ({}), []);
 
@@ -68,12 +60,7 @@ const InputGroup: DynamicRefForwardingComponent<'div', InputGroupProps> =
           <Component
             ref={ref}
             {...props}
-            className={clsx(
-              className,
-              bsPrefix,
-              size && `${bsPrefix}-${size}`,
-              hasValidation && 'has-validation',
-            )}
+            className={clsx(className, bsPrefix, size && `${bsPrefix}-${size}`)}
           />
         </InputGroupContext.Provider>
       );

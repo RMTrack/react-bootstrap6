@@ -33,17 +33,15 @@ import * as React from 'react';
 
 function Example() {
   return (
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div class="alert theme-danger" role="alert">
       <strong>Oh snap! You got an error!</strong>
       <p>Change this and that and try again.</p>
       <button
         type="button"
-        class="close"
-        data-dismiss="alert"
+        class="btn-close"
+        data-bs-dismiss="alert"
         aria-label="Close"
-      >
-        <span aria-hidden="true">&times;</span>
-      </button>
+      ></button>
     </div>
   );
 }
@@ -83,7 +81,7 @@ when creating more complex components.
 ### Bootstrap
 
 ```html
-<div class="alert alert-success alert-dismissible fade show firstCollapsible" role="alert">
+<div class="alert theme-success firstCollapsible" role="alert">
   <strong>How's it going?!</strong>
   <p>
     Duis mollis, est non commodo luctus, nisi erat porttitor ligula,
@@ -92,21 +90,21 @@ when creating more complex components.
   </p>
   <hr/>
   <div class="d-flex justify-content-end">
-	<button type="button" class="btn btn-outline-success">Close me ya'll!</button>
+	<button type="button" class="btn-outline theme-success">Close me ya'll!</button>
   </div>
 </div>
-<div class="d-flex justify-content-start alert fade show">
-	<button type="button" class="btn btn-primary d-none secondCollapsible">Show Alert</button>
+<div class="d-flex justify-content-start alert">
+	<button type="button" class="btn-solid theme-primary d-none secondCollapsible">Show Alert</button>
 </div>
 ```
 
 ```js
-$('.btn-outline-success').on('click', function(e) {
+$('.btn-outline').on('click', function(e) {
     $('.firstCollapsible').addClass('d-none');
     $('.secondCollapsible').removeClass('d-none');
 })
 
-$('.btn-primary').on('click', function(e) {
+$('.btn-solid').on('click', function(e) {
     $('.firstCollapsible').removeClass('d-none');
     $('.secondCollapsible').addClass('d-none');
 })

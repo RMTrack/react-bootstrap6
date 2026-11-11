@@ -18,22 +18,22 @@ export interface FormCheckProps extends React.InputHTMLAttributes<HTMLInputEleme
   as?: React.ElementType | undefined;
 
   /**
-   * @default 'form-check'
+   * The `.form-field` layout wrapper.
+   *
+   * @default 'form-field'
    */
   bsPrefix?: string | undefined;
 
   /**
-   * bsPrefix override for the base switch class.
+   * bsPrefix override for the `.switch` wrapper around a switch input.
    *
-   * @default 'form-switch'
+   * @default 'switch'
    */
   bsSwitchPrefix?: string | undefined;
 
   /**
    * A HTML id attribute, necessary for proper form accessibility.
    * An id is recommended for allowing label clicks to toggle the check control.
-   *
-   * This is **required** when `type="switch"` due to how they are rendered.
    */
   id?: string | undefined;
 
@@ -49,16 +49,6 @@ export interface FormCheckProps extends React.InputHTMLAttributes<HTMLInputEleme
    * ```
    */
   children?: React.ReactNode | undefined;
-
-  /**
-   * Groups controls horizontally with other `FormCheck`s.
-   */
-  inline?: boolean | undefined;
-
-  /**
-   * Put your checkboxes, radios, and switches on the opposite side.
-   */
-  reverse?: boolean | undefined;
 
   /**
    * Disables the control.
@@ -113,8 +103,6 @@ const FormCheck: DynamicRefForwardingComponent<'input', FormCheckProps> =
         id,
         bsPrefix,
         bsSwitchPrefix,
-        inline = false,
-        reverse = false,
         disabled = false,
         isValid = false,
         isInvalid = false,
@@ -133,8 +121,7 @@ const FormCheck: DynamicRefForwardingComponent<'input', FormCheckProps> =
       },
       ref,
     ) => {
-      bsPrefix = useBootstrapPrefix(bsPrefix, 'form-check');
-      bsSwitchPrefix = useBootstrapPrefix(bsSwitchPrefix, 'form-switch');
+      bsPrefix = useBootstrapPrefix(bsPrefix, 'form-field');
 
       const { controlId } = useContext(FormContext);
       const innerFormContext = useMemo(
@@ -151,7 +138,8 @@ const FormCheck: DynamicRefForwardingComponent<'input', FormCheckProps> =
       const input = (
         <FormCheckInput
           {...props}
-          type={type === 'switch' ? 'checkbox' : type}
+          type={type}
+          bsPrefix={type === 'switch' ? bsSwitchPrefix : undefined}
           ref={ref}
           isValid={isValid}
           isInvalid={isInvalid}
@@ -162,16 +150,7 @@ const FormCheck: DynamicRefForwardingComponent<'input', FormCheckProps> =
 
       return (
         <FormContext.Provider value={innerFormContext}>
-          <div
-            style={style}
-            className={clsx(
-              className,
-              hasLabel && bsPrefix,
-              inline && `${bsPrefix}-inline`,
-              reverse && `${bsPrefix}-reverse`,
-              type === 'switch' && bsSwitchPrefix,
-            )}
-          >
+          <div style={style} className={clsx(className, hasLabel && bsPrefix)}>
             {children || (
               <>
                 {input}

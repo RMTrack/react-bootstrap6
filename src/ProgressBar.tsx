@@ -2,8 +2,8 @@ import clsx from 'clsx';
 import * as React from 'react';
 import { cloneElement } from 'react';
 import { useBootstrapPrefix } from './ThemeProvider.js';
+import type { Variant } from './types.js';
 import { map } from './ElementChildren.js';
-import type { LiteralUnion } from './types.js';
 
 export interface ProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -48,12 +48,11 @@ export interface ProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
   animated?: boolean | undefined;
 
   /**
-   * Sets the background class of the progress bar.
+   * The theme color of the progress bar, applied with `.theme-*`.
    *
-   * @type {'success' | 'danger' | 'warning' | 'info' | string | undefined}
+   * @type {'primary' | 'accent' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'inverse' | string | undefined}
    */
-  variant?:
-    LiteralUnion<'success' | 'danger' | 'warning' | 'info', string> | undefined;
+  variant?: Variant | undefined;
 
   /**
    * @private
@@ -119,7 +118,7 @@ const ProgressBar = React.forwardRef<HTMLDivElement, ProgressBarProps>(
       >
         <div
           className={clsx(className, `${bsPrefix}-bar`, {
-            [`bg-${variant}`]: variant,
+            [`theme-${variant}`]: variant,
             [`${bsPrefix}-bar-animated`]: animated,
             [`${bsPrefix}-bar-striped`]: animated || striped,
           })}

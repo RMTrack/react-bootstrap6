@@ -15,7 +15,7 @@ describe('Tooltip', () => {
     expect(classList).toContain('bs-tooltip-end');
 
     expect(
-      screen.getByTestId('test-tooltip').getAttribute('x-placement')!,
+      screen.getByTestId('test-tooltip').getAttribute('data-bs-placement')!,
     ).toEqual('right');
   });
 });

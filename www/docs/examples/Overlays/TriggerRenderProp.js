@@ -10,7 +10,7 @@ function TriggerRendererProp() {
     >
       {({ ref, ...triggerHandler }) => (
         <Button
-          variant="light"
+          variant="subtle-secondary"
           {...triggerHandler}
           className="d-inline-flex align-items-center"
         >

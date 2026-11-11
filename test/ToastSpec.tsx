@@ -28,7 +28,7 @@ describe('<Toast>', () => {
 
   it('should apply bg prop', () => {
     const { container } = render(<Toast bg="primary">Card</Toast>);
-    expect(container.firstElementChild!.classList).toContain('bg-primary');
+    expect(container.firstElementChild!.classList).toContain('theme-primary');
     expect(container.firstElementChild!.classList).toContain('toast');
   });
 
@@ -40,9 +40,8 @@ describe('<Toast>', () => {
       </Toast>,
     );
 
-    ['fade', 'toast', 'show'].map((className) =>
-      expect(container.firstElementChild!.classList).toContain(className),
-    );
+    // Bootstrap 6 toasts animate in CSS and no longer get .fade.
+    expect(container.firstElementChild!.className).toEqual('toast show');
 
     (
       [
@@ -252,5 +251,24 @@ describe('<Toast>', () => {
     });
 
     expect(increment).toHaveBeenCalledTimes(6);
+  });
+  it('should add toast-instant when animation is false', () => {
+    const { container, rerender } = render(
+      <Toast animation={false}>
+        <Toast.Body />
+      </Toast>,
+    );
+
+    const toast = container.firstElementChild!;
+    expect(toast.className).toEqual('toast toast-instant show');
+
+    rerender(
+      <Toast animation={false} show={false}>
+        <Toast.Body />
+      </Toast>,
+    );
+
+    // Bootstrap 6 removed .hide; only .show is toggled.
+    expect(toast.className).toEqual('toast toast-instant');
   });
 });

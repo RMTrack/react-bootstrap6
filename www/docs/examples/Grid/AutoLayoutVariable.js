@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 function AutoLayoutVariableExample() {
   return (
     <Container>
-      <Row className="justify-content-md-center">
+      <Row className="md:justify-content-center">
         <Col xs lg="2">
           1 of 3
         </Col>

@@ -1,7 +1,7 @@
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
+import Menu from 'react-bootstrap/Menu';
+import MenuButton from 'react-bootstrap/MenuButton';
 
 function VerticalExample() {
   return (
@@ -9,35 +9,23 @@ function VerticalExample() {
       <Button>Button</Button>
       <Button>Button</Button>
 
-      <DropdownButton
-        as={ButtonGroup}
-        title="Dropdown"
-        id="bg-vertical-dropdown-1"
-      >
-        <Dropdown.Item eventKey="1">Dropdown link</Dropdown.Item>
-        <Dropdown.Item eventKey="2">Dropdown link</Dropdown.Item>
-      </DropdownButton>
+      <MenuButton as={ButtonGroup} title="Menu" id="bg-vertical-dropdown-1">
+        <Menu.Item eventKey="1">Menu link</Menu.Item>
+        <Menu.Item eventKey="2">Menu link</Menu.Item>
+      </MenuButton>
 
       <Button>Button</Button>
       <Button>Button</Button>
 
-      <DropdownButton
-        as={ButtonGroup}
-        title="Dropdown"
-        id="bg-vertical-dropdown-2"
-      >
-        <Dropdown.Item eventKey="1">Dropdown link</Dropdown.Item>
-        <Dropdown.Item eventKey="2">Dropdown link</Dropdown.Item>
-      </DropdownButton>
+      <MenuButton as={ButtonGroup} title="Menu" id="bg-vertical-dropdown-2">
+        <Menu.Item eventKey="1">Menu link</Menu.Item>
+        <Menu.Item eventKey="2">Menu link</Menu.Item>
+      </MenuButton>
 
-      <DropdownButton
-        as={ButtonGroup}
-        title="Dropdown"
-        id="bg-vertical-dropdown-3"
-      >
-        <Dropdown.Item eventKey="1">Dropdown link</Dropdown.Item>
-        <Dropdown.Item eventKey="2">Dropdown link</Dropdown.Item>
-      </DropdownButton>
+      <MenuButton as={ButtonGroup} title="Menu" id="bg-vertical-dropdown-3">
+        <Menu.Item eventKey="1">Menu link</Menu.Item>
+        <Menu.Item eventKey="2">Menu link</Menu.Item>
+      </MenuButton>
     </ButtonGroup>
   );
 }

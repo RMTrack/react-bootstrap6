@@ -8,11 +8,11 @@ function PlacementExample() {
 
   return (
     <>
-      <div className="mb-3">
+      <div className="mb-5">
         <label htmlFor="selectToastPlacement">Toast position</label>
         <Form.Select
           id="selectToastPlacement"
-          className="mt-2"
+          className="mt-3"
           onChange={(e) => setPosition(e.currentTarget.value)}
         >
           {[
@@ -36,11 +36,11 @@ function PlacementExample() {
       <div
         aria-live="polite"
         aria-atomic="true"
-        className="bg-dark position-relative"
+        className="bg-black position-relative"
         style={{ minHeight: '240px' }}
       >
         <ToastContainer
-          className="p-3"
+          className="p-5"
           position={position}
           style={{ zIndex: 1 }}
         >
@@ -48,7 +48,7 @@ function PlacementExample() {
             <Toast.Header closeButton={false}>
               <img
                 src="holder.js/20x20?text=%20"
-                className="rounded me-2"
+                className="rounded me-3"
                 alt=""
               />
               <strong className="me-auto">Bootstrap</strong>

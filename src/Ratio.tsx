@@ -23,10 +23,12 @@ export interface RatioProps extends React.HTMLAttributes<HTMLDivElement> {
   aspectRatio?: AspectRatio | number | undefined;
 }
 
-function toPercent(num: number): string {
-  if (num <= 0) return '100%';
-  if (num < 1) return `${num * 100}%`;
-  return `${num}%`;
+// Custom ratios are given as height / width, either as a fraction (0.5) or a
+// percentage (50). Bootstrap 6's `--bs-ratio` is an `aspect-ratio` value.
+function toAspectRatio(num: number): string {
+  if (num <= 0) return '1 / 1';
+  const percent = num < 1 ? num * 100 : num;
+  return `100 / ${percent}`;
 }
 
 const Ratio = React.forwardRef<HTMLDivElement, RatioProps>(
@@ -36,6 +38,7 @@ const Ratio = React.forwardRef<HTMLDivElement, RatioProps>(
   ) => {
     bsPrefix = useBootstrapPrefix(bsPrefix, 'ratio');
     const isCustomRatio = typeof aspectRatio === 'number';
+    const child = React.Children.only(children);
 
     return (
       <div
@@ -44,16 +47,23 @@ const Ratio = React.forwardRef<HTMLDivElement, RatioProps>(
         style={{
           ...style,
           ...(isCustomRatio && {
-            '--bs-aspect-ratio': toPercent(aspectRatio as number),
+            '--bs-ratio': toAspectRatio(aspectRatio as number),
           }),
         }}
         className={clsx(
-          bsPrefix,
           className,
-          !isCustomRatio && `${bsPrefix}-${aspectRatio}`,
+          `${bsPrefix}-${isCustomRatio ? 'auto' : aspectRatio}`,
         )}
       >
-        {React.Children.only(children)}
+        {
+          // Bootstrap 6 ratio utilities size the element itself, so stretch the
+          // embedded element to fill the ratio box.
+          React.isValidElement<{ className?: string }>(child)
+            ? React.cloneElement(child, {
+                className: clsx(child.props.className, 'w-100', 'h-100'),
+              })
+            : child
+        }
       </div>
     );
   },

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useContext } from 'react';
 import useEventCallback from '@restart/hooks/useEventCallback';
 import { useBootstrapPrefix } from './ThemeProvider.js';
-import CloseButton, { type CloseButtonVariant } from './CloseButton.js';
+import CloseButton from './CloseButton.js';
 import ToastContext from './ToastContext.js';
 
 export interface ToastHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -20,11 +20,6 @@ export interface ToastHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   closeLabel?: string | undefined;
 
   /**
-   * Sets the variant for close button.
-   */
-  closeVariant?: CloseButtonVariant | undefined;
-
-  /**
    * Specify whether the Component should contain a close button
    */
   closeButton?: boolean | undefined;
@@ -35,7 +30,6 @@ const ToastHeader = React.forwardRef<HTMLDivElement, ToastHeaderProps>(
     {
       bsPrefix,
       closeLabel = 'Close',
-      closeVariant,
       closeButton = true,
       className,
       children,
@@ -58,7 +52,6 @@ const ToastHeader = React.forwardRef<HTMLDivElement, ToastHeaderProps>(
         {closeButton && (
           <CloseButton
             aria-label={closeLabel}
-            variant={closeVariant}
             onClick={handleClick}
             data-dismiss="toast"
           />

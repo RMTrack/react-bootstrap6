@@ -62,9 +62,12 @@ const NavbarToggle: DynamicRefForwardingComponent<'button', NavbarToggleProps> =
           ref={ref}
           onClick={handleClick}
           aria-label={label}
-          className={clsx(className, bsPrefix, !expanded && 'collapsed')}
+          aria-expanded={!!expanded}
+          className={clsx(className, 'btn-icon', bsPrefix)}
         >
-          {children || <span className={`${bsPrefix}-icon`} />}
+          {children || (
+            <span className={`${bsPrefix}-icon`} aria-hidden="true" />
+          )}
         </Component>
       );
     },

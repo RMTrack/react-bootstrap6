@@ -1,40 +1,40 @@
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
+import Menu from 'react-bootstrap/Menu';
+import MenuButton from 'react-bootstrap/MenuButton';
 
 function Example() {
   return (
-    <Stack direction="horizontal" gap={3}>
-      <DropdownButton
+    <Stack direction="horizontal" gap={5}>
+      <MenuButton
         id="dropdown-button-dark-example2"
         variant="secondary"
-        title="Light dropdown"
-        className="mt-2"
+        title="Light menu"
+        className="mt-3"
         data-bs-theme="light"
       >
-        <Dropdown.Item href="#/action-1" active>
+        <Menu.Item href="#/action-1" active>
           Action
-        </Dropdown.Item>
-        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-        <Dropdown.Divider />
-        <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
-      </DropdownButton>
+        </Menu.Item>
+        <Menu.Item href="#/action-2">Another action</Menu.Item>
+        <Menu.Item href="#/action-3">Something else</Menu.Item>
+        <Menu.Divider />
+        <Menu.Item href="#/action-4">Separated link</Menu.Item>
+      </MenuButton>
 
-      <DropdownButton
+      <MenuButton
         id="dropdown-button-dark-example2"
         variant="secondary"
-        title="Dark dropdown"
-        className="mt-2"
+        title="Dark menu"
+        className="mt-3"
         data-bs-theme="dark"
       >
-        <Dropdown.Item href="#/action-1" active>
+        <Menu.Item href="#/action-1" active>
           Action
-        </Dropdown.Item>
-        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-        <Dropdown.Divider />
-        <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
-      </DropdownButton>
+        </Menu.Item>
+        <Menu.Item href="#/action-2">Another action</Menu.Item>
+        <Menu.Item href="#/action-3">Something else</Menu.Item>
+        <Menu.Divider />
+        <Menu.Item href="#/action-4">Separated link</Menu.Item>
+      </MenuButton>
     </Stack>
   );
 }

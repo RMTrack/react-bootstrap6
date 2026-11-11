@@ -5,8 +5,8 @@ import useEventCallback from '@restart/hooks/useEventCallback';
 import { useBootstrapPrefix } from './ThemeProvider.js';
 import AlertHeading from './AlertHeading.js';
 import AlertLink from './AlertLink.js';
-import Fade from './Fade.js';
-import CloseButton, { type CloseButtonVariant } from './CloseButton.js';
+import { HidingTransition } from './CssTransition.js';
+import CloseButton from './CloseButton.js';
 import type { Variant } from './types.js';
 import type { TransitionType } from './helpers.js';
 
@@ -19,7 +19,7 @@ export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * The Alert visual variant.
    *
-   * @type {'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark' | 'light' | undefined}
+   * @type {'primary' | 'accent' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'inverse' | undefined}
    */
   variant?: Variant | undefined;
 
@@ -55,12 +55,7 @@ export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   closeLabel?: string | undefined;
 
   /**
-   * Sets the variant for close button.
-   */
-  closeVariant?: CloseButtonVariant | undefined;
-
-  /**
-   * Animate the alert dismissal. Defaults to using `<Fade>` animation or use
+   * Animate the alert dismissal. Defaults to fading out with `.hiding` or use
    * `false` to disable. A custom `react-transition-group` Transition can also
    * be provided.
    */
@@ -73,13 +68,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
       bsPrefix,
       show = true,
       closeLabel = 'Close alert',
-      closeVariant,
       className,
       children,
       variant = 'primary',
       onClose,
       dismissible,
-      transition = Fade,
+      transition = HidingTransition,
       ...props
     } = useUncontrolled(uncontrolledProps, {
       show: 'onClose',
@@ -91,27 +85,22 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         onClose(false, e);
       }
     });
-    const Transition = transition === true ? Fade : transition;
+    const Transition = transition === true ? HidingTransition : transition;
     const alert = (
       <div
         role="alert"
         {...(!Transition ? props : undefined)}
         ref={ref}
-        className={clsx(
-          className,
-          prefix,
-          variant && `${prefix}-${variant}`,
-          dismissible && `${prefix}-dismissible`,
-        )}
+        className={clsx(className, prefix, variant && `theme-${variant}`)}
       >
+        {children}
         {dismissible && (
           <CloseButton
+            className="ms-auto"
             onClick={handleClose}
             aria-label={closeLabel}
-            variant={closeVariant}
           />
         )}
-        {children}
       </div>
     );
 

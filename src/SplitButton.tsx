@@ -1,13 +1,13 @@
 import * as React from 'react';
 import Button from './Button.js';
 import ButtonGroup from './ButtonGroup.js';
-import Dropdown from './Dropdown.js';
-import type { PropsFromToggle } from './DropdownToggle.js';
-import { BsDropdownProps } from './types.js';
+import Menu from './Menu.js';
+import type { PropsFromToggle } from './MenuToggle.js';
+import { BsMenuProps } from './types.js';
 
 export interface SplitButtonProps
   extends
-    BsDropdownProps,
+    BsMenuProps,
     PropsFromToggle,
     Omit<
       React.HTMLAttributes<HTMLElement>,
@@ -19,14 +19,14 @@ export interface SplitButtonProps
   menuRole?: string | undefined;
 
   /**
-   * Whether to render the dropdown menu in the DOM before the first time it is shown
+   * Whether to render the menu panel in the DOM before the first time it is shown
    */
   renderMenuOnMount?: boolean | undefined;
 
   /**
    *  Which event when fired outside the component will cause it to be closed.
    *
-   * _see [DropdownMenu](#dropdown-menu-props) for more details_
+   * _see [MenuPanel](#menu-panel-props) for more details_
    */
   rootCloseEvent?: 'click' | 'mousedown' | undefined;
 
@@ -56,21 +56,21 @@ export interface SplitButtonProps
   type?: 'submit' | 'reset' | 'button' | undefined;
 
   /**
-   * Allow Dropdown to flip in case of an overlapping on the reference element. For more information refer to
+   * Allow Menu to flip in case of an overlapping on the reference element. For more information refer to
    * Popper.js's flip [docs](https://popper.js.org/docs/v2/modifiers/flip/).
    */
   flip?: boolean | undefined;
 }
 
 /**
- * A convenience component for simple or general use split button dropdowns. Renders a
- * `ButtonGroup` containing a `Button` and a `Button` toggle for the `Dropdown`. All `children`
- * are passed directly to the default `Dropdown.Menu`. This component accepts all of [`Dropdown`'s
- * props](#dropdown-props).
+ * A convenience component for simple or general use split button menus. Renders a
+ * `ButtonGroup` containing a `Button` and a `Button` toggle for the `Menu`. All `children`
+ * are passed directly to the default `Menu.Panel`. This component accepts all of [`Menu`'s
+ * props](#menu-props).
  *
- * _All unknown props are passed through to the `Dropdown` component._
+ * _All unknown props are passed through to the `Menu` component._
  * The Button `variant`, `size` and `bsPrefix` props are passed to the button and toggle,
- * and menu-related props are passed to the `Dropdown.Menu`
+ * and menu-related props are passed to the `Menu.Panel`
  */
 const SplitButton = React.forwardRef<HTMLElement, SplitButtonProps>(
   (
@@ -81,7 +81,7 @@ const SplitButton = React.forwardRef<HTMLElement, SplitButtonProps>(
       variant,
       title,
       type = 'button',
-      toggleLabel = 'Toggle dropdown',
+      toggleLabel = 'Toggle menu',
       children,
       onClick,
       href,
@@ -94,7 +94,7 @@ const SplitButton = React.forwardRef<HTMLElement, SplitButtonProps>(
     },
     ref,
   ) => (
-    <Dropdown ref={ref} {...props} as={ButtonGroup}>
+    <Menu ref={ref} {...props} as={ButtonGroup}>
       <Button
         size={size}
         variant={variant}
@@ -107,7 +107,7 @@ const SplitButton = React.forwardRef<HTMLElement, SplitButtonProps>(
       >
         {title}
       </Button>
-      <Dropdown.Toggle
+      <Menu.Toggle
         split
         id={id}
         size={size}
@@ -116,17 +116,17 @@ const SplitButton = React.forwardRef<HTMLElement, SplitButtonProps>(
         childBsPrefix={bsPrefix}
       >
         <span className="visually-hidden">{toggleLabel}</span>
-      </Dropdown.Toggle>
+      </Menu.Toggle>
 
-      <Dropdown.Menu
+      <Menu.Panel
         role={menuRole}
         renderOnMount={renderMenuOnMount}
         rootCloseEvent={rootCloseEvent}
         flip={flip}
       >
         {children}
-      </Dropdown.Menu>
-    </Dropdown>
+      </Menu.Panel>
+    </Menu>
   ),
 );
 

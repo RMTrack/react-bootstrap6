@@ -38,7 +38,8 @@ describe('Figure', () => {
       render(<Figure.Image rounded fluid data-testid="test" />);
 
       const image = screen.getByTestId('test');
-      expect(image.classList).toContain('figure-img');
+      // Bootstrap 6 has no .figure-img; .figure lays out the image and caption.
+      expect(image.classList).not.toContain('figure-img');
       expect(image.classList).toContain('img-fluid');
       expect(image.classList).toContain('rounded');
     });

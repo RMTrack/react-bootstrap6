@@ -11,8 +11,8 @@ function ColorExample() {
       <Placeholder xs={12} bg="danger" />
       <Placeholder xs={12} bg="warning" />
       <Placeholder xs={12} bg="info" />
-      <Placeholder xs={12} bg="light" />
-      <Placeholder xs={12} bg="dark" />
+      <Placeholder xs={12} bg="accent" />
+      <Placeholder xs={12} bg="inverse" />
     </>
   );
 }

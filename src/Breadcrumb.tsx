@@ -25,6 +25,12 @@ export interface BreadcrumbProps extends React.HTMLAttributes<HTMLElement> {
    * Additional props passed as-is to the underlying `<ol>` element
    */
   listProps?: React.OlHTMLAttributes<HTMLOListElement> | undefined;
+
+  /**
+   * Content of the `.breadcrumb-divider` rendered between items. Leave it
+   * empty for Bootstrap's default chevron, or pass text or an icon.
+   */
+  divider?: React.ReactNode | undefined;
 }
 
 const Breadcrumb: DynamicRefForwardingComponent<'nav', BreadcrumbProps> =
@@ -36,6 +42,7 @@ const Breadcrumb: DynamicRefForwardingComponent<'nav', BreadcrumbProps> =
         listProps = {},
         children,
         label = 'breadcrumb',
+        divider,
         // Need to define the default "as" during prop destructuring to be compatible with styled-components github.com/react-bootstrap/react-bootstrap/issues/3595
         as: Component = 'nav',
         ...props
@@ -43,6 +50,8 @@ const Breadcrumb: DynamicRefForwardingComponent<'nav', BreadcrumbProps> =
       ref,
     ) => {
       const prefix = useBootstrapPrefix(bsPrefix, 'breadcrumb');
+      // toArray() drops null, undefined and boolean children.
+      const items = React.Children.toArray(children);
 
       return (
         <Component
@@ -52,7 +61,16 @@ const Breadcrumb: DynamicRefForwardingComponent<'nav', BreadcrumbProps> =
           {...props}
         >
           <ol {...listProps} className={clsx(prefix, listProps?.className)}>
-            {children}
+            {items.map((child, index) => (
+              <React.Fragment key={(child as any)?.key ?? index}>
+                {index > 0 && (
+                  <li className={`${prefix}-divider`} aria-hidden="true">
+                    {divider}
+                  </li>
+                )}
+                {child}
+              </React.Fragment>
+            ))}
           </ol>
         </Component>
       );

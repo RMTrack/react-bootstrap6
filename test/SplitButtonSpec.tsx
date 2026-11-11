@@ -1,15 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import SplitButton from '../src/SplitButton';
-import DropdownItem from '../src/DropdownItem';
+import MenuItem from '../src/MenuItem';
 
 describe('<SplitButton>', () => {
   const simple = (
     <SplitButton data-testid="test-wrapper" title="Title" id="test-id">
-      <DropdownItem>Item 1</DropdownItem>
-      <DropdownItem>Item 2</DropdownItem>
-      <DropdownItem>Item 3</DropdownItem>
-      <DropdownItem>Item 4</DropdownItem>
+      <MenuItem>Item 1</MenuItem>
+      <MenuItem>Item 2</MenuItem>
+      <MenuItem>Item 3</MenuItem>
+      <MenuItem>Item 4</MenuItem>
     </SplitButton>
   );
 
@@ -42,7 +42,7 @@ describe('<SplitButton>', () => {
         id="test-id"
         onClick={onClickSpy}
       >
-        <DropdownItem>Item 1</DropdownItem>
+        <MenuItem>Item 1</MenuItem>
       </SplitButton>,
     );
     const splitButtonElem = screen.getByTestId('test-wrapper');
@@ -62,7 +62,7 @@ describe('<SplitButton>', () => {
         id="test-id"
         onClick={onClickSpy}
       >
-        <DropdownItem>Item 1</DropdownItem>
+        <MenuItem>Item 1</MenuItem>
       </SplitButton>,
     );
     const splitButtonElem = screen.getByTestId('test-wrapper');
@@ -79,7 +79,7 @@ describe('<SplitButton>', () => {
         id="test-id"
         disabled
       >
-        <DropdownItem>Item 1</DropdownItem>
+        <MenuItem>Item 1</MenuItem>
       </SplitButton>,
     );
     const splitButtonElem = screen.getByTestId('test-wrapper');
@@ -98,7 +98,7 @@ describe('<SplitButton>', () => {
         href="/some/unique-thing/"
         target="_blank"
       >
-        <DropdownItem eventKey="1">DropdownItem 1 content</DropdownItem>
+        <MenuItem eventKey="1">MenuItem 1 content</MenuItem>
       </SplitButton>,
     );
     const splitButtonElem = screen.getByTestId('test-wrapper');
@@ -113,14 +113,14 @@ describe('<SplitButton>', () => {
 
   it('should set accessible label on toggle', () => {
     render(simple);
-    const toggleLabelElem = screen.getByText('Toggle dropdown');
+    const toggleLabelElem = screen.getByText('Toggle menu');
     expect(toggleLabelElem.classList).toContain('visually-hidden');
   });
 
   it('should set aria-label on toggle from toggleLabel', () => {
     render(
       <SplitButton title="Title" id="test-id" toggleLabel="Label">
-        <DropdownItem>Item 1</DropdownItem>
+        <MenuItem>Item 1</MenuItem>
       </SplitButton>,
     );
     const labelElem = screen.getByText('Label');
@@ -135,7 +135,7 @@ describe('<SplitButton>', () => {
         id="test-id"
         type="submit"
       >
-        <DropdownItem>Item 1</DropdownItem>
+        <MenuItem>Item 1</MenuItem>
       </SplitButton>,
     );
     const splitButtonElem = screen.getByTestId('test-wrapper');

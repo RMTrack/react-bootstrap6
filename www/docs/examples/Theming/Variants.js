@@ -5,9 +5,11 @@ function VariantsExample() {
     <>
       <style type="text/css">
         {`
-    .btn-flat {
-      background-color: purple;
-      color: white;
+    .theme-flat {
+      --bs-theme-bg: purple;
+      --bs-theme-contrast: white;
+      --bs-theme-fg: purple;
+      --bs-theme-border: purple;
     }
 
     .btn-xxl {

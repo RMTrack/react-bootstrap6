@@ -25,8 +25,8 @@ describe('Col', () => {
     );
     expect(screen.getByText('Column').classList).toHaveLength(3);
     expect(screen.getByText('Column').classList).toContain('col-4');
-    expect(screen.getByText('Column').classList).toContain('col-md-8');
-    expect(screen.getByText('Column').classList).toContain('col-lg-12');
+    expect(screen.getByText('Column').classList).toContain('md:col-8');
+    expect(screen.getByText('Column').classList).toContain('lg:col-12');
   });
 
   it('Should include offsets', () => {
@@ -40,11 +40,11 @@ describe('Col', () => {
       </Col>,
     );
     expect(screen.getByText('Column').classList).toHaveLength(5);
-    expect(screen.getByText('Column').classList).toContain('col-md-8');
-    expect(screen.getByText('Column').classList).toContain('order-md-1');
+    expect(screen.getByText('Column').classList).toContain('md:col-8');
+    expect(screen.getByText('Column').classList).toContain('md:order-1');
     expect(screen.getByText('Column').classList).toContain('col-4');
     expect(screen.getByText('Column').classList).toContain('offset-1');
-    expect(screen.getByText('Column').classList).toContain('order-lg-last');
+    expect(screen.getByText('Column').classList).toContain('lg:order-last');
   });
 
   it('Should allow span to be null', () => {
@@ -54,8 +54,8 @@ describe('Col', () => {
       </Col>,
     );
     expect(screen.getByText('Column').classList).toContain('col-6');
-    expect(screen.getByText('Column').classList).toContain('order-md-1');
-    expect(screen.getByText('Column').classList).not.toContain('col-md');
+    expect(screen.getByText('Column').classList).toContain('md:order-1');
+    expect(screen.getByText('Column').classList).not.toContain('md:col');
   });
 
   it('Should allow span to be false', () => {
@@ -65,8 +65,8 @@ describe('Col', () => {
       </Col>,
     );
     expect(screen.getByText('Column').classList).toContain('col-6');
-    expect(screen.getByText('Column').classList).toContain('order-md-1');
-    expect(screen.getByText('Column').classList).not.toContain('col-md');
+    expect(screen.getByText('Column').classList).toContain('md:order-1');
+    expect(screen.getByText('Column').classList).not.toContain('md:col');
   });
 
   it('Should allow span to be auto', () => {
@@ -75,8 +75,8 @@ describe('Col', () => {
         Column
       </Col>,
     );
-    expect(screen.getByText('Column').classList).toContain('col-md-auto');
-    expect(screen.getByText('Column').classList).toContain('col-lg-auto');
+    expect(screen.getByText('Column').classList).toContain('md:col-auto');
+    expect(screen.getByText('Column').classList).toContain('lg:col-auto');
   });
 
   it('Should have div as default component', () => {
@@ -90,7 +90,7 @@ describe('Col', () => {
         <Col custom="3">test</Col>
       </ThemeProvider>,
     );
-    expect(screen.getByText('test').classList).toContain('col-custom-3');
+    expect(screen.getByText('test').classList).toContain('custom:col-3');
   });
 
   it('should allow custom breakpoints smaller than default "xs"', () => {
@@ -103,6 +103,6 @@ describe('Col', () => {
     );
 
     expect(screen.getByText('test').classList).toContain('col-3');
-    expect(screen.getByText('test').classList).toContain('col-xs-2');
+    expect(screen.getByText('test').classList).toContain('xs:col-2');
   });
 });

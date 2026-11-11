@@ -26,7 +26,7 @@ describe('<ProgressBar>', () => {
         />,
       );
       const innerProgressElem = screen.getByTestId('test').firstElementChild!;
-      expect(innerProgressElem.classList).toContain(`bg-${variant}`);
+      expect(innerProgressElem.classList).toContain(`theme-${variant}`);
     });
   });
 

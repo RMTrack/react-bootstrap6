@@ -1,0 +1,156 @@
+---
+title: Migrating to Bootstrap 6
+sidebar_label: Migrating to Bootstrap 6
+sidebar_position: 8
+---
+
+## Summary of breaking changes
+
+React-Bootstrap now renders Bootstrap 6 markup and classes and no longer emits any
+Bootstrap 5 class. Below is a _rough_ account of the breaking API changes as well as the
+minimal change to migrate. See the
+[Bootstrap 6 migration guide](https://getbootstrap.com/docs/6.0/guides/migration/) for the
+CSS side of the upgrade.
+
+### General
+
+- Bootstrap 6 (`bootstrap@6.0.0-alpha.1`) CSS is required. The Sass source must be loaded
+  with `@use` and Dart Sass; see [Stylesheets](../getting-started/introduction#stylesheets).
+- Responsive classes use a breakpoint prefix instead of an infix: `col-md-6` becomes
+  `md:col-6`, `navbar-expand-lg` becomes `lg:navbar-expand`, and so on. Breakpoint props
+  keep their names, but `xxl` now maps to the `2xl:` prefix, and string values accept `2xl`.
+- The `lg`, `xl` and `2xl` breakpoints are now 1024px, 1280px and 1536px.
+- Theme colors are `.theme-*` classes, and text colors are `.fg-*` utilities. The theme
+  keys are `primary`, `accent`, `secondary`, `success`, `danger`, `warning`, `info` and
+  `inverse`. There are no `light` or `dark` theme colors; use `inverse`, the neutral
+  surfaces (`bg-1`, `bg-2`, ...) or a color mode instead.
+- Stacks, navbar expansion, horizontal list groups, card groups and stacked tables use
+  container queries. Some need a parent that is a query container, such as `.contains-inline`.
+
+### Renamed components
+
+`Modal`, `Offcanvas` and `Dropdown` take the Bootstrap 6 component names. The old
+names are gone (there are no aliases), and the props are unchanged.
+
+| Bootstrap 5 | Bootstrap 6 |
+| --- | --- |
+| `Modal`, `Modal.Header`/`Title`/`Body`/`Footer` | `Dialog`, `Dialog.Header`/`Title`/`Body`/`Footer` |
+| `ModalHeader`, `ModalTitle`, `ModalBody`, `ModalFooter` | `DialogHeader`, `DialogTitle`, `DialogBody`, `DialogFooter` |
+| `ModalContext`, `ModalProps` (and the other `*Props` types) | `DialogContext`, `DialogProps` |
+| `Offcanvas`, `Offcanvas.Header`/`Title`/`Body` | `Drawer`, `Drawer.Header`/`Title`/`Body` |
+| `OffcanvasHeader`, `OffcanvasTitle`, `OffcanvasBody` | `DrawerHeader`, `DrawerTitle`, `DrawerBody` |
+| `Navbar.Offcanvas`, `NavbarOffcanvas` | `Navbar.Drawer`, `NavbarDrawer` |
+| `OffcanvasPlacement` | `DrawerPlacement` |
+| `Dropdown`, `Dropdown.Toggle` | `Menu`, `Menu.Toggle` |
+| `Dropdown.Menu` | `Menu.Panel` (the floating `.menu` element) |
+| `Dropdown.Item`/`Divider`/`Header` | `Menu.Item`/`Divider`/`Header` |
+| `Dropdown.ItemText` | `Menu.Text` |
+| `DropdownToggle`, `DropdownMenu`, `DropdownItem` | `MenuToggle`, `MenuPanel`, `MenuItem` |
+| `DropdownItemText`, `DropdownDivider`, `DropdownHeader` | `MenuText`, `MenuDivider`, `MenuHeader` |
+| `DropdownButton` | `MenuButton` |
+| `NavDropdown` (and its `Item`/`Text`/`Divider`/`Header`) | `NavMenu` |
+| `DropdownContext` | `MenuContext` |
+
+Import paths follow the names, for example `react-bootstrap/Dialog` and
+`react-bootstrap/Menu`. `SplitButton` keeps its name.
+
+### Accordion
+
+- Items render native `<details>`/`<summary>` elements.
+- Removed `AccordionButton`/`Accordion.Button` and `AccordionCollapse`/`Accordion.Collapse`,
+  and the transition callbacks on `Accordion.Body`. `useAccordionButton` is kept for custom
+  toggles; see [custom accordions](../components/accordion#custom-accordions).
+- `Accordion.Header`'s `as` now replaces the `<summary>` rather than a heading wrapper.
+- New `size="sm"` and `gap` props.
+
+### Alert, Toast and CloseButton
+
+- Removed `closeVariant` from `Alert`, `Dialog.Header` and `Toast.Header`, and the
+  `variant` prop from `CloseButton`. The close icon follows the text color.
+- Removed `ToastFade`. Toasts animate in CSS and get `.toast-instant` when `animation` is off.
+
+### Badge and Card
+
+- `bg` applies a `.theme-*` class.
+- New `variant` prop: `subtle` or `outline` on `Badge`, `subtle` or `translucent` on `Card`.
+- Removed `CardLink`/`Card.Link`. Use plain links.
+- `Card.Img` accepts `variant="start"` and `variant="end"` for horizontal (`.card-row`) cards.
+
+### Breadcrumb
+
+- Separators render as `.breadcrumb-divider` items between the items, and links get
+  `.breadcrumb-link`. New `divider` prop for the divider content.
+
+### Button
+
+- `variant` composes a style and a theme: `primary` renders `.btn-solid.theme-primary`,
+  `outline-primary` renders `.btn-outline.theme-primary`. New `subtle-*`, `text-*` and
+  `styled-*` variants, and a new `size="xs"`.
+
+### Carousel
+
+- Rebuilt on CSS scroll snap. Removed the `touch` prop; native swiping is used.
+- Autoplay is **opt-in**: add the `autoplay` prop. Any interaction stops it for good.
+- Removed `CarouselCaption`/`Carousel.Caption`. Use your own markup in `Carousel.Item`.
+- New `overlay` prop (default `true`) to overlay the controls on the slides.
+
+### Collapse
+
+- Toggles only `.show`; CSS animates the size. Removed `getDimensionValue`.
+
+### Dialog (was Modal)
+
+- Renders a single native `<dialog class="dialog">`. The `ref` points to the
+  `HTMLDialogElement`, and `Dialog.Title` renders an `<h5>`.
+- Removed `ModalDialog`/`Modal.Dialog`, and the `dialogAs`, `dialogClassName`,
+  `contentClassName`, `centered`, `backdropClassName`, `manager`, `autoFocus`,
+  `enforceFocus`, `restoreFocus` and `restoreFocusOptions` props. Native dialogs are
+  centered and the browser handles focus. Removed `BootstrapModalManager`.
+- New `modal` prop: `modal={false}` opens a non-modal dialog.
+- `fullscreen="xxl-down"` is now `fullscreen="2xl-down"`.
+
+### Drawer (was Offcanvas)
+
+- Renders Bootstrap 6's Drawer: a native `<dialog class="drawer">`. The `ref` points to the
+  `HTMLDialogElement`.
+- Removed `backdropClassName`, `manager`, `container`, `autoFocus`, `enforceFocus` and
+  `restoreFocus`, and `OffcanvasToggling`.
+- New `animation` prop: `animation={false}` adds `.drawer-instant`.
+
+### Forms
+
+- `FormCheck` renders `.form-field` with an `input.check` or `input.radio` and a plain label.
+  Removed the `inline` and `reverse` props.
+- `Form`'s `validated` prop renders `data-bs-validate` (or `data-bs-validate="valid"`)
+  instead of `.was-validated`. Controls are styled with `:user-invalid`.
+- Removed `InputGroup`'s `hasValidation` prop.
+- `FormSelect` uses `.form-control`. `FormRange` renders a `.form-range` wrapper around a
+  `.form-range-input`.
+
+### Menu (was Dropdown)
+
+- Renders Bootstrap 6 Menu classes (`.menu`, `.menu-item`, ...). There is no wrapper,
+  toggle or direction class. Dark menus render `data-bs-theme="dark"`.
+- `SplitButton`'s default `toggleLabel` is now "Toggle menu" (was "Toggle dropdown").
+
+### Nav and Navbar
+
+- Removed `NavbarCollapse`/`Navbar.Collapse`. Responsive navbars use `Navbar.Drawer`.
+- Removed `Nav`'s `navbarScroll` prop.
+- `variant` renders `data-bs-theme` instead of `.navbar-light`/`.navbar-dark`.
+
+### Pagination
+
+- New `variant` prop for a theme color.
+
+### Table
+
+- `variant` applies a `.theme-*` class; use `data-bs-theme="dark"` for a dark table.
+- New `stacked` prop.
+
+### Other components
+
+- `ToggleButton` nests its input inside a `label.btn-check`.
+- `Tooltip` and `Popover` use `data-bs-placement`.
+- `Spinner` sizes render `.spinner-sm`, and colors use `.fg-*`.
+- `Placeholder` adds a `pulse` animation.

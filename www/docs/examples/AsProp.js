@@ -1,4 +1,4 @@
-<Stack direction="horizontal" gap={2}>
+<Stack direction="horizontal" gap={3}>
   <Button as="a" variant="primary">
     Button as link
   </Button>

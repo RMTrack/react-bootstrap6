@@ -5,7 +5,7 @@ import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import FormContext from './FormContext.js';
 import { useBootstrapPrefix } from './ThemeProvider.js';
 
-type FormCheckInputType = 'checkbox' | 'radio';
+export type FormCheckInputType = 'checkbox' | 'radio' | 'switch';
 
 export interface FormCheckInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   /**
@@ -14,7 +14,10 @@ export interface FormCheckInputProps extends React.InputHTMLAttributes<HTMLInput
   as?: React.ElementType | undefined;
 
   /**
-   * @default 'form-check-input'
+   * The class of the input: `check` for checkboxes, `radio` for radios. For
+   * switches it is the class of the `.switch` wrapper around the input.
+   *
+   * @default 'check' | 'radio' | 'switch'
    */
   bsPrefix?: string | undefined;
 
@@ -24,7 +27,8 @@ export interface FormCheckInputProps extends React.InputHTMLAttributes<HTMLInput
   id?: string | undefined;
 
   /**
-   * The type of checkable.
+   * The type of checkable. A `switch` renders a checkbox with
+   * `role="switch"` inside a `.switch` wrapper.
    */
   type?: FormCheckInputType | undefined;
 
@@ -58,7 +62,33 @@ const FormCheckInput: DynamicRefForwardingComponent<
     ref,
   ) => {
     const { controlId } = useContext(FormContext);
-    bsPrefix = useBootstrapPrefix(bsPrefix, 'form-check-input');
+    const isSwitch = type === 'switch';
+    bsPrefix = useBootstrapPrefix(
+      bsPrefix,
+      isSwitch ? 'switch' : type === 'radio' ? 'radio' : 'check',
+    );
+
+    const validationClasses = [
+      isValid && 'is-valid',
+      isInvalid && 'is-invalid',
+    ];
+
+    if (isSwitch) {
+      return (
+        <div className={bsPrefix}>
+          <Component
+            role="switch"
+            // Enables the native switch control where supported (Safari).
+            switch=""
+            {...props}
+            ref={ref}
+            type="checkbox"
+            id={id || controlId}
+            className={clsx(className, ...validationClasses) || undefined}
+          />
+        </div>
+      );
+    }
 
     return (
       <Component
@@ -66,12 +96,7 @@ const FormCheckInput: DynamicRefForwardingComponent<
         ref={ref}
         type={type}
         id={id || controlId}
-        className={clsx(
-          className,
-          bsPrefix,
-          isValid && 'is-valid',
-          isInvalid && 'is-invalid',
-        )}
+        className={clsx(className, bsPrefix, ...validationClasses)}
       />
     );
   },

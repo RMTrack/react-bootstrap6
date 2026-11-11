@@ -17,15 +17,4 @@ describe('Toast.Header', () => {
 
     expect(container.firstElementChild!.classList).toContain('toast-header');
   });
-
-  it('should render close button variant', () => {
-    const { container } = render(
-      <Toast.Header closeButton closeVariant="white">
-        <strong>content</strong>
-      </Toast.Header>,
-    );
-    expect(
-      container.firstElementChild!.getElementsByTagName('button')[0].classList,
-    ).toContain('btn-close-white');
-  });
 });

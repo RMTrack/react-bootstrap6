@@ -4,7 +4,7 @@ import type { ColProps } from './Col.js';
 import useCol from './useCol.js';
 import type { Variant } from './types.js';
 
-export type PlaceholderAnimation = 'glow' | 'wave';
+export type PlaceholderAnimation = 'wave' | 'pulse' | 'glow';
 export type PlaceholderSize = 'xs' | 'sm' | 'lg';
 
 export interface UsePlaceholderProps extends Omit<ColProps, 'as'> {
